@@ -106,3 +106,7 @@ The work evolves toward a strategic position — but only after analytical found
 These assumptions are examined — not asserted.
 
 ## License
+
+This work is licensed under the Creative Commons Attribution–NonCommercial 4.0 International License (CC BY-NC 4.0).
+
+Commercial use, institutional embedding, or derivative advisory applications require explicit permission.
