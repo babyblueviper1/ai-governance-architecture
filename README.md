@@ -2,8 +2,10 @@
 
 **Version:** v0.3  
 **Status:** Draft — Architecture Phase  
-**Lead:** Federico Blanco Sánchez-Llanos
+**Lead:** Federico Blanco Sánchez-Llanos  
 **Date:** February 19, 2026
+
+---
 
 **The AI Governance Project is an evolving architectural initiative focused on capability-tiered governance frameworks and enforcement infrastructure for advanced AI systems.**
 
