@@ -193,9 +193,10 @@ Thank you for engaging thoughtfully.
 
 For institutional engagement, collaboration inquiries, research alignment, formal critique, or discussions on capability-tiered governance, enforcement architecture, or related standards work:
 
-**Federico Blanco Sánchez-Llanos**  
-Email: fsllanos@gmail.com
-LinkedIn: [https://www.linkedin.com/in/fedblanco](https://www.linkedin.com/in/fedblanco)  
+**Federico Blanco Sánchez-Llanos**
+
+**Email:** fsllanos@gmail.com  
+**LinkedIn:** [https://www.linkedin.com/in/fedblanco](https://www.linkedin.com/in/fedblanco)
 
 Please include context from the repository (e.g., specific notes, principles, or sections you're referencing) to help ensure focused and productive conversation.
 
