@@ -189,6 +189,18 @@ Serious, focused contributions help advance this architectural exploration from 
 
 Thank you for engaging thoughtfully.
 
+## Contact
+
+For institutional engagement, collaboration inquiries, research alignment, formal critique, or discussions on capability-tiered governance, enforcement architecture, or related standards work:
+
+**Federico Blanco Sánchez-Llanos**  
+Email: fsllanos@gmail.com
+LinkedIn: [https://www.linkedin.com/in/fedblanco](https://www.linkedin.com/in/fedblanco)  
+
+Please include context from the repository (e.g., specific notes, principles, or sections you're referencing) to help ensure focused and productive conversation.
+
+We aim to respond thoughtfully to serious, substantive outreach within a reasonable timeframe.
+
 ## License
 
 This work is licensed under the Creative Commons Attribution–NonCommercial 4.0 International License (CC BY-NC 4.0).
