@@ -1,5 +1,9 @@
 # Note III — Capability-Tiered Governance & Enforcement Architecture
 
+**Version:** v0.3  
+**Status:** Draft — Architecture Phase  
+**Date:** February 19, 2026
+
 ## Context
 
 Notes I and II established:
