@@ -7,9 +7,7 @@
 
 ---
 
-**The AI Governance Project is an evolving architectural initiative focused on capability-tiered governance frameworks and enforcement infrastructure for advanced AI systems.**
-
-This repository develops a capability-tiered model of AI governance and explores the architectural implications of enforcement in AI-native ecosystems.
+The AI Governance Project is an evolving architectural initiative focused on capability-tiered governance frameworks and enforcement infrastructure for advanced AI systems.
 
 **The objective is not reactive regulation, but structural clarity.**
 
