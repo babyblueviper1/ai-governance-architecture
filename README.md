@@ -18,7 +18,7 @@ This repository develops that framework step by step.
 
 ## Structure of the Research Series
 
-### Note I — The AI Agent Spectrum
+### [Note I — The AI Agent Spectrum](./note-01-ai-agent-spectrum.md)
 
 Introduces a capability-based classification of AI systems.
 
@@ -36,7 +36,7 @@ The note defines a spectrum based on:
 
 It outlines differentiated governance modes appropriate to each class of system.
 
-### Note II — From Agent Spectrum to Governance Architecture
+### [Note II — From Agent Spectrum to Governance Architecture](./note-02-from-agent-spectrum-to-governance-architecture.md)
 
 Builds on the spectrum model and introduces the structural implications.
 
