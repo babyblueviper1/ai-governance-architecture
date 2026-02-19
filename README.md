@@ -160,7 +160,34 @@ Future iterations may include:
 
 The work presented here — including capability tiers, design principles, enforcement topologies, and governance maturity alignment — is intended as foundational input to help shape safe, scalable, and interoperable governance architectures for increasingly autonomous AI systems.
 
-We welcome discussion, critique, and parallel efforts in this rapidly evolving domain.
+## Collaboration & Engagement
+
+The **AI Governance Project** is open to substantive engagement from:
+
+- Researchers
+- Institutional leaders
+- Practitioners
+
+…working at the intersection of **AI systems design** and **governance**.
+
+This is **not** a general commentary forum. Contributions should engage meaningfully with structural, architectural, or enforcement-level questions raised in the notes and design principles.
+
+### How to Engage
+
+- If your work directly intersects with capability-tiered governance, enforcement architectures, identity continuity, jurisdictional awareness, interoperable enforcement nodes, or related topics → **open an issue** describing the overlap or proposed contribution.
+- For deeper discussion, formal critique, collaborative refinement, or potential alignment with standards efforts → feel free to **contact the lead directly** (Federico Blanco Sánchez-Llanos).
+- We will actively reach out to academic institutions, standards bodies (e.g., ISO/IEC JTC 1/SC 42, NIST AI Risk Management Framework contributors, emerging AI safety consortia), and industry leaders to refine and formalize elements of the framework.
+
+We particularly welcome:
+
+- Parallel research on enforcement primitives or runtime constraint systems
+- Feedback on the four-tier capability spectrum and governance maturity alignment
+- Proposals for verifiable identity models or cross-agent verification topologies
+- Insights from sovereign compute, economic throttling, or multilateral governance perspectives
+
+Serious, focused contributions help advance this architectural exploration from conceptual foundations toward concrete, interoperable standards.
+
+Thank you for engaging thoughtfully.
 
 ## License
 
