@@ -18,7 +18,7 @@ This repository develops that framework step by step.
 
 ## Structure of the Research Series
 
-### [Note I — The AI Agent Spectrum](./note-01-ai-agent-spectrum.md)
+### [Note I — The AI Agent Spectrum](./notes/note-01-ai-agent-spectrum.md)
 
 Introduces a capability-based classification of AI systems.
 
@@ -36,7 +36,7 @@ The note defines a spectrum based on:
 
 It outlines differentiated governance modes appropriate to each class of system.
 
-### [Note II — From Agent Spectrum to Governance Architecture](./note-02-from-agent-spectrum-to-governance-architecture.md)
+### [Note II — From Agent Spectrum to Governance Architecture](./notes/note-02-from-agent-spectrum-to-governance-architecture.md)
 
 Builds on the spectrum model and introduces the structural implications.
 
@@ -52,7 +52,7 @@ This note explores:
 
 It introduces — but does not yet fully develop — the idea that enforcement in AI ecosystems may become partially autonomous and infrastructural.
 
-### [Note III — Capability-Tiered Governance & Enforcement Architecture](./note-03-capability-tiered-governance-enforcement.md)
+### [Note III — Capability-Tiered Governance & Enforcement Architecture](./notes/note-03-capability-tiered-governance-enforcement.md)
 
 Formalizes the capability spectrum and establishes enforcement as an architectural necessity.
 
