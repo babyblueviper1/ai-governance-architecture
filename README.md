@@ -1,6 +1,11 @@
-# AI Governance Architecture
+# AI Governance Project
 
-**A structured research initiative examining how governance frameworks must evolve in response to increasingly autonomous, economically active, and infrastructure-dependent AI systems.**
+**Version:** v0.3  
+**Status:** Draft — Architecture Phase  
+**Lead:** Federico Blanco Sánchez-Llanos
+**Date:** February 19, 2026
+
+**The AI Governance Project is an evolving architectural initiative focused on capability-tiered governance frameworks and enforcement infrastructure for advanced AI systems.**
 
 This repository develops a capability-tiered model of AI governance and explores the architectural implications of enforcement in AI-native ecosystems.
 
