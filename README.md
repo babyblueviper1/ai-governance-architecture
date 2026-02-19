@@ -52,6 +52,33 @@ This note explores:
 
 It introduces — but does not yet fully develop — the idea that enforcement in AI ecosystems may become partially autonomous and infrastructural.
 
+### [Note III — Capability-Tiered Governance & Enforcement Architecture](./note-03-capability-tiered-governance-enforcement.md)
+
+Formalizes the capability spectrum and establishes enforcement as an architectural necessity.
+
+**Key thesis:**  
+As AI systems gain persistence, planning, and economic agency, governance must migrate from policy to embedded runtime architecture.
+
+This note defines:
+
+- **Four-tier capability spectrum**  
+  - Tier 1: Assistive Systems (low/no persistence, human-directed)  
+  - Tier 2: Hybrid Distributed Agency Systems (persistent memory + workflows)  
+  - Tier 3: Autonomous Operational Agents (persistent identity, planning, adaptive behavior)  
+  - Tier 4: Autonomous Economic Agents (capital allocation, contracts, market participation)
+
+- **Governance Maturity Alignment** table mapping each tier to its required governance layer
+
+- **Enforcement as Architecture** — shift to embedded constraint systems, runtime verification, and enforcement node networks
+
+- **Conceptual Enforcement Topology** (Agent Layer → Constraint Layer → Verification Layer → Enforcement Node Network)
+
+- Strategic position: AI governance as an **architectural synchronization challenge** between capability expansion and enforcement maturity
+
+- Roadmap for next phases (enforcement nodes, verification topologies, economic throttling, sovereign compute, identity continuity standards)
+
+This note completes the foundational classification-to-architecture transition and prepares the ground for concrete enforcement models.
+
 ## Direction of Inquiry
 
 Future work will explore:
@@ -104,6 +131,31 @@ The work evolves toward a strategic position — but only after analytical found
 - Enforcement cannot remain purely declarative.  
 
 These assumptions are examined — not asserted.
+
+# Initiative Position
+
+This repository represents early-stage work toward a **capability-tiered governance standard** for advanced AI systems.
+
+## Objective
+
+The objective is to:
+
+- Formalize classification frameworks
+- Define enforcement architecture requirements
+- Develop interoperable governance primitives
+- Contribute to emerging standards discourse
+
+This is an **architectural exploration phase**.
+
+Future iterations may include:
+
+- Formal proposals
+- Draft technical specifications
+- Collaborative contributions
+
+The work presented here — including capability tiers, design principles, enforcement topologies, and governance maturity alignment — is intended as foundational input to help shape safe, scalable, and interoperable governance architectures for increasingly autonomous AI systems.
+
+We welcome discussion, critique, and parallel efforts in this rapidly evolving domain.
 
 ## License
 
