@@ -3,7 +3,7 @@
 **Version:** v0.4  
 **Status:** Draft — Architecture Phase  
 **Lead:** Federico Blanco Sánchez-Llanos  
-**Date:** February 19, 2026
+**Date:** February 20, 2026
 
 ---
 
