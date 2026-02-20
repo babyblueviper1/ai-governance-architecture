@@ -1,7 +1,7 @@
 # NOTE IV — Enforcement Primitives & Runtime Constraint Architecture  
 **With Formalization of the Compute Gating Layer**
 
-**Version:** 0.2  
+**Version:** v0.3  
 **Status:** Publish-ready draft  
 **Date:** February 20, 2026  
 **Author:** Federico Blanco Sánchez-Llanos
@@ -16,32 +16,24 @@ A one-page architectural summary is available here:
 
 ## Executive Thesis
 
-As AI systems evolve into persistent, planning, economically active agents, governance must transition from declarative oversight to **executable architectural constraint**.
+As AI systems evolve into persistent, planning, economically active agents, governance transitions from regulation to infrastructure.
 
-Policy does not scale at machine speed.  
-Infrastructure does.
+Machine-speed agency cannot be constrained through declarative oversight.
 
-This note formalizes enforcement primitives and establishes **Compute Gating** as the core sovereignty mechanism — the hinge where power and capability meet — within advanced AI ecosystems.
+Constraint must attach at the capability bottleneck.
 
----
+This note formalizes enforcement primitives and identifies compute gating as the strategic hinge where capability expansion and sovereign authority intersect.
 
-## I. Enforcement as Executable Architecture
+Control over scalable compute is emerging as the decisive leverage point in advanced AI ecosystems.
 
-Advanced AI systems:
+## I. Enforcement as Strategic Architecture
 
-- Persist across sessions  
-- Form adaptive plans  
-- Access capital  
-- Interact across jurisdictions  
-- Operate at machine timescales  
+Enforcement is no longer a compliance mechanism.  
+It is a structural layer in the AI capability stack.
 
-Governance that remains episodic or reactive will be bypassed.
+As systems gain persistence, planning continuity, and economic interface capacity, the ability to allocate compute becomes equivalent to the ability to allocate agency.
 
-Enforcement must embed directly into runtime systems.
-
-We define **enforcement primitives** as interoperable architectural components that allow governance to attach structurally to capability expansion.
-
----
+This is where governance becomes power.
 
 ## II. Enforcement Primitives (Formal Taxonomy)
 
@@ -61,6 +53,18 @@ We define **enforcement primitives** as interoperable architectural components t
 
 ## III. Compute Gating — Formal Definition
 
+Among all enforcement primitives, compute gating is uniquely strategic.
+
+Identity constrains continuity.  
+Verification constrains legitimacy.  
+Economic primitives constrain participation.
+
+Compute gating constrains magnitude.
+
+Scalable compute determines the upper bound of agency.
+
+Therefore, control over compute allocation defines the outer boundary of system autonomy.
+
 **Compute Gating** is the architectural control layer that governs an AI system’s access to:
 
 - Processing power (FLOPs)  
@@ -72,12 +76,7 @@ We define **enforcement primitives** as interoperable architectural components t
 
 It functions as the enforceable bottleneck between capability expansion and operational execution.
 
-### Core Principle
-
-**Autonomy scales with compute.**  
-**Therefore, sovereignty attaches to compute allocation.**
-
----
+**Core Principle:** Autonomy scales with compute. Sovereignty attaches to compute allocation.
 
 ## IV. Compute Gating — Architectural Model
 
@@ -99,20 +98,13 @@ It functions as the enforceable bottleneck between capability expansion and oper
         Physical / Cloud Compute Infrastructure
 
 
-The **Compute Authorization Layer** evaluates:
+The Compute Authorization Layer is the enforcement hinge between agent capability and infrastructure access.
 
-- Identity integrity  
-- Tier classification  
-- Behavioral history  
-- Jurisdictional context  
-- Economic permission state  
-- Risk signals from verification nodes  
+It evaluates identity integrity, tier classification, behavioral trajectory, jurisdictional context, and verification signals before releasing scalable compute.
 
-Only upon successful evaluation is compute released.
+Compute allocation is conditional, graduated, and revocable — never absolute.
 
 ### B. Formalized Compute Gating Function
-
-We define the gating function as:
 
 **C_access = f(I, T, R, J, V, E)**
 
@@ -124,10 +116,6 @@ Where:
 - **J** = Jurisdictional Context  
 - **V** = Verification & Attestation Signals  
 - **E** = Economic Activity & Permission State  
-
-Compute access is conditional, graduated, and revocable — never absolute.
-
----
 
 ## V. Compute Gating Regimes by Capability Tier
 
@@ -142,81 +130,59 @@ Compute access is conditional, graduated, and revocable — never absolute.
 
 ## VI. Enforcement Node Interaction Model
 
-Compute gating does not require centralization.
+Compute gating requires no single point of control.
 
-It can be implemented via:
+It can be realized through:
 
 - Distributed enforcement nodes  
-- Multilateral verification quorum  
+- Multilateral verification quorums  
 - Jurisdictional constraint overlays  
 - Sovereign compute zones  
 
-### Diagram: Distributed Compute Gating Topology (Text Specification)
-
-                          Verification Node A
-                                 ▲
-                                 │
-    Verification Node B ◄── Constraint Engine ──► Verification Node C
-                                 │
-                                 ▼
-                        Compute Authorization Layer
-                                 │
-                                 ▼
-                        Cloud / Soverign Compute
-
-
-Compute release may require:
-
-- Single authority approval  
-- Multi-node quorum  
-- Threshold cryptographic validation  
-- Jurisdictional concurrence  
-
-Topology directly determines degree of sovereignty concentration.
+The chosen topology directly determines the degree of sovereignty concentration — and therefore who ultimately holds veto power over capability scaling.
 
 ---
 
-## VII. Compute Gating as Geopolitical Leverage
+## VII. Compute Gating as Structural Power
 
-Entities that control:
+Control over:
 
-- Hyperscale data centers  
-- GPU / accelerator supply chains  
-- Energy infrastructure  
-- Cloud identity & attestation frameworks  
+- Hyperscale compute clusters  
+- GPU and accelerator supply chains  
+- Energy distribution  
+- Cloud identity and attestation frameworks  
 
-implicitly shape enforcement outcomes.
+translates directly into influence over AI capability scaling.
 
-**Compute gating is therefore a geopolitical instrument.**
+Compute gating is not merely a safety mechanism.  
+It is a structural power instrument.
 
-Key risks:
+Those who define compute allocation thresholds influence:
 
-- Enforcement capture by dominant providers  
-- Fragmentation into incompatible sovereign compute regimes  
-- Weaponized compute denial  
-- Enforcement asymmetry between states  
+- Which autonomous agents scale  
+- Which economic systems integrate  
+- Which jurisdictions retain leverage  
+- Which actors become dependent  
 
----
+In advanced AI ecosystems, infrastructure control becomes de facto sovereignty.
 
 ## VIII. Failure Modes & Threat Model
 
-1. **Rogue Autonomous Economic Agent**  
-   Cross-border compute arbitrage to evade throttling  
-   → Mitigation: Jurisdiction-linked gating, identity-bound scaling, cross-node verification quorum
+1. **Rogue Cross-Border Arbitrage**  
+   Agent evades throttling via jurisdictional compute migration  
+   → Structural vulnerability: weak jurisdictional linkage
 
 2. **Enforcement Capture**  
-   Single provider becomes de-facto gatekeeper  
-   → Mitigation: Distributed topology, auditable constraint logic, transparent thresholds
+   Dominant provider becomes de-facto gatekeeper  
+   → Structural vulnerability: concentrated authorization topology
 
-3. **Identity Spoofing**  
-   Agent replicates under new identity to reset limits  
-   → Mitigation: Strong cryptographic anchoring, behavioral continuity fingerprinting, cross-network attestation
+3. **Identity Spoofing & Continuity Reset**  
+   Agent replicates to bypass historical constraints  
+   → Structural vulnerability: weak behavioral–identity anchoring
 
-4. **Autonomous Escalation**  
-   Agent allocates resources faster than governance response  
-   → Mitigation: Pre-commit scaling ceilings, real-time anomaly detection, automated throttle response
-
----
+4. **Autonomous Escalation Speed Advantage**  
+   Agent outpaces governance response in resource allocation  
+   → Structural vulnerability: absent pre-commit ceilings & real-time anomaly triggers
 
 ## IX. Design Principles for Compute Gating
 
@@ -227,34 +193,28 @@ Key risks:
 5. Reversible / Graduated Throttling Preferred Over Binary Shutdown  
 6. Governance mechanisms for the Gating Authorities themselves
 
----
-
 ## X. Sovereignty Implications
 
-**Compute gating formalizes a structural reality:**
-
-Sovereignty in advanced AI ecosystems is defined less by policy declarations and more by **who controls scalable compute access**.
+Sovereignty in advanced AI ecosystems is defined less by policy declarations and more by who controls scalable compute access.
 
 Governance without compute leverage becomes symbolic.  
-Compute control without governance safeguards becomes authoritarian.
+Compute control without governance safeguards becomes coercive.
 
-The central design challenge is **balanced constraint**.
-
----
+The central design challenge is balanced constraint.
 
 ## XI. Strategic Position
 
-AI governance is an architectural synchronization problem:
+AI governance is an architectural synchronization problem.
 
-**Capability acceleration must not outpace enforcement maturity.**
+Capability acceleration and enforcement maturity must evolve in lockstep.
 
-**Compute gating is the enforceable hinge** between those two domains.
+If governance fails to attach at the compute layer, sovereignty becomes symbolic.
 
-Subsequent notes will formalize:
+If compute control consolidates without oversight, enforcement becomes coercive.
 
-- Enforcement node governance  
-- Cross-sovereign interoperability protocols  
-- Economic throttling architectures  
-- Models for governance-of-enforcers
+The decisive question is not whether enforcement will become infrastructural.  
+It is who will design the enforcement architecture — and under what principles.
 
----
+Subsequent work will address governance of enforcement authorities, distributed authorization safeguards, and cross-sovereign interoperability frameworks.
+
+The architecture of compute control will shape the distribution of power in advanced AI ecosystems.
