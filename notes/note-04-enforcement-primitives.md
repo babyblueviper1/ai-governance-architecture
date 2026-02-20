@@ -10,7 +10,7 @@
 
 A one-page architectural summary is available here:
 
-[Download PDF](../artifacts/AI_Governance_Compute_Gating_With_Topology.pdf)
+[Download PDF](../artifacts/AI_Governance_Compute_Gating.pdf)
 
 ---
 
