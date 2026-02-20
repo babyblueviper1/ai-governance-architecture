@@ -1,149 +1,104 @@
 # AI Governance Project
 
-**Version:** v0.4  
-**Status:** Draft — Architecture Phase  
+**Version:** v0.5  
+**Status:** Strategic Architecture Phase  
 **Lead:** Federico Blanco Sánchez-Llanos  
-**Date:** February 20, 2026
-
----
+**Date:** February 2026
 
 ## Executive Framing
 
-Advanced AI systems are rapidly evolving from assistive tools into persistent, economically active agents. Existing governance approaches often treat these systems as a single regulatory category, creating structural blind spots.
+Advanced AI systems are evolving from assistive tools into persistent, economically active agents embedded within economic and institutional infrastructures.
 
-The AI Governance Project develops a **capability-tiered governance framework** that aligns oversight and enforcement architecture with system autonomy, persistence, planning capacity, and economic agency.
+Existing governance approaches often treat these systems as a single regulatory category, creating structural blind spots.
+
+The AI Governance Project develops a capability-tiered governance and enforcement doctrine aligned with system autonomy, persistence, planning capacity, economic agency, and infrastructural leverage.
 
 The objective is not reactive regulation — but structural synchronization between capability expansion and governance maturity.
 
-This repository develops that architecture step by step.
+As enforcement becomes infrastructural, questions of jurisdiction, sovereignty, and power distribution become central design variables.
 
----
+This repository develops that architecture and its sovereign implications step by step.
 
 ## Premise
 
 The term “AI” currently collapses fundamentally different system types into a single regulatory category.
 
-Stateless predictive tools, enterprise workflow agents, economically active autonomous systems, sovereign-scale compute deployments, and decentralized rogue actors cannot coherently share the same governance regime.
+Stateless predictive tools, enterprise workflow agents, autonomous operational systems, economically active agents, sovereign-scale compute deployments, and decentralized rogue actors cannot coherently share the same governance regime.
 
-Effective governance must map to **capability — not branding.**
+Effective governance must map to capability — not branding.
 
 As capability growth accelerates, governance must evolve proportionally.  
 The question is not whether advanced AI systems will emerge — but whether enforcement infrastructure matures alongside them.
 
----
-
 ## Structure of the Research Series
 
 ### [Note I — The AI Agent Spectrum](./notes/note-01-ai-agent-spectrum.md)
-
 Introduces a capability-based classification of AI systems.
 
-**Core thesis:**  
-Governance must be capability-tiered.
+**Core thesis:** Governance must be capability-tiered.
 
-The note defines a spectrum based on:
-
+Defines a spectrum based on:  
 - Autonomy  
 - Persistence  
 - Goal formation  
 - Economic participation  
 - Infrastructure access  
-- Identity continuity  
-
-It outlines differentiated governance modes appropriate to each class of system.
+- Identity continuity
 
 ### [Note II — From Agent Spectrum to Governance Architecture](./notes/note-02-from-agent-spectrum-to-governance-architecture.md)
+Transitions from classification to structural governance implications.
 
-Builds on the spectrum model and introduces structural implications.
+**Core thesis:** Governance must move from declarative regulation to infrastructural architecture.
 
-**Core thesis:**  
-Governance must move from declarative regulation to infrastructural architecture.
-
-This note explores:
-
+Explores:  
 - Why uniform regulation fails  
 - How governance attaches to leverage points  
-- The emerging role of compute, energy, identity, and infrastructure  
-- The concept of enforcement as a system layer  
-
-It introduces the idea that enforcement in AI ecosystems may increasingly become infrastructural and partially autonomous.
+- Compute, energy, identity, and infrastructure as control surfaces  
+- Enforcement as a system layer
 
 ### [Note III — Capability-Tiered Governance & Enforcement Architecture](./notes/note-03-capability-tiered-governance-enforcement.md)
+Formalizes governance maturity alignment and enforcement topology.
 
-Formalizes the capability spectrum and establishes enforcement as an architectural necessity.
+**Core thesis:** As AI systems gain persistence, planning capacity, and economic agency, governance must migrate from policy toward embedded runtime architecture.
 
-**Core thesis:**  
-As AI systems gain persistence, planning capacity, and economic agency, governance must migrate from policy toward embedded runtime architecture.
-
-#### Four-Tier Capability Spectrum
-
-| Tier   | System Type                          | Core Traits                                          | Governance Mode                          |
-|--------|--------------------------------------|------------------------------------------------------|------------------------------------------|
-| Tier 1 | Assistive Systems                    | Stateless, human-directed                            | Disclosure, usage norms                  |
-| Tier 2 | Hybrid Distributed Agency Systems    | Persistent memory, bounded workflows                 | Auditability, traceability               |
-| Tier 3 | Autonomous Operational Agents        | Persistent identity, adaptive planning               | Runtime constraint enforcement           |
-| Tier 4 | Autonomous Economic Agents           | Capital allocation, contracts, market participation  | Infrastructure-level gating & verification |
-
-#### Governance Maturity Alignment
-
-Each capability tier requires a corresponding maturity level in governance architecture.
-
-Governance layers include:
-
-- Policy layer  
-- Institutional oversight layer  
-- Runtime constraint layer  
-- Verification layer  
+Introduces:  
+- A four-tier capability spectrum  
+- Governance maturity alignment  
+- Runtime constraint layers  
+- Verification architecture  
 - Enforcement node networks  
 
-#### Enforcement as Architecture
-
-As AI systems gain planning, persistence, and economic agency, enforcement cannot remain exclusively declarative or post-hoc.
-
-It must increasingly embed into:
-
-- Runtime constraint systems  
-- Verification architectures  
-- Infrastructure layers  
-- Compute and resource gating regimes  
-
-**Conceptual enforcement topology:**
-
-**Agent Layer → Constraint Layer → Verification Layer → Enforcement Node Network**
-
-AI governance becomes a synchronization challenge between capability acceleration and enforcement maturity.
+Enforcement becomes an architectural synchronization challenge.
 
 ### [Note IV — Enforcement Primitives & Runtime Constraint Architecture](./notes/note-04-enforcement-primitives.md)
 
-Formalizes the enforcement primitives and introduces **Compute Gating** as the core sovereignty mechanism and architectural hinge.
+Formalizes interoperable enforcement primitives and establishes Compute Gating as the sovereignty hinge.
 
-**Core thesis:**  
-Policy does not scale at machine speed. Infrastructure does. Governance must therefore embed directly into runtime systems through interoperable enforcement primitives, with Compute Gating anchoring sovereign control over capability expansion.
+**Core thesis:** Policy does not scale at machine speed. Infrastructure does.
 
-This note defines:
+Governance must embed into runtime systems through interoperable enforcement primitives, with compute gating anchoring sovereign control over scalable capability.
 
-- A formal taxonomy of seven enforcement primitives  
-- The Compute Gating function, regimes by capability tier, and distributed topologies  
-- Geopolitical leverage, failure modes, and design principles  
-- The structural reality that sovereignty in advanced AI systems is ultimately defined by who controls scalable compute access  
+Defines:  
+- A taxonomy of enforcement primitives  
+- Compute gating regimes by capability tier  
+- Distributed enforcement topologies  
+- Geopolitical leverage and structural failure modes  
 
-It positions Compute Gating as the enforceable link between capability acceleration and governance maturity.
+Sovereignty in advanced AI systems increasingly maps to control over scalable compute access.
 
----
+## Emerging Phase: Jurisdiction & Sovereignty
 
-## Direction of Inquiry
+The next phase of this work develops the jurisdictional and sovereign implications of enforcement architecture.
 
-Future work will explore:
+As enforcement becomes infrastructural and partially autonomous, key questions emerge:
 
-- Enforcement as a formal governance layer  
-- Autonomous enforcement agents  
-- Resource gating and compute access regimes  
-- Sovereign compute infrastructure  
-- Multilateral vs national governance architectures  
-- Power concentration risks in enforcement systems  
-- Governance of the enforcers  
+- Where does jurisdiction attach in distributed AI systems?  
+- Who governs enforcement nodes?  
+- How do sovereign compute regimes interact?  
+- How is cross-border enforcement coordinated or contested?  
+- What prevents enforcement concentration from becoming systemic power capture?
 
----
+Governance in advanced AI ecosystems becomes inseparable from sovereignty design.
 
 ## Risks & Structural Tensions
 
@@ -157,21 +112,18 @@ Any enforcement architecture introduces structural tradeoffs. This project expli
 
 These risks are not peripheral — they are integral to the design problem.
 
----
-
 ## Project Approach
 
-This project proceeds methodically:
+This initiative proceeds sequentially:
 
 1. Map the terrain  
-2. Clarify categories  
-3. Identify leverage points  
-4. Develop structural models  
-5. Articulate strategic implications  
+2. Clarify capability categories  
+3. Identify structural leverage points  
+4. Develop enforcement architecture models  
+5. Analyze jurisdictional and sovereign implications  
+6. Articulate strategic doctrine considerations  
 
 Analytical foundations precede policy positioning.
-
----
 
 ## Non-Goals
 
@@ -181,11 +133,9 @@ This repository does not:
 - Advocate premature capability caps  
 - Promote broad surveillance expansion  
 - Restrict open research by default  
-- Assume a specific geopolitical governance model  
+- Assume a single geopolitical governance model  
 
-The work focuses on architectural clarity — not prescriptive overreach.
-
----
+The work focuses on structural alignment and sovereignty-aware architecture — not prescriptive overreach.
 
 ## Working Assumptions
 
@@ -193,24 +143,24 @@ These assumptions are examined, not asserted:
 
 - AI systems will increase in autonomy and persistence  
 - Economically active agents will proliferate  
-- Compute concentration will have geopolitical implications  
+- Compute concentration will shape geopolitical leverage  
 - Governance will increasingly attach to infrastructure  
 - Enforcement cannot remain purely declarative  
-
----
+- Sovereignty will increasingly map to control over scalable compute and enforcement nodes  
 
 ## Initiative Position
 
-This repository represents early-stage work toward a capability-tiered governance standard for advanced AI systems.
+This repository represents early-stage development of a capability-tiered governance and enforcement doctrine for advanced AI systems.
 
 It aims to complement — not replace — existing frameworks such as:
 
 - ISO/IEC JTC 1/SC 42  
 - NIST AI Risk Management Framework  
 
-The contribution is structural: capability-tiered alignment and enforcement architecture modeling.
-
----
+The contribution is structural:  
+- Capability-tiered alignment  
+- Enforcement architecture modeling  
+- Sovereignty-aware governance design  
 
 ## Objective
 
@@ -218,19 +168,18 @@ The objective is to:
 
 - Formalize classification frameworks  
 - Define enforcement architecture requirements  
-- Develop interoperable governance primitives  
+- Model interoperable enforcement primitives  
+- Clarify jurisdictional attachment points  
+- Develop sovereignty-aware governance doctrine  
 - Contribute to emerging standards discourse  
 
-This is an architectural exploration phase.
+This remains an architectural and strategic exploration phase.
 
-Future iterations may include:
-
-- Formal proposals  
+Future iterations may include:  
 - Draft technical specifications  
-- Reference models  
-- Collaborative contributions  
-
----
+- Reference enforcement topologies  
+- Sovereign compute governance models  
+- Collaborative standards alignment  
 
 ## Audience
 
@@ -240,29 +189,26 @@ Future iterations may include:
 - National security analysts  
 - Institutional leaders  
 - AI systems designers  
-
----
+- Sovereign technology strategists  
 
 ## Collaboration & Engagement
 
-The AI Governance Project welcomes substantive engagement from researchers, institutional leaders, and practitioners working at the intersection of AI systems design and governance.
-
-Engagement should focus on architectural, enforcement-level, or structural governance questions aligned with the framework.
+The AI Governance Project welcomes substantive engagement from researchers, institutional leaders, and practitioners working at the intersection of AI systems design, enforcement architecture, and sovereignty.
 
 We particularly welcome:
 
-- Parallel research on enforcement primitives or runtime constraint systems  
-- Feedback on the four-tier capability spectrum  
-- Proposals for verifiable identity models or cross-agent verification topologies  
-- Insights from sovereign compute, economic throttling, or multilateral governance perspectives  
+- Research on enforcement primitives or runtime constraint systems  
+- Feedback on capability-tiered classification  
+- Proposals for verifiable identity or cross-agent verification models  
+- Perspectives on sovereign compute regimes  
+- Jurisdictional coordination models  
+- Power-distribution analysis in enforcement networks  
 
-Serious, focused contributions help advance this work from conceptual foundations toward interoperable standards.
+Focused structural critique is encouraged.
 
----
+### How to Engage
 
-## How to Engage
-
-If your work directly intersects with capability-tiered governance, enforcement architectures, identity continuity, jurisdictional awareness, interoperable enforcement nodes, or related topics:
+If your work intersects with capability-tiered governance, enforcement architectures, identity continuity, jurisdictional attachment, interoperable enforcement nodes, or sovereign compute regimes:
 
 → Open an issue describing the overlap or proposed contribution.
 
@@ -270,25 +216,16 @@ For deeper discussion, formal critique, collaborative refinement, or potential s
 
 → Contact the project lead directly.
 
-Please include context from specific notes, principles, or sections to ensure focused dialogue.
-
----
+Please reference specific notes or architectural elements to ensure focused dialogue.
 
 ## Contact
 
-**Federico Blanco Sánchez-Llanos**
-
-Email: [fsllanos@gmail.com](mailto:fsllanos@gmail.com)  
-LinkedIn: [https://www.linkedin.com/in/fedblanco](https://www.linkedin.com/in/fedblanco)
-
-We aim to respond thoughtfully to substantive outreach within a reasonable timeframe.
-
----
+**Federico Blanco Sánchez-Llanos**  
+Email: fsllanos@gmail.com  
+LinkedIn: [linkedin.com/in/fedblanco](https://www.linkedin.com/in/fedblanco)
 
 ## License
 
-This work is licensed under the Creative Commons Attribution–NonCommercial 4.0 International License (CC BY-NC 4.0).
+Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0).
 
 Commercial use, institutional embedding, or derivative advisory applications require explicit permission.
-
----
