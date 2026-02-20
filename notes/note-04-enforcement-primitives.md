@@ -6,6 +6,12 @@
 **Date:** February 20, 2026  
 **Author:** Federico Blanco Sánchez-Llanos
 
+## Summary Artifact
+
+A one-page architectural summary is available here:
+
+[Download PDF](../artifacts/AI_Governance_Compute_Gating_With_Topology.pdf)
+
 ---
 
 ## Executive Thesis
