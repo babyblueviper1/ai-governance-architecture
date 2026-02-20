@@ -1,17 +1,22 @@
-# Note III — Capability-Tiered Governance & Enforcement Architecture
+# Note III — Capability-Tiered Governance & the Necessity of Enforcement Architecture
 
-**Version:** v0.3  
-**Status:** Draft — Architecture Phase  
+**Version:** v0.4  
+**Status:** Draft — Enforcement Formalization Phase  
 **Date:** February 19, 2026
 
-## Context
+## Context — From Governance Theory to Enforcement Necessity
 
-Notes I and II established:
+Note II concluded with a civilizational question:
 
-- Governance must be layered (usage → deployment → infrastructure).
-- AI systems exist across a spectrum of operational autonomy.
+> If enforcement becomes infrastructural — and potentially autonomous — who governs the enforcers?
 
-This note formalizes that spectrum and introduces enforcement as an architectural necessity.
+Before that question can be meaningfully addressed, enforcement itself must be formalized.
+
+This note does not yet answer *who* governs enforcement.  
+It establishes *why* enforcement must become architectural.
+
+As AI systems evolve from tools to persistent agents, governance can no longer remain declarative.  
+The structural shift is driven by capability tier.
 
 ## I. The Capability Spectrum
 
@@ -147,22 +152,37 @@ Governance must align to capability tier.
 - Over-regulating Tier 1 systems wastes institutional bandwidth.
 - Under-governing Tier 4 systems creates systemic risk.
 
-## III. Enforcement as Architecture
+## III. Why Declarative Governance Breaks
 
-As systems approach Tier 3 and Tier 4, governance must migrate:
+As systems reach Tier 3 and Tier 4:
 
-**From:**
+- They persist beyond single interactions.
+- They allocate resources.
+- They coordinate across platforms.
+- They adapt under constraint.
 
-- Declarative regulation
-- Organizational compliance
+At this stage:
 
-**To:**
+Organizational compliance and post-hoc auditing cannot scale.
 
-- Embedded constraint systems
-- Runtime verification
-- Autonomous monitoring agents
+Governance must migrate from:
 
-**Conceptual Enforcement Topology**
+- Policy language  
+- Institutional review
+
+To:
+
+- Runtime constraint  
+- Embedded verification  
+- Infrastructure-level control hooks
+
+Enforcement becomes a systems layer.
+
+Only once enforcement becomes a systems layer does the question raised in Note II emerge:
+
+> Who governs enforcement itself?
+
+## IV. Conceptual Enforcement Topology
         
         Agent Identity
              │
@@ -175,42 +195,47 @@ As systems approach Tier 3 and Tier 4, governance must migrate:
              ▼
         Enforcement Node Network
 
-**Enforcement nodes may include:**
+Enforcement nodes represent architectural attachment points where constraint is applied.
+
+Examples may include:
 
 - Autonomous monitoring agents
 - Jurisdictional compliance validators
 - Economic constraint oracles
 - Identity continuity registries
 
-**Enforcement must operate at parity with agent capability.**
+Enforcement must operate at parity with agent capability.
 
 Human review cannot scale with persistent autonomous systems.
 
-## IV. Strategic Position
+## V. Strategic Position
 
-AI governance is not primarily a policy problem.
+AI governance is not reducible to policy design.
 
-It is an **architectural synchronization challenge**:
+It is an architectural synchronization challenge:
 
-Capability expansion vs enforcement maturity.
+Capability growth versus enforcement maturity.
 
-The institutions that design enforcement architecture early will shape:
+The institutional actors who define enforcement primitives early will shape:
 
-- Standards
-- Compliance protocols
-- Sovereignty frameworks
-- Cross-agent interoperability norms
+- Interoperability norms
+- Compliance architectures
+- Sovereignty boundaries
+- Cross-agent coordination standards
 
-Governance will evolve into systems design.
+Governance is converging with systems engineering.
 
-## V. Roadmap — Direction of Further Work
+## VI. Direction of Further Work
 
-Next phases of development:
+The next phase formalizes enforcement primitives.
 
-- Formal definition of Enforcement Nodes
-- Cross-agent verification topology models
-- Economic throttling protocol design
-- Sovereign compute and jurisdiction-aware orchestration
-- Agent identity continuity standards
+Specifically:
 
-This repository will evolve from classification → enforcement models → architectural prototypes.
+- Constraint attachment at the compute layer
+- Verification signal integration
+- Capability-tier aware compute authorization
+- Jurisdiction-aware execution gating
+
+Only after enforcement primitives are formally defined can the governance of enforcement — the question posed in Note II — be addressed rigorously.
+
+This repository will evolve from classification → enforcement primitives → architectural prototypes → governance-of-enforcement models.
