@@ -133,8 +133,7 @@ These agents participate in markets.
 - Jurisdiction-aware execution
 - Cross-agent enforcement coordination
 
-This tier is not speculative.  
-It is the logical convergence of persistence + planning + transaction interfaces.
+This tier emerges directly from the convergence of persistence, planning, and transaction interfaces.
 
 ## II. Governance Maturity Alignment
 
@@ -147,10 +146,7 @@ Governance must align to capability tier.
 | Tier 3          | Runtime constraint architecture        |
 | Tier 4          | Enforcement infrastructure             |
 
-**Misalignment creates instability.**
-
-- Over-regulating Tier 1 systems wastes institutional bandwidth.
-- Under-governing Tier 4 systems creates systemic risk.
+Capability expansion without corresponding enforcement maturity produces structural instability.
 
 ## III. Why Declarative Governance Breaks
 
