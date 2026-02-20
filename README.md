@@ -113,6 +113,22 @@ It must increasingly embed into:
 
 AI governance becomes a synchronization challenge between capability acceleration and enforcement maturity.
 
+### [Note IV — Enforcement Primitives & Runtime Constraint Architecture](./notes/note-04-enforcement-primitives.md)
+
+Formalizes the enforcement primitives and introduces **Compute Gating** as the core sovereignty mechanism and architectural hinge.
+
+**Core thesis:**  
+Policy does not scale at machine speed. Infrastructure does. Governance must therefore embed directly into runtime systems through interoperable enforcement primitives, with Compute Gating anchoring sovereign control over capability expansion.
+
+This note defines:
+
+- A formal taxonomy of seven enforcement primitives  
+- The Compute Gating function, regimes by capability tier, and distributed topologies  
+- Geopolitical leverage, failure modes, and design principles  
+- The structural reality that sovereignty in advanced AI systems is ultimately defined by who controls scalable compute access  
+
+It positions Compute Gating as the enforceable link between capability acceleration and governance maturity.
+
 ---
 
 ## Direction of Inquiry
