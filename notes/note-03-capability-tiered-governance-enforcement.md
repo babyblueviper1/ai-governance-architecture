@@ -92,7 +92,7 @@ They require differentiated governance.
         Tool Network
              │
              ▼
-        External Environment
+      External Environment
 
 **Governance implications:**
 
