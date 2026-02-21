@@ -15,7 +15,7 @@ The AI Governance Project develops a capability-tiered governance and enforcemen
 
 The objective is not reactive regulation — but structural synchronization between capability expansion and governance maturity.
 
-As enforcement becomes infrastructural, questions of jurisdiction, sovereignty, and power distribution become central design variables.
+As enforcement migrates into infrastructure, jurisdiction, sovereignty, and power distribution become design variables rather than external policy considerations.
 
 This repository develops that architecture and its sovereign implications step by step.
 
@@ -85,6 +85,64 @@ Defines:
 - Geopolitical leverage and structural failure modes  
 
 Sovereignty in advanced AI systems increasingly maps to control over scalable compute access.
+
+# Architecture Overview
+
+## Capability-Tiered AI Infrastructure  
+with Embedded Governance Layer
+
+               ┌─────────────────────────────┐
+               │   APPLICATIONS & AGENTS     │
+               └─────────────────────────────┘
+                         ↓
+               ┌─────────────────────────────┐
+               │        MODEL LAYER          │
+               └─────────────────────────────┘
+                         ↓
+               ┌─────────────────────────────┐
+               │    GOVERNANCE LAYER        │
+               │  • Capability tiers         │
+               │  • Pre-deploy gating        │
+               │  • Tenant risk segments     │
+               │  • Runtime constraints      │
+               │  • Escalation / audit       │
+               └─────────────────────────────┘
+                         ↓
+               ┌─────────────────────────────┐
+               │  DEPLOYMENT / ORCHESTRATION │
+               └─────────────────────────────┘
+                         ↓
+               ┌─────────────────────────────┐
+               │      COMPUTE INFRA          │
+               └─────────────────────────────┘
+                         ↓
+               ┌─────────────────────────────┐
+               │  PHYSICAL + ENERGY          │
+               └─────────────────────────────┘
+
+                Governance embedded in deployment
+
+               ┌─────────────────────────────┐
+               │    Capability Tiers         │
+               │ Tier 1  • Low-risk inference│
+               │ Tier 2  • Domain fine-tuned │
+               │ Tier 3  • Autonomous agents │
+               │ Tier 4  • High-capability   │
+               └─────────────────────────────┘
+## Structural Claim
+
+This framework positions **governance** as an **embedded control layer** between model capability and deployment orchestration.
+
+Governance is implemented as **enforcement logic** — including:
+
+- Capability classification
+- Compute gating
+- Runtime constraints
+- Escalation pathways
+
+— rather than post-deployment policy.
+
+The objective is **structural risk containment** at the infrastructure layer.
 
 ## Emerging Phase: Jurisdiction & Sovereignty
 
