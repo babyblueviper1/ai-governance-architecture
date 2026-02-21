@@ -168,24 +168,31 @@ The chosen topology directly determines the degree of sovereignty concentration 
 
 Control over:
 
-- Hyperscale compute clusters  
-- GPU and accelerator supply chains  
-- Energy distribution  
-- Cloud identity and attestation frameworks  
+- Hyperscale compute clusters
+- GPU and accelerator supply chains
+- Energy provisioning
+- Cloud identity and attestation frameworks
 
-translates directly into influence over AI capability scaling.
+confers **measurable influence** over AI capability scaling.
 
-Compute gating is not merely a safety mechanism.  
-It is a structural power instrument.
+Because scalable compute defines the upper bound of model training, inference throughput, and autonomous task persistence, **control over compute allocation becomes a strategic variable** within advanced AI ecosystems.
 
-Those who define compute allocation thresholds influence:
+Compute gating therefore functions not only as a safety mechanism, but as an **infrastructural coordination mechanism**.
 
-- Which autonomous agents scale  
-- Which economic systems integrate  
-- Which jurisdictions retain leverage  
-- Which actors become dependent  
+Those who establish compute allocation thresholds and authorization logic influence:
 
-In advanced AI ecosystems, infrastructure control becomes de facto sovereignty.
+- Which autonomous systems can expand operational scope
+- Which economic agents can scale participation
+- How cross-jurisdiction capability growth is mediated
+- Where leverage accumulates within enforcement networks
+
+As governance mechanisms migrate into infrastructure, compute allocation policy becomes intertwined with **sovereignty considerations**.
+
+The design challenge is not whether compute gating will shape power distribution — but **how its architecture can balance**:
+
+- Constraint
+- Interoperability
+- Concentration risk
 
 ## IX. Failure Modes & Threat Model
 
