@@ -97,9 +97,9 @@ Architecture status: Conceptual structural model (non-normative)
 
 ## Structural Claim
 
-This framework positions **governance** as an **embedded control layer** between model capability and deployment orchestration.
+This framework positions governance as an embedded control layer between model capability and deployment orchestration.
 
-Governance is implemented as **enforcement logic** — including:
+Governance is implemented as enforcement logic — including:
 
 - Capability classification
 - Compute gating
@@ -108,7 +108,7 @@ Governance is implemented as **enforcement logic** — including:
 
 — rather than post-deployment policy.
 
-The objective is **structural risk containment** at the infrastructure layer.
+The objective is structural risk containment at the infrastructure layer.
 
 ## Emerging Phase: Jurisdiction & Sovereignty
 
