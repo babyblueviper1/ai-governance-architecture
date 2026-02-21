@@ -1,6 +1,6 @@
 # AI Governance Project
 
-**Version:** v0.5  
+**Version:** v0.6  
 **Status:** Strategic Architecture Phase  
 **Lead:** Federico Blanco Sánchez-Llanos  
 **Date:** February 2026
