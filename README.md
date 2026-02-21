@@ -91,44 +91,10 @@ Sovereign leverage in advanced AI ecosystems increasingly correlates with contro
 ## Capability-Tiered AI Infrastructure  
 with Embedded Governance Layer
 
-               ┌─────────────────────────────┐
-               │   APPLICATIONS & AGENTS     │
-               └─────────────────────────────┘
-                         ↓
-               ┌─────────────────────────────┐
-               │        MODEL LAYER          │
-               └─────────────────────────────┘
-                         ↓
-               ┌─────────────────────────────┐
-               │    GOVERNANCE LAYER         │
-               │  • Capability tiers         │
-               │  • Pre-deploy gating        │
-               │  • Tenant risk segments     │
-               │  • Runtime constraints      │
-               │  • Escalation / audit       │
-               └─────────────────────────────┘
-                         ↓
-               ┌─────────────────────────────┐
-               │  DEPLOYMENT / ORCHESTRATION │
-               └─────────────────────────────┘
-                         ↓
-               ┌─────────────────────────────┐
-               │      COMPUTE INFRA          │
-               └─────────────────────────────┘
-                         ↓
-               ┌─────────────────────────────┐
-               │  PHYSICAL + ENERGY          │
-               └─────────────────────────────┘
+![Capability-Tiered Governance Architecture](docs/capability-tiered-governance-architecture-v0.1.svg)
+Diagram version: v0.1  
+Architecture status: Conceptual structural model (non-normative)
 
-                Governance embedded in deployment
-
-               ┌─────────────────────────────┐
-               │    Capability Tiers         │
-               │ Tier 1  • Low-risk inference│
-               │ Tier 2  • Domain fine-tuned │
-               │ Tier 3  • Autonomous agents │
-               │ Tier 4  • High-capability   │
-               └─────────────────────────────┘
 ## Structural Claim
 
 This framework positions **governance** as an **embedded control layer** between model capability and deployment orchestration.
