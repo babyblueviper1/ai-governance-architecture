@@ -68,7 +68,7 @@ Execution and Verification primitives therefore extend to govern:
 
 In AI-native development environments, infrastructure mutation becomes partially automated.
 
-Governance architecture must ensure that modification authority remains constrained, auditable, tier-aligned, and revocable.
+Governance architecture must ensure that modification authority remains **constrained**, **auditable**, **tier-aligned**, and **revocable**.
 
 Constraint must apply not only to operational behavior — but to the **capacity to alter the operational substrate itself**.
 
