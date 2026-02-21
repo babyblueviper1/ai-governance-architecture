@@ -33,7 +33,7 @@ It is a structural layer in the AI capability stack.
 
 As systems gain persistence, planning continuity, and economic interface capacity, the ability to allocate compute becomes equivalent to the ability to allocate agency.
 
-This is where governance becomes power.
+This is where governance intersects directly with power allocation.
 
 ## II. Enforcement Primitives (Formal Taxonomy)
 
@@ -51,7 +51,28 @@ This is where governance becomes power.
 
 ---
 
-## III. Compute Gating — Formal Definition
+## III. Autonomous Infrastructure Mutation
+
+AI systems are increasingly participating in code generation, vulnerability remediation, infrastructure configuration, and deployment workflows.
+
+As this participation expands, governance must account not only for agent actions *within* environments — but for agent-mediated **modification** of those environments.
+
+Execution and Verification primitives therefore extend to govern:
+
+- AI-generated code integration into production systems
+- Authorization boundaries for model-suggested or model-initiated patches
+- Change-approval gating for autonomous remediation workflows
+- Runtime attestation of AI-mediated configuration changes
+- Traceable audit logs for model-driven infrastructure mutation
+- Escalation protocols for high-impact system modifications
+
+In AI-native development environments, infrastructure mutation becomes partially automated.
+
+Governance architecture must ensure that modification authority remains **constrained**, **auditable**, **tier-aligned**, and **revocable**.
+
+Constraint must apply not only to operational behavior — but to the **capacity to alter the operational substrate itself**.
+
+## IV. Compute Gating — Formal Definition
 
 Among all enforcement primitives, compute gating is uniquely strategic.
 
@@ -78,7 +99,7 @@ It functions as the enforceable bottleneck between capability expansion and oper
 
 **Core Principle:** Autonomy scales with compute. Sovereignty attaches to compute allocation.
 
-## IV. Compute Gating — Architectural Model
+## V. Compute Gating — Architectural Model
 
 ### A. Conceptual Flow
 
@@ -117,7 +138,7 @@ Where:
 - **V** = Verification & Attestation Signals  
 - **E** = Economic Activity & Permission State  
 
-## V. Compute Gating Regimes by Capability Tier
+## VI. Compute Gating Regimes by Capability Tier
 
 | Tier | System Type                        | Gating Model Characteristics                                                                 |
 |------|------------------------------------|----------------------------------------------------------------------------------------------|
@@ -128,7 +149,7 @@ Where:
 
 ---
 
-## VI. Enforcement Node Interaction Model
+## VII. Enforcement Node Interaction Model
 
 Compute gating requires no single point of control.
 
@@ -143,7 +164,7 @@ The chosen topology directly determines the degree of sovereignty concentration 
 
 ---
 
-## VII. Compute Gating as Structural Power
+## VIII. Compute Gating as Structural Power
 
 Control over:
 
@@ -166,7 +187,7 @@ Those who define compute allocation thresholds influence:
 
 In advanced AI ecosystems, infrastructure control becomes de facto sovereignty.
 
-## VIII. Failure Modes & Threat Model
+## IX. Failure Modes & Threat Model
 
 1. **Rogue Cross-Border Arbitrage**  
    Agent evades throttling via jurisdictional compute migration  
@@ -184,7 +205,7 @@ In advanced AI ecosystems, infrastructure control becomes de facto sovereignty.
    Agent outpaces governance response in resource allocation  
    → Structural vulnerability: absent pre-commit ceilings & real-time anomaly triggers
 
-## IX. Design Principles for Compute Gating
+## X. Design Principles for Compute Gating
 
 1. Capability-Constraint Symmetry  
 2. Distributed Authorization Where Feasible  
@@ -193,7 +214,7 @@ In advanced AI ecosystems, infrastructure control becomes de facto sovereignty.
 5. Reversible / Graduated Throttling Preferred Over Binary Shutdown  
 6. Governance mechanisms for the Gating Authorities themselves
 
-## X. Sovereignty Implications
+## XI. Sovereignty Implications
 
 Sovereignty in advanced AI ecosystems is defined less by policy declarations and more by who controls scalable compute access.
 
@@ -202,7 +223,7 @@ Compute control without governance safeguards becomes coercive.
 
 The central design challenge is balanced constraint.
 
-## XI. Strategic Position
+## XII. Strategic Position
 
 AI governance is an architectural synchronization problem.
 
