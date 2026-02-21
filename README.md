@@ -100,7 +100,7 @@ with Embedded Governance Layer
                └─────────────────────────────┘
                          ↓
                ┌─────────────────────────────┐
-               │    GOVERNANCE LAYER        │
+               │    GOVERNANCE LAYER         │
                │  • Capability tiers         │
                │  • Pre-deploy gating        │
                │  • Tenant risk segments     │
