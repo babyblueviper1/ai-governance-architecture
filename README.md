@@ -91,7 +91,7 @@ Sovereign leverage in advanced AI ecosystems increasingly correlates with contro
 ## Capability-Tiered AI Infrastructure  
 with Embedded Governance Layer
 
-![Capability-Tiered Governance Architecture](docs/capability-tiered-governance-architecture-v0.1.svg)
+![Capability-Tiered Governance Architecture](docs/capability-tiered-governance-architecture-v0.1.png)
 Diagram version: v0.1  
 Architecture status: Conceptual structural model (non-normative)
 
