@@ -84,7 +84,7 @@ Defines:
 - Distributed enforcement topologies  
 - Geopolitical leverage and structural failure modes  
 
-Sovereignty in advanced AI systems increasingly maps to control over scalable compute access.
+Sovereign leverage in advanced AI ecosystems increasingly correlates with control over scalable compute access.
 
 # Architecture Overview
 
@@ -156,7 +156,7 @@ As enforcement becomes infrastructural and partially autonomous, key questions e
 - How is cross-border enforcement coordinated or contested?  
 - What prevents enforcement concentration from becoming systemic power capture?
 
-Governance in advanced AI ecosystems becomes inseparable from sovereignty design.
+Governance architecture in advanced AI ecosystems intersects directly with sovereignty design.
 
 ## Risks & Structural Tensions
 
