@@ -99,16 +99,20 @@ Architecture status: Conceptual structural model (non-normative)
 
 This framework positions governance as an embedded control layer between model capability and deployment orchestration.
 
-Governance is implemented as enforcement logic — including:
+Governance is implemented as enforcement logic embedded directly into infrastructure layers — rather than as post-deployment policy — including:
 
 - Capability classification
 - Compute gating
-- Runtime constraints
-- Escalation pathways
+- Runtime constraint systems
+- Escalation and revocation pathways
+- Identity verification and continuity controls
+- Deployment authorization and economic interface conditioning
 
-— rather than post-deployment policy.
+Enforcement logic operates across identity, compute allocation, deployment orchestration, and economic interaction layers. It conditions access to scalable capability rather than attempting to retroactively constrain behavior.
 
-The objective is structural risk containment at the infrastructure layer.
+Compute gating refers to infrastructural mechanisms that condition access to scalable training and inference resources based on capability tier classification and governance maturity alignment. As capability increases, gating regimes adjust proportionally.
+
+The objective is structural risk containment through synchronized alignment between capability expansion and governance maturity — implemented at the infrastructure layer rather than through reactive oversight.
 
 ## Emerging Phase: Jurisdiction & Sovereignty
 
@@ -122,7 +126,7 @@ As enforcement becomes infrastructural and partially autonomous, key questions e
 - How is cross-border enforcement coordinated or contested?  
 - What prevents enforcement concentration from becoming systemic power capture?
 
-Governance architecture in advanced AI ecosystems intersects directly with sovereignty design.
+As enforcement becomes infrastructural, sovereignty design becomes inseparable from AI governance architecture.
 
 ## Risks & Structural Tensions
 
