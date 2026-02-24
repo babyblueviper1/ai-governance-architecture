@@ -71,7 +71,6 @@ Introduces:
 Enforcement becomes an architectural synchronization challenge.
 
 ### [Note IV — Enforcement Primitives & Runtime Constraint Architecture](./notes/note-04-enforcement-primitives.md)
-
 Formalizes interoperable enforcement primitives and establishes Compute Gating as the sovereignty hinge.
 
 **Core thesis:** Policy does not scale at machine speed. Infrastructure does.
@@ -85,6 +84,22 @@ Defines:
 - Geopolitical leverage and structural failure modes  
 
 Sovereign leverage in advanced AI ecosystems increasingly correlates with control over scalable compute access.
+
+### [Note V — Capability-Tiered Runtime Governance for Persistent AI Agents](./notes/note-05-enterprise-deployment-model.md)
+**Transitions from structural doctrine to deployable architecture within enterprise AI environments.**
+
+**Core thesis:**  
+Capability-tiered runtime governance can be piloted within enterprise multi-agent orchestration systems without requiring regulatory reform.
+
+**Demonstrates:**
+
+- Tier-based runtime enforcement layering
+- Identity-bound persistent agents
+- Compute & execution gating within enterprise infrastructure
+- Escalation and revocation mechanisms
+- Progressive autonomy scaling models
+
+This note serves as a **practical validation pathway** for embedded governance architecture.
 
 # Architecture Overview
 
@@ -128,6 +143,8 @@ As enforcement becomes infrastructural and partially autonomous, key questions e
 
 As enforcement becomes infrastructural, sovereignty design becomes inseparable from AI governance architecture.
 
+Enterprise deployment environments provide an initial proving ground for runtime governance architectures. Structured pilot environments allow enforcement primitives to mature operationally before sovereign-scale integration.
+
 ## Risks & Structural Tensions
 
 Any enforcement architecture introduces structural tradeoffs. This project explicitly examines:
@@ -148,8 +165,9 @@ This initiative proceeds sequentially:
 2. Clarify capability categories  
 3. Identify structural leverage points  
 4. Develop enforcement architecture models  
-5. Analyze jurisdictional and sovereign implications  
-6. Articulate strategic doctrine considerations  
+5. Pilot deployable runtime control architectures   
+6. Analyze jurisdictional and sovereign implications
+7. Articulate strategic doctrine considerations 
 
 Analytical foundations precede policy positioning.
 
