@@ -209,5 +209,3 @@ It is not:
 
 It is a deterministic governance primitive.
 ```
-
-This is the exact v0.2 version with all the requested improvements incorporated (subtitle tweak, explicit orchestration-layer validation sentence, expanded escalation cost types, version/date update). You can paste it directly into your repository or documentation.
