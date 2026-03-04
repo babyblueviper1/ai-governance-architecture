@@ -101,26 +101,29 @@ Capability-tiered runtime governance can be piloted within enterprise multi-agen
 
 This note serves as a **practical validation pathway** for embedded governance architecture.
 
-## Enforcement Architecture Extension
-### CEFP — Compute Escalation & Fee Protocol
+## Protocol Modules
 
-As part of the enforcement primitive taxonomy introduced in Note IV, this project explores a specific infrastructural instantiation:
+In addition to conceptual and architectural notes, this project develops modular enforcement protocol specifications derived from the broader governance framework.
 
-**Compute Escalation & Fee Protocol (CEFP)**.
+### [CEGP v0.1 — Compute Escalation Governance Protocol](./protocols/cefp/cefp-v0.1.md)  
+**A Deterministic Governance Primitive for Autonomy-Linked Compute Expansion**
 
-**Core premise:**  
-Autonomy-linked capability escalation must incur increasing infrastructural friction.
+CEGP formalizes cryptographically enforced compute envelopes with structured escalation.
 
-CEFP proposes that:
+It introduces:  
+- Signed Compute Envelopes  
+- Deterministic boundary enforcement at the orchestration layer  
+- Explicit escalation requests  
+- Risk-tiered governance thresholds  
+- Escalating governance requirements proportional to autonomy amplification  
+- Optional public hash anchoring for tamper-evident auditability  
 
-- Compute escalation events (training scale, inference expansion, autonomy expansion, cross-system execution authority, economic agency scaling) trigger structured governance checkpoints.
-- Escalation may require verifiable **hash commitments**.
-- Escalation may require fee commitments.
-- Fee commitments may be anchored to public blockchain infrastructure (e.g., Bitcoin) for tamper-resistance and auditability.
-- Escalation history becomes externally verifiable without exposing proprietary system internals.
+CEGP does not regulate model cognition or content behavior.  
+It governs compute-linked scope expansion only.
 
-CEFP does not impose behavioral micromanagement.  
-It conditions scalable capability expansion.
+The protocol functions without blockchain anchoring, though optional external hash commitments may strengthen audit guarantees.
+
+CEGP represents a modular enforcement primitive within the broader capability-tiered governance architecture.
 
 **Structural Logic**
 
