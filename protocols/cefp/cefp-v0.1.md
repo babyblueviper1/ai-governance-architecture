@@ -208,4 +208,3 @@ It is not:
 - A cryptocurrency
 
 It is a deterministic governance primitive.
-```
