@@ -1,9 +1,9 @@
 # AI Governance Project
 
-**Version:** v0.6  
+**Version:** v0.7  
 **Status:** Strategic Architecture Phase  
 **Lead:** Federico Blanco Sánchez-Llanos  
-**Date:** February 2026
+**Date:** March 2026
 
 ## Executive Framing
 
@@ -101,7 +101,45 @@ Capability-tiered runtime governance can be piloted within enterprise multi-agen
 
 This note serves as a **practical validation pathway** for embedded governance architecture.
 
-# Architecture Overview
+## Enforcement Architecture Extension
+### CEFP — Compute Escalation & Fee Protocol
+
+As part of the enforcement primitive taxonomy introduced in Note IV, this project explores a specific infrastructural instantiation:
+
+**Compute Escalation & Fee Protocol (CEFP)**.
+
+**Core premise:**  
+Autonomy-linked capability escalation must incur increasing infrastructural friction.
+
+CEFP proposes that:
+
+- Compute escalation events (training scale, inference expansion, autonomy expansion, cross-system execution authority, economic agency scaling) trigger structured governance checkpoints.
+- Escalation may require verifiable **hash commitments**.
+- Escalation may require fee commitments.
+- Fee commitments may be anchored to public blockchain infrastructure (e.g., Bitcoin) for tamper-resistance and auditability.
+- Escalation history becomes externally verifiable without exposing proprietary system internals.
+
+CEFP does not impose behavioral micromanagement.  
+It conditions scalable capability expansion.
+
+**Structural Logic**
+
+As agents scale in autonomy, compute requirements increase.  
+As compute requirements increase, governance friction increases.  
+Escalation becomes progressively expensive and auditable.
+
+Governance attaches to infrastructure, not to subjective behavioral interpretation.
+
+CEFP is designed as:
+- A modular enforcement primitive
+- Compatible with enterprise deployments
+- Potentially layerable onto public blockchain infrastructure
+- Sovereignty-aware and non-centralized by default
+
+It is not a global control system.  
+It is a compute-linked escalation conditioning mechanism.
+
+## Architecture Overview
 
 ## Capability-Tiered AI Infrastructure  
 with Embedded Governance Layer
@@ -110,7 +148,7 @@ with Embedded Governance Layer
 Diagram version: v0.1  
 Architecture status: Conceptual structural model (non-normative)
 
-## Structural Claim
+### Structural Claim
 
 This framework positions governance as an embedded control layer between model capability and deployment orchestration.
 
@@ -122,12 +160,40 @@ Governance is implemented as enforcement logic embedded directly into infrastruc
 - Escalation and revocation pathways
 - Identity verification and continuity controls
 - Deployment authorization and economic interface conditioning
+- **Compute Escalation & Fee Protocol (CEFP) integration where applicable**
 
 Enforcement logic operates across identity, compute allocation, deployment orchestration, and economic interaction layers. It conditions access to scalable capability rather than attempting to retroactively constrain behavior.
 
-Compute gating refers to infrastructural mechanisms that condition access to scalable training and inference resources based on capability tier classification and governance maturity alignment. As capability increases, gating regimes adjust proportionally.
+Compute gating refers to infrastructural mechanisms that condition access to scalable training and inference resources based on capability tier classification and governance maturity alignment.  
 
-The objective is structural risk containment through synchronized alignment between capability expansion and governance maturity — implemented at the infrastructure layer rather than through reactive oversight.
+**CEFP represents one potential instantiation of compute-linked escalation conditioning.**
+
+### Why This Matters
+
+If autonomy expansion is frictionless, capability concentration accelerates uncontested.
+
+If escalation requires:
+- Explicit checkpoints
+- Infrastructure commitments
+- Economic signaling
+- Distributed verification
+
+Then governance scales proportionally with power.
+
+The goal is not to cap innovation.  
+The goal is to ensure capability expansion and governance maturity remain synchronized.
+
+### Important Clarification
+
+This repository does not assume:
+- Mandatory blockchain anchoring
+- Mandatory Bitcoin integration
+- Universal fee mechanisms
+- A single sovereign compute regime
+
+CEFP is explored as a structural candidate — not as ideological doctrine.
+
+Enterprise pilots may precede sovereign-scale integration.
 
 ## Emerging Phase: Jurisdiction & Sovereignty
 
