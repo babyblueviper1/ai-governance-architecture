@@ -31,11 +31,13 @@ This repository develops that architecture and its sovereign implications step b
 │
 ├── protocols/
 │   └── cegp/
-│       ├── cegp-v0.1-spec.md
-│       ├── compute-envelope-schema.md
-│       ├── escalation-flow.md
+│       ├── cegp-v0.1.md
+│       ├── cegp-spec.md
+│       ├── cegp-envelope-schema.md
+│       ├── cegp-escalation-flow.md
+│       ├── cegp-enforcement-loop.md
+│       ├── cegp-enterpries-depolyment.md
 │       ├── enforcement-patterns.md
-│       ├── deployment-model.md
 │       └── threat-model.md
 │
 └── docs/
