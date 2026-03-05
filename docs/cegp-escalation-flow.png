@@ -1,0 +1,21 @@
+AI SYSTEM REQUESTS MORE COMPUTE
+            │
+            ▼
+   Envelope Boundary Check
+            │
+     ┌──────┴──────┐
+     │             │
+ Within Limit   Exceeds Limit
+     │             │
+     ▼             ▼
+ Continue       Escalation Request
+ Execution            │
+                      ▼
+            Governance Authority
+                      │
+             ┌────────┴────────┐
+             │                 │
+           Reject            Approve
+             │                 │
+             ▼                 ▼
+       Maintain Envelope   Issue New Envelope
