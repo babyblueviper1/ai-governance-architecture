@@ -1,13 +1,13 @@
 # AI Governance Project
 
 **Version:** v0.7  
-**Status:** Strategic Architecture Phase  
+**Status:** Status: Research Architecture & Protocol Drafting  
 **Lead:** Federico Blanco Sánchez-Llanos  
 **Date:** March 2026
 
 ## Executive Framing
 
-Advanced AI systems are evolving from assistive tools into persistent, economically active agents embedded within economic and institutional infrastructures.
+Advanced AI systems are evolving from assistive tools into persistent, economically active agents embedded within institutional and economic infrastructures.
 
 Existing governance approaches often treat these systems as a single regulatory category, creating structural blind spots.
 
@@ -18,6 +18,33 @@ The objective is not reactive regulation — but structural synchronization betw
 As enforcement migrates into infrastructure, jurisdiction, sovereignty, and power distribution become design variables rather than external policy considerations.
 
 This repository develops that architecture and its sovereign implications step by step.
+
+## Repository Structure
+```markdown
+# Repository Structure Overview
+
+├── notes/
+│   ├── note-01-ai-agent-spectrum.md
+│   ├── note-02-governance-architecture.md
+│   ├── note-03-capability-tiered-enforcement.md
+│   ├── note-04-enforcement-primitives.md
+│   └── note-05-enterprise-deployment-model.md
+│
+├── protocols/
+│   └── cegp/
+│       ├── cegp-v0.1-spec.md
+│       ├── compute-envelope-schema.md
+│       ├── escalation-flow.md
+│       ├── enforcement-patterns.md
+│       ├── deployment-model.md
+│       └── threat-model.md
+│
+└── docs/
+    ├── capability-tiered-governance-architecture-v0.1.png
+    ├── cegp-architecture.png
+    └── cegp-escalation-flow.png
+
+The repository separates strategic architecture research (Notes) from deployable enforcement protocol specifications (Protocols)
 
 ## Premise
 
@@ -31,6 +58,27 @@ As capability growth accelerates, governance must evolve proportionally.
 The question is not whether advanced AI systems will emerge — but whether enforcement infrastructure matures alongside them.
 
 ## Structure of the Research Series
+## Core Protocol: CEGP
+
+The first deployable enforcement primitive developed within this research program is:
+
+**CEGP — Compute Escalation Governance Protocol**
+
+CEGP introduces deterministic compute envelopes with cryptographic authorization and structured escalation pathways.
+
+It governs **compute-linked capability expansion** rather than model cognition or content behavior.
+
+Primary components:
+
+- Signed Compute Envelopes
+- Deterministic envelope enforcement
+- Explicit escalation requests
+- Risk-tiered governance thresholds
+- Tamper-evident audit pathways
+
+Protocol documentation:
+
+→ `/protocols/cegp/cegp-v0.1-spec.md
 
 ### [Note I — The AI Agent Spectrum](./notes/note-01-ai-agent-spectrum.md)
 Introduces a capability-based classification of AI systems.
@@ -118,8 +166,7 @@ It introduces:
 - Escalating governance requirements proportional to autonomy amplification  
 - Optional public hash anchoring for tamper-evident auditability  
 
-CEGP does not regulate model cognition or content behavior.  
-It governs compute-linked scope expansion only.
+CEGP attaches governance friction to compute expansion rather than attempting to interpret or regulate model cognition.
 
 The protocol functions without blockchain anchoring, though optional external hash commitments may strengthen audit guarantees.
 
@@ -133,7 +180,7 @@ Escalation becomes progressively expensive and auditable.
 
 Governance attaches to infrastructure, not to subjective behavioral interpretation.
 
-CEFP is designed as:
+CEGP is designed as:
 - A modular enforcement primitive
 - Compatible with enterprise deployments
 - Potentially layerable onto public blockchain infrastructure
@@ -142,7 +189,7 @@ CEFP is designed as:
 It is not a global control system.  
 It is a compute-linked escalation conditioning mechanism.
 
-## Architecture Overview
+## Governance Architecture Overview
 
 ## Capability-Tiered AI Infrastructure  
 with Embedded Governance Layer
@@ -163,13 +210,13 @@ Governance is implemented as enforcement logic embedded directly into infrastruc
 - Escalation and revocation pathways
 - Identity verification and continuity controls
 - Deployment authorization and economic interface conditioning
-- **Compute Escalation & Fee Protocol (CEFP) integration where applicable**
+- **Compute Escalation Governance Protocol (CEGP) integration where applicable**
 
 Enforcement logic operates across identity, compute allocation, deployment orchestration, and economic interaction layers. It conditions access to scalable capability rather than attempting to retroactively constrain behavior.
 
 Compute gating refers to infrastructural mechanisms that condition access to scalable training and inference resources based on capability tier classification and governance maturity alignment.  
 
-**CEFP represents one potential instantiation of compute-linked escalation conditioning.**
+**CEGP represents one potential instantiation of compute-linked escalation conditioning.**
 
 ### Why This Matters
 
@@ -194,7 +241,7 @@ This repository does not assume:
 - Universal fee mechanisms
 - A single sovereign compute regime
 
-CEFP is explored as a structural candidate — not as ideological doctrine.
+CEGP is explored as a structural candidate — not as ideological doctrine.
 
 Enterprise pilots may precede sovereign-scale integration.
 
