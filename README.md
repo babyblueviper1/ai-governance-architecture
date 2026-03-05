@@ -151,7 +151,7 @@ This note serves as a **practical validation pathway** for embedded governance a
 
 In addition to conceptual and architectural notes, this project develops modular enforcement protocol specifications derived from the broader governance framework.
 
-### [CEGP v0.1 — Compute Escalation Governance Protocol](./protocols/cefp/cefp-v0.1.md)  
+### [CEGP v0.1 — Compute Escalation Governance Protocol](./protocols/cegp/cegp-v0.1.md)  
 **A Deterministic Governance Primitive for Autonomy-Linked Compute Expansion**
 
 CEGP formalizes cryptographically enforced compute envelopes with structured escalation.
