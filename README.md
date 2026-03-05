@@ -1,8 +1,8 @@
 # AI Governance Project
 
 **Version:** v0.7  
-**Status:** Status: Research Architecture & Protocol Drafting
-**Protocol:** CEGP v0.1
+**Status:** Research Architecture & Protocol Drafting  
+**Protocol:** CEGP v0.1  
 **Lead:** Federico Blanco Sánchez-Llanos  
 **Date:** March 2026
 
