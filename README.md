@@ -77,9 +77,7 @@ Primary components:
 - Risk-tiered governance thresholds
 - Tamper-evident audit pathways
 
-Protocol documentation:
-
-→ `/protocols/cegp/cegp-v0.1-spec.md
+→ [CEGP Specification](./protocols/cegp/cegp-spec.md)
 
 ### [Note I — The AI Agent Spectrum](./notes/note-01-ai-agent-spectrum.md)
 Introduces a capability-based classification of AI systems.
