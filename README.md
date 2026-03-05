@@ -20,9 +20,7 @@ As enforcement migrates into infrastructure, jurisdiction, sovereignty, and powe
 This repository develops that architecture and its sovereign implications step by step.
 
 ## Repository Structure
-```markdown
-# Repository Structure Overview
-
+```
 ├── notes/
 │   ├── note-01-ai-agent-spectrum.md
 │   ├── note-02-governance-architecture.md
@@ -43,7 +41,7 @@ This repository develops that architecture and its sovereign implications step b
     ├── capability-tiered-governance-architecture-v0.1.png
     ├── cegp-architecture.png
     └── cegp-escalation-flow.png
-
+```
 The repository separates strategic architecture research (Notes) from deployable enforcement protocol specifications (Protocols)
 
 ## Premise
