@@ -95,15 +95,19 @@ This architecture introduces the concept of an **enforcement layer** within the 
 
 The enforcement layer sits between capability and deployment.
 
-APPLICATIONS
-     ↓
-MODELS
-     ↓
-ENFORCEMENT LAYER
-     ↓
-DEPLOYMENT / ORCHESTRATION
-     ↓
-COMPUTE INFRASTRUCTURE
+         APPLICATIONS
+             │
+             ▼
+           MODELS
+             │
+             ▼
+        ENFORCEMENT LAYER
+             │
+             ▼
+        DEPLOYMENT / ORCHESTRATION
+             │
+             ▼
+        COMPUTE INFRASTRUCTURE
 
 The enforcement layer performs several functions:
 
