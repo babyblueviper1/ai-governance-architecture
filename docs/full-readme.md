@@ -42,6 +42,7 @@ This repository develops that architecture and its sovereign implications step b
 │
 └── docs/
     ├── capability-tiered-governance-architecture-v0.1.png
+    ├── cegp-use.cases.md
     ├── cegp-architecture.png
     └── cegp-escalation-flow.png
 ```
@@ -277,6 +278,27 @@ The goal is to ensure capability expansion and governance maturity remain synchr
  - Governance as geopolitical leverage
 
 **Threat model:** [CEGP Threat Model](./protocols/cegp/threat-model.md)
+
+### Use Cases: Where CEGP Adds Value
+
+CEGP is designed to embed governance directly into execution infrastructure. Example scenarios include:
+
+- **AI Agent Platforms**  
+  Multi-agent orchestration environments where persistent agents require capability-tiered constraints.
+
+- **Sovereign AI Infrastructure**  
+  Government or regulated cloud deployments where deterministic control over compute escalation is necessary.
+
+- **Regulated Financial AI Systems**  
+  Automated trading, treasury operations, or multi-tenant financial computation with audit and escalation requirements.
+
+- **Multi-Tenant Model Hosting**  
+  AI marketplaces or enterprise SaaS where isolated compute environments must enforce capability boundaries.
+
+- **Critical Infrastructure AI**  
+  Industrial, energy, or healthcare AI where compute activation and escalation must be deterministic and auditable.
+  
+**Use cases:** [CEGP Use Cases](./use-cases.md)
 
 ### Important Clarification
 
