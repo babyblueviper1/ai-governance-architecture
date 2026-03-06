@@ -1,5 +1,7 @@
 # AI Governance Project
 
+This repository contains both the conceptual governance architecture (Notes) and the deployable enforcement protocol specifications (Protocols) for capability-tiered AI governance systems.
+
 **Version:** v0.7  
 **Status:** Research Architecture & Protocol Drafting  
 **Protocol:** CEGP v0.1  
@@ -36,7 +38,7 @@ This repository develops that architecture and its sovereign implications step b
 │       ├── cegp-envelope-schema.md
 │       ├── cegp-escalation-flow.md
 │       ├── cegp-enforcement-loop.md
-│       ├── cegp-enterpries-depolyment.md
+│       ├── cegp-enterprise-deployment.md
 │       ├── enforcement-patterns.md
 │       └── threat-model.md
 │
