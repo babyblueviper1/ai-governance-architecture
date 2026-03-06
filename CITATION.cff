@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+title: "AI Governance Project"
+message: "If you use or reference this work, please cite it as below."
+type: software
+authors:
+  - family-names: "Blanco Sánchez-Llanos"
+    given-names: "Federico"
+title: "AI Governance Project: Capability-Tiered Governance Architecture and the Compute Escalation Governance Protocol (CEGP)"
+version: "0.7"
+date-released: 2026-03
+repository-code: "https://github.com/babyblueviper1/ai-governance-architecture"
+license: "CC-BY-NC-4.0"
