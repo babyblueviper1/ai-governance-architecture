@@ -79,13 +79,17 @@ Safety-critical AI operates reliably under deterministic, infrastructure-embedde
 
 ## Diagram
 
-![CEGP Use Case Architecture](docs/cegp-use-case-architecture.png)
+![CEGP Use Case Architecture](./diagrams/cegp-use-case-architecture.png)
 
-**Diagram Description:**  
-- Agents bound to capability tiers  
-- Enforcement layer embedding pre-deployment gates, runtime monitoring, and escalation pathways  
-- Compute resources aligned with governance constraints  
-- Distributed Runtime Verification Layer nodes ensuring deterministic validation and auditability  
+**Architecture Overview**
+
+CEGP embeds governance checkpoints across the full AI execution lifecycle:
+
+1. Agents operate within predefined capability tiers
+2. Signed compute envelopes define allowed operations
+3. Deployment gating prevents unauthorized infrastructure access
+4. Runtime monitoring enforces operational constraints
+5. Distributed Runtime Verification Layer (DRVL) validates execution across independent nodes
 
 ---
 
