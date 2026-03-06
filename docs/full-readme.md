@@ -92,26 +92,6 @@ CEGP envelopes are validated **redundantly across independent runtime nodes**:
 
 ---
 
-### Governance Architecture Overview
-
-![Capability-Tiered Governance Architecture](./capability-tiered-governance-architecture-v0.1.png)
-
-This framework positions governance as an embedded control layer between model capability and deployment orchestration.
-
-Key enforcement logic includes:
-
-- Capability classification  
-- Compute gating  
-- Runtime constraint systems  
-- Escalation and revocation pathways  
-- Identity verification and continuity controls  
-- Deployment authorization and economic interface conditioning  
-- **CEGP integration where applicable**
-
-Compute gating conditions access to scalable training and inference resources based on capability tier and governance alignment.  
-
----
-
 ### [Note I — The AI Agent Spectrum](./notes/note-01-ai-agent-spectrum.md)
 Introduces a capability-based classification of AI systems.
 
