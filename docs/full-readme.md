@@ -298,7 +298,7 @@ CEGP is designed to embed governance directly into execution infrastructure. Exa
 - **Critical Infrastructure AI**  
   Industrial, energy, or healthcare AI where compute activation and escalation must be deterministic and auditable.
   
-**Use cases:** [CEGP Use Cases](./use-cases.md)
+**Use cases:** [CEGP Use Cases](./cegp-use-cases.md)
 
 ### Important Clarification
 
