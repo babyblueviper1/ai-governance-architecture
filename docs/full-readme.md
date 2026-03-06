@@ -94,7 +94,7 @@ CEGP envelopes are validated **redundantly across independent runtime nodes**:
 
 ### Governance Architecture Overview
 
-![Capability-Tiered Governance Architecture](docs/capability-tiered-governance-architecture-v0.1.png)
+![Capability-Tiered Governance Architecture](./capability-tiered-governance-architecture-v0.1.png)
 
 This framework positions governance as an embedded control layer between model capability and deployment orchestration.
 
