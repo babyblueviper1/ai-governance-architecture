@@ -77,9 +77,55 @@ Safety-critical AI operates reliably under deterministic, infrastructure-embedde
 
 ---
 
-## Diagram
+## Architecture flow
 
-![CEGP Use Case Architecture](./diagrams/cegp-use-case-architecture.png)
+```
++-----------------------+
+|      AI Agents        |
+|  (Capability Tiers)   |
++-----------------------+
+           │
+           ▼
++-----------------------+
+|  CEGP Enforcement     |
+|  Layer                |
+|                       |
+| • Capability Check    |
+| • Signed Envelope     |
+| • Access Authorization|
++-----------------------+
+           │
+           ▼
++-----------------------+
+|  Deployment Gating    |
+|  Infrastructure       |
+|  Enforcement          |
++-----------------------+
+           │
+           ▼
++-----------------------+
+|  Runtime Monitoring   |
+|  Constraint +         |
+|  Escalation Logic     |
++-----------------------+
+           │
+           ▼
++-----------------------+
+|  Compute Resources    |
+|  GPUs / Cloud / Edge  |
++-----------------------+
+           │
+           ▼
++-----------------------------------+
+| Distributed Runtime Verification  |
+| Layer (DRVL)                      |
+|                                   |
+| • Multi-node validation           |
+| • Deterministic replay            |
+| • Hardware attestation            |
+| • Escalation consensus            |
++-----------------------------------+
+```
 
 **Architecture Overview**
 
