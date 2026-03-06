@@ -59,25 +59,57 @@ As capability growth accelerates, governance must evolve proportionally.
 The question is not whether advanced AI systems will emerge — but whether enforcement infrastructure matures alongside them.
 
 ## Structure of the Research Series
-## Core Protocol: CEGP
 
-The first deployable enforcement primitive developed within this research program is:
+### Core Protocol: CEGP
 
-**CEGP — Compute Escalation Governance Protocol**
-
-CEGP introduces deterministic compute envelopes with cryptographic authorization and structured escalation pathways.
-
-It governs **compute-linked capability expansion** rather than model cognition or content behavior.
+**CEGP — Compute Escalation Governance Protocol** introduces deterministic compute envelopes with cryptographic authorization and structured escalation pathways.  
+It governs **compute-linked capability expansion**, not model cognition or content behavior.
 
 Primary components:
 
-- Signed Compute Envelopes
-- Deterministic envelope enforcement
-- Explicit escalation requests
-- Risk-tiered governance thresholds
+- Signed Compute Envelopes  
+- Deterministic envelope enforcement  
+- Explicit escalation requests  
+- Risk-tiered governance thresholds  
 - Tamper-evident audit pathways
 
 → [CEGP Specification](./protocols/cegp/cegp-spec.md)
+
+---
+
+### Distributed Runtime Verification Layer (DRVL)
+
+CEGP envelopes are validated **redundantly across independent runtime nodes**:
+
+- Deterministic envelope replay to verify compliance  
+- Network consensus prevents unilateral bypass of escalation logic  
+- Resilient to partial node compromise  
+- Interoperable with hardware attestation (SGX, Nitro Enclaves, etc.)  
+- Ensures **provable escalation friction** in multi-cloud or hybrid sovereign environments
+
+**Signal:** Demonstrates enterprise-grade enforcement maturity, distributed verification, and multi-node resilience.
+
+---
+
+### Governance Architecture Overview
+
+![Capability-Tiered Governance Architecture](docs/capability-tiered-governance-architecture-v0.1.png)
+
+This framework positions governance as an embedded control layer between model capability and deployment orchestration.
+
+Key enforcement logic includes:
+
+- Capability classification  
+- Compute gating  
+- Runtime constraint systems  
+- Escalation and revocation pathways  
+- Identity verification and continuity controls  
+- Deployment authorization and economic interface conditioning  
+- **CEGP integration where applicable**
+
+Compute gating conditions access to scalable training and inference resources based on capability tier and governance alignment.  
+
+---
 
 ### [Note I — The AI Agent Spectrum](./notes/note-01-ai-agent-spectrum.md)
 Introduces a capability-based classification of AI systems.
@@ -231,6 +263,20 @@ Then governance scales proportionally with power.
 
 The goal is not to cap innovation.  
 The goal is to ensure capability expansion and governance maturity remain synchronized.
+
+### Threat & Risk Considerations
+
+ - Centralization & concentration risk
+
+ - Regulatory capture risk
+
+ - Sovereign fragmentation
+
+ - Over-constraint vs innovation suppression
+
+ - Governance as geopolitical leverage
+
+**Threat model:** [CEGP Threat Model](./protocols/cegp/threat-model.md)
 
 ### Important Clarification
 
