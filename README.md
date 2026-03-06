@@ -70,4 +70,4 @@ CEGP envelopes are validated redundantly across independent runtime nodes, suppo
 
 ## License
 
-This project is licensed under **Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)**. See the accompanying [`LICENSE`](./LICENSE) file for full details.
+This project is licensed under **Creative Commons Attribution–NonCommercial 4.0 International (CC BY-NC 4.0)**. See the accompanying [`LICENSE`](./LICENSE.md) file for full details.
