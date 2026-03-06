@@ -1,4 +1,5 @@
 # AI Governance Project — Overview
+Architecture research exploring capability-tiered AI governance and compute-linked enforcement protocols.
 
 **Version:** v0.7  
 **Protocol:** CEGP v0.1  
@@ -53,9 +54,9 @@ Align governance with AI system capability, embedding enforcement into compute a
 
 Engineers, architects, and institutional leaders exploring high-assurance governance infrastructure.
 
-### Full Architecture & Research Context
+### Full Architecture & Research Documentation
 
-For a detailed breakdown of capability-tiered governance, enforcement architecture, deployment examples, threat modeling, the full CEGP specification, notes on the AI agent spectrum, enforcement primitives, enterprise deployment models, diagrams (e.g., capability-tiered architecture, CEGP flow), jurisdictional implications, risks, and more — see the complete README:
+For the complete architecture and research context — including the AI agent spectrum, capability-tiered governance framework, enforcement primitives, the full CEGP specification, deployment models, threat modeling, jurisdictional considerations, and architecture diagrams — see the full documentation:
 
 **[Full Architecture Document](https://github.com/babyblueviper1/ai-governance-architecture/blob/main/docs/architecture-overview.md)**
 
