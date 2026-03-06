@@ -1,0 +1,45 @@
++-----------------------+
+|      AI Agents        |
+|  (Capability Tiers)   |
++----------+------------+
+           |
+           v
++-----------------------+
+|  CEGP Enforcement     |
+|  Layer                |
+|                       |
+| • Capability Check    |
+| • Signed Envelope     |
+| • Access Authorization|
++----------+------------+
+           |
+           v
++-----------------------+
+|  Deployment Gating    |
+|  Infrastructure       |
+|  Enforcement          |
++----------+------------+
+           |
+           v
++-----------------------+
+|  Runtime Monitoring   |
+|  Constraint +         |
+|  Escalation Logic     |
++----------+------------+
+           |
+           v
++-----------------------+
+|  Compute Resources    |
+|  GPUs / Cloud / Edge  |
++----------+------------+
+           |
+           v
++-----------------------------------+
+| Distributed Runtime Verification  |
+| Layer (DRVL)                      |
+|                                   |
+| • Multi-node validation           |
+| • Deterministic replay            |
+| • Hardware attestation            |
+| • Escalation consensus            |
++-----------------------------------+
