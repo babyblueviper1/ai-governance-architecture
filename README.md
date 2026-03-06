@@ -56,7 +56,7 @@ Engineers, architects, and institutional leaders exploring high-assurance govern
 
 For a detailed breakdown of capability-tiered governance, enforcement architecture, deployment examples, threat modeling, the full CEGP specification, notes on the AI agent spectrum, enforcement primitives, enterprise deployment models, diagrams (e.g., capability-tiered architecture, CEGP flow), jurisdictional implications, risks, and more — see the complete README:
 
-**[Full AI Governance Project README](https://github.com/babyblueviper1/ai-governance-architecture/blob/main/docs/full-readme.md)**
+**[Full Architecture Document](https://github.com/babyblueviper1/ai-governance-architecture/blob/main/docs/architecture-overview.md)**
 
 ### License
 
