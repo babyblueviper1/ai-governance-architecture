@@ -22,8 +22,9 @@ CEGP envelopes are validated redundantly across independent runtime nodes, suppo
 - Hardware-backed attestation (SGX, Nitro Enclaves)  
 - Provable escalation friction in multi-cloud or hybrid sovereign deployments
 
-**Impact:**  
-Signals enterprise-grade technical sophistication and awareness of distributed, resilient governance enforcement.
+**Impact:**
+Demonstrates enterprise-grade enforcement maturity,
+distributed verification, and multi-node resilience.
 
 ### Use Cases: Where CEGP Adds Value
 
