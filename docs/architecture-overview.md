@@ -8,7 +8,7 @@ This repository contains both the conceptual governance architecture (Notes) and
 **Lead:** Federico Blanco Sánchez-Llanos  
 **Date:** March 2026
 
-## Executive Framing
+## Executive Overview
 
 Advanced AI systems are evolving from assistive tools into persistent, economically active agents embedded within institutional and economic infrastructures.
 
