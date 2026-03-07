@@ -26,8 +26,8 @@ This repository develops that architecture and its sovereign implications step b
 ```
 ├── notes/
 │   ├── note-01-ai-agent-spectrum.md
-│   ├── note-02-governance-architecture.md
-│   ├── note-03-capability-tiered-enforcement.md
+│   ├── note-02-from-agent-spectrum-to-governance-architecture.md
+│   ├── note-03-capability-tiered-governance-enforcement.md
 │   ├── note-04-enforcement-primitives.md
 │   └── note-05-enterprise-deployment-model.md
 │
