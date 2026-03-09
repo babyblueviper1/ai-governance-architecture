@@ -221,7 +221,7 @@ It is a **compute-linked escalation conditioning mechanism** designed to introdu
 ## Capability-Tiered AI Infrastructure  
 with Embedded Governance Layer
 
-![Capability-Tiered Governance Architecture](./capability-tiered-governance-architecture-v0.1.png)
+![Capability-Tiered Governance Architecture](./docs/capability-tiered-governance-architecture-v0.1.png)
 Diagram version: v0.1  
 Architecture status: Conceptual structural model (non-normative)
 
