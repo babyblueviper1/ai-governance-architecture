@@ -12,15 +12,15 @@ This repository contains both the conceptual governance architecture (Notes) and
 
 Advanced AI systems are evolving from assistive tools into persistent, economically active agents embedded within institutional and economic infrastructures.
 
-Existing governance approaches often treat these systems as a single regulatory category, creating structural blind spots.
+As these systems gain autonomy, governance cannot rely solely on policy guidance or post-hoc monitoring. Governance must migrate into **execution infrastructure**.
 
-The AI Governance Project develops a capability-tiered governance and enforcement doctrine aligned with system autonomy, persistence, planning capacity, economic agency, and infrastructural leverage.
+The AI Governance Project explores a capability-tiered governance architecture in which AI systems operate within **deterministically enforced compute envelopes**. These envelopes define capability boundaries and require explicit governance escalation when agents attempt to exceed them.
 
-The objective is not reactive regulation — but structural synchronization between capability expansion and governance maturity.
+The objective is not reactive regulation, but **structural synchronization between capability expansion and governance maturity** through enforcement mechanisms embedded directly into compute orchestration systems.
+
+In this model, governance operates as a **control plane for probabilistic agents**, introducing deterministic boundaries, escalation pathways, and verifiable constraint enforcement.
 
 As enforcement migrates into infrastructure, jurisdiction, sovereignty, and power distribution become design variables rather than external policy considerations.
-
-This repository develops that architecture and its sovereign implications step by step.
 
 ## Repository Structure
 ```
