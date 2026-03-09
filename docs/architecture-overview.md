@@ -69,13 +69,20 @@ The question is not whether advanced AI systems will emerge — but whether enfo
 **CEGP — Compute Escalation Governance Protocol** introduces deterministic compute envelopes with cryptographic authorization and structured escalation pathways.  
 It governs **compute-linked capability expansion**, not model cognition or content behavior.
 
+CEGP does not attempt to regulate model cognition or interpret behavior.  
+Instead, it enforces governance boundaries at **execution and orchestration layers**, where deterministic infrastructure controls remain possible even when model outputs are probabilistic.
+
+This approach treats AI governance as a **fault-containment architecture for autonomous systems**, rather than a behavioral alignment problem.
+
 Primary components:
 
-- Signed Compute Envelopes  
-- Deterministic envelope enforcement  
-- Explicit escalation requests  
-- Risk-tiered governance thresholds  
-- Tamper-evident audit pathways
+- **Signed Compute Envelopes** — cryptographically defined capability and compute boundaries per agent.  
+- **Deterministic Envelope Enforcement** — all actions pass through orchestration-level control to ensure governance rules are followed.  
+- **Explicit Escalation Requests** — agents must request permission to exceed envelope limits; approvals are auditable and optionally anchored.  
+- **Distributed Runtime Verification Layer (DRVL)** — envelope compliance is redundantly verified across independent runtime nodes, preventing unilateral bypass and supporting multi-node consensus.  
+- **Risk-Tiered Governance Thresholds** — escalation requirements scale with agent autonomy and operational risk.  
+- **Fault Containment Mechanisms** — constraints prevent cascading failures across agents, tools, and infrastructure, even in probabilistic or multi-agent environments.  
+- **Tamper-Evident Audit Pathways** — all envelope and escalation events can be cryptographically verified for compliance and accountability.
 
 → [CEGP Specification](./protocols/cegp/cegp-spec.md)
 
@@ -91,7 +98,7 @@ CEGP envelopes are validated **redundantly across independent runtime nodes**:
 - Interoperable with hardware attestation (SGX, Nitro Enclaves, etc.)  
 - Ensures **provable escalation friction** in multi-cloud or hybrid sovereign environments
 
-**Signal:** Demonstrates enterprise-grade enforcement maturity, distributed verification, and multi-node resilience.
+This architecture provides a **distributed verification layer for governance enforcement**, ensuring that envelope boundaries and escalation rules cannot be unilaterally bypassed by compromised runtimes, orchestration layers, or infrastructure operators.
 
 ---
 
@@ -166,43 +173,46 @@ This note serves as a **practical validation pathway** for embedded governance a
 
 ## Protocol Modules
 
-In addition to conceptual and architectural notes, this project develops modular enforcement protocol specifications derived from the broader governance framework.
+In addition to conceptual and architectural research, this project develops **modular enforcement protocol specifications** derived from the broader capability-tiered governance framework.
 
 ### [CEGP v0.1 — Compute Escalation Governance Protocol](./protocols/cegp/cegp-v0.1.md)  
 **A Deterministic Governance Primitive for Autonomy-Linked Compute Expansion**
 
-CEGP formalizes cryptographically enforced compute envelopes with structured escalation.
+CEGP formalizes **cryptographically enforced compute envelopes** with structured escalation pathways embedded directly into AI execution infrastructure.
 
-It introduces:  
-- Signed Compute Envelopes  
-- Deterministic boundary enforcement at the orchestration layer  
-- Explicit escalation requests  
-- Risk-tiered governance thresholds  
-- Escalating governance requirements proportional to autonomy amplification  
-- Optional public hash anchoring for tamper-evident auditability  
+The protocol introduces:
 
-CEGP attaches governance friction to compute expansion rather than attempting to interpret or regulate model cognition.
+- **Signed Compute Envelopes** defining agent capability and resource boundaries  
+- **Deterministic boundary enforcement at the orchestration layer**  
+- **Explicit escalation requests** for capability expansion beyond envelope limits  
+- **Risk-tiered governance thresholds** proportional to operational autonomy  
+- **Escalating governance friction tied to compute expansion**  
+- **Optional public hash anchoring** for tamper-evident auditability
 
-The protocol functions without blockchain anchoring, though optional external hash commitments may strengthen audit guarantees.
+CEGP attaches governance friction to **compute expansion and infrastructure execution**, rather than attempting to interpret or regulate model cognition.
 
-CEGP represents a modular enforcement primitive within the broader capability-tiered governance architecture.
+The protocol functions independently of blockchain infrastructure, though **optional external hash commitments** may strengthen audit guarantees in high-assurance environments.
+
+CEGP is designed as a **modular enforcement primitive** within the broader capability-tiered governance architecture.
 
 **Structural Logic**
 
 As agents scale in autonomy, compute requirements increase.  
 As compute requirements increase, governance friction increases.  
-Escalation becomes progressively expensive and auditable.
+Escalation becomes progressively constrained, auditable, and expensive.
 
-Governance attaches to infrastructure, not to subjective behavioral interpretation.
+Governance therefore attaches to **deterministic infrastructure boundaries**, not to subjective interpretation of model behavior.
 
-CEGP is designed as:
-- A modular enforcement primitive
-- Compatible with enterprise deployments
-- Potentially layerable onto public blockchain infrastructure
-- Sovereignty-aware and non-centralized by default
+CEGP is designed to be:
 
-It is not a global control system.  
-It is a compute-linked escalation conditioning mechanism.
+- A **modular governance enforcement primitive**
+- **Compatible with enterprise orchestration environments**
+- **Composable with distributed runtime verification layers**
+- **Potentially layerable onto public blockchain infrastructure**
+- **Sovereignty-aware and non-centralized by default**
+
+CEGP is not a global control system.  
+It is a **compute-linked escalation conditioning mechanism** designed to introduce deterministic governance boundaries into probabilistic AI agent ecosystems.
 
 ## Governance Architecture Overview
 
@@ -216,6 +226,8 @@ Architecture status: Conceptual structural model (non-normative)
 ### Structural Claim
 
 This framework positions governance as an embedded control layer between model capability and deployment orchestration.
+
+The architecture assumes AI systems remain probabilistic and non-deterministic internally. Governance therefore attaches to deterministic infrastructure boundaries where execution can be reliably controlled.
 
 Governance is implemented as enforcement logic embedded directly into infrastructure layers — rather than as post-deployment policy — including:
 
@@ -259,6 +271,8 @@ The goal is to ensure capability expansion and governance maturity remain synchr
  - Over-constraint vs innovation suppression
 
  - Governance as geopolitical leverage
+
+Autonomous multi-agent environments introduce cascading failure risk, where small model errors or hallucinations propagate through toolchains and agent networks. Runtime constraint layers and compute envelopes function as containment boundaries to limit uncontrolled capability propagation.
 
 **Threat model:** [CEGP Threat Model](./protocols/cegp/threat-model.md)
 
