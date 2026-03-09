@@ -20,7 +20,7 @@ Expansion beyond these boundaries requires explicit governance escalation.
 This design embeds governance directly into infrastructure control surfaces, allowing enforcement to occur **before execution** and **during runtime**, rather than relying on policy interpretation after deployment.
 
 The normative structure of compute envelopes is defined in:  
-→ [protocols/cegp/compute-envelope_schema.md](protocols/cegp/compute-envelope_schema.md)
+→ [protocols/cegp/cegp-envelope_schema.md](protocols/cegp/cegp-envelope_schema.md)
 
 ## Design Principles
 
@@ -106,7 +106,7 @@ It acts as a signed governance artifact that specifies:
 Compute resources and system behaviors cannot exceed the defined envelope without triggering an escalation request.
 
 The formal structure of compute envelopes is defined in:  
-→ [protocols/cegp/compute-envelope_schema.md](protocols/cegp/compute-envelope_schema.md)
+→ [protocols/cegp/cegp-envelope_schema.md](protocols/cegp/cegp-envelope_schema.md)
 
 **Example simplified envelope:**
 
