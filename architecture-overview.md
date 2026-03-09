@@ -224,30 +224,40 @@ It is a **compute-linked escalation conditioning mechanism** designed to introdu
 Diagram version: v0.2  
 Architecture status: Conceptual structural model (non-normative)
 
-### Structural Claim
+This architecture establishes a **deterministic governance control plane** between autonomous AI agents and the infrastructure they operate on.
 
-This framework positions governance as an **embedded control layer** between model capability and deployment orchestration.
+While the diagram focuses on the enforcement pathway, the architecture supports **capability-tiered governance**: AI systems classified by capability tier experience proportional governance friction, reflected in:
 
-The architecture assumes AI systems remain **probabilistic and non-deterministic** internally. Governance therefore attaches to **deterministic infrastructure boundaries**, where execution can be reliably controlled.
+- Escalation requirements
+- Envelope validation
+- Audit checkpoints
 
-Governance is implemented as **enforcement logic** embedded directly into infrastructure layers — rather than as post-deployment policy — including:
+Capability tiers serve as inputs into the **compute envelope** and **orchestration control layer**, shaping how escalation requests are evaluated and approved.
 
-- Capability classification
-- Compute gating
-- Runtime constraint systems
+Governance is implemented as **deterministic enforcement logic** embedded directly into infrastructure layers — rather than relying on post-deployment policy. Key mechanisms include:
+
+- Compute envelope enforcement
+- Orchestration control layer validation
 - Escalation and revocation pathways
 - Identity verification and continuity controls
 - Deployment authorization and economic interface conditioning
-- Compute Escalation Governance Protocol (**CEGP**) integration where applicable
+- Integration with the **Compute Escalation Governance Protocol (CEGP)**
 
-Enforcement logic operates across **identity**, **compute allocation**, **deployment orchestration**, and **economic interaction** layers. It conditions access to scalable capability rather than attempting to retroactively constrain behavior.
+Enforcement operates across four primary layers:
+
+- Identity
+- Compute allocation
+- Deployment orchestration
+- Economic interaction
+
+It conditions access to scalable capabilities rather than attempting to retroactively constrain behavior.
 
 **Compute gating** refers to infrastructural mechanisms that condition access to scalable training and inference resources based on:
 
 - Capability tier classification
 - Governance maturity alignment
 
-**CEGP** represents one potential instantiation of compute-linked escalation conditioning.
+**CEGP** represents one instantiation of compute-linked escalation conditioning.
 
 ### Why This Matters
 
