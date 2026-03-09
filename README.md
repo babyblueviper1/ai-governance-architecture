@@ -1,5 +1,3 @@
-Here is the provided content formatted in clean **Markdown**:
-
 # AI Governance Project — Overview
 
 **Architecture research exploring deterministic governance for autonomous AI systems through capability-tiered compute enforcement.**
@@ -18,6 +16,15 @@ The **Compute Escalation Governance Protocol (CEGP)** introduces a control-plane
 When an agent attempts to exceed its envelope, it must submit an explicit **escalation request**, which is validated through policy or human governance before expanded capabilities are granted.
 
 This model shifts governance from post-hoc monitoring to **execution-layer enforcement**.
+
+## Architecture Overview
+
+The CEGP architecture introduces a deterministic governance control plane positioned between autonomous AI agents and the infrastructure they execute on.
+
+Agents operate inside **signed compute envelopes**, enforced at the orchestration layer.  
+Capability expansion requires explicit escalation and governance approval.
+
+![CEGP Architecture Diagram](docs/cegp-architecture.png)
 
 ## Key Innovation: CEGP — Compute Escalation Governance Protocol
 
