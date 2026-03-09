@@ -218,8 +218,7 @@ It is a **compute-linked escalation conditioning mechanism** designed to introdu
 
 ## Governance Architecture Overview
 
-## Capability-Tiered AI Infrastructure  
-with Embedded Governance Layer
+### Deterministic Governance Architecture
 
 ![Capability-Tiered Governance Architecture](./docs/cegp-architecture.png)
 Diagram version: v0.2  
