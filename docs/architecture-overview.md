@@ -39,6 +39,7 @@ This repository develops that architecture and its sovereign implications step b
 │       ├── cegp-escalation-flow.md
 │       ├── cegp-enforcement-loop.md
 │       ├── cegp-enterprise-deployment.md
+│       ├── enforcement-invariants.md
 │       ├── enforcement-patterns.md
 │       └── threat-model.md
 │
