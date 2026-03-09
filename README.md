@@ -88,7 +88,7 @@ Engineers, system architects, and institutional leaders exploring high-assurance
 
 For the complete architecture and research context — including the AI agent spectrum, capability-tiered governance framework, enforcement primitives, the full CEGP specification, deployment models, threat modeling, jurisdictional considerations, and architecture diagrams — see the full documentation:
 
-**[Full Architecture Document](https://github.com/babyblueviper1/ai-governance-architecture/blob/main/docs/architecture-overview.md)**
+**[Full Architecture Document](https://github.com/babyblueviper1/ai-governance-architecture/blob/main/architecture-overview.md)**
 
 ### License
 
