@@ -261,19 +261,18 @@ It conditions access to scalable capabilities rather than attempting to retroact
 
 ### Why This Matters
 
-If autonomy expansion is **frictionless**, capability concentration accelerates uncontested.
+If capability expansion is unconstrained, power and influence can concentrate uncontested.
 
-If escalation requires:
+By introducing:
 
-- Explicit checkpoints
-- Infrastructure commitments
-- Economic signaling
-- Distributed verification
+- explicit checkpoints
+- infrastructure commitments
+- economic signaling
+- distributed verification
 
-Then **governance scales proportionally with power**.
+governance scales proportionally with system capability.
 
-The goal is **not** to cap innovation.  
-The goal is to ensure **capability expansion** and **governance maturity** remain synchronized.
+The goal is **not** to restrict innovation — it is to ensure **alignment** between capability expansion and governance maturity, maintaining predictable and auditable infrastructure control.
 
 ### Threat & Risk Considerations
 
