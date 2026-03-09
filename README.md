@@ -1,60 +1,90 @@
+Here is the provided content formatted in clean **Markdown**:
+
 # AI Governance Project — Overview
-Architecture research exploring capability-tiered AI governance and compute-linked enforcement protocols.
+
+**Architecture research exploring deterministic governance for autonomous AI systems through capability-tiered compute enforcement.**
 
 **Version:** v0.7  
 **Protocol:** CEGP v0.1  
 **Lead:** Federico Blanco Sánchez-Llanos  
 **Date:** March 2026
 
-### Key Innovation: CEGP — Compute Escalation Governance Protocol
+## Core Concept
+
+As AI systems become more autonomous, governance must move from policy guidance to deterministic control infrastructure.
+
+The **Compute Escalation Governance Protocol (CEGP)** introduces a control-plane architecture where AI agents operate within **signed compute envelopes** that enforce capability boundaries at the orchestration layer.
+
+When an agent attempts to exceed its envelope, it must submit an explicit **escalation request**, which is validated through policy or human governance before expanded capabilities are granted.
+
+This model shifts governance from post-hoc monitoring to **execution-layer enforcement**.
+
+## Key Innovation: CEGP — Compute Escalation Governance Protocol
+
+CEGP introduces several enforcement primitives:
 
 - **Signed Compute Envelopes**  
-- **Deterministic enforcement at orchestration**  
-- **Explicit escalation requests**  
-- **Risk-tiered governance thresholds**  
-- **Optional public hash anchoring**
+  Agents operate within cryptographically defined capability and compute boundaries.
+
+- **Deterministic Orchestration Enforcement**  
+  All capability expansion must pass through the orchestration control layer.
+
+- **Explicit Escalation Requests**  
+  Agents must request additional compute or capabilities when limits are reached.
+
+- **Risk-Tiered Governance Thresholds**  
+  Escalation requirements scale with system capability and operational risk.
+
+- **Optional Public Hash Anchoring**  
+  Envelope states and escalations can be anchored for external auditability.
 
 ### High-Signal Addition: Distributed Runtime Verification Layer (DRVL)
 
-CEGP envelopes are validated redundantly across independent runtime nodes, supporting:
+CEGP envelopes can be validated across independent runtime verification nodes, supporting:
 
-- Deterministic replay  
-- Multi-node consensus  
-- Hardware-backed attestation (SGX, Nitro Enclaves)  
-- Provable escalation friction in multi-cloud or hybrid sovereign deployments
+- Deterministic execution replay
+- Multi-node verification consensus
+- Hardware-backed attestation (SGX, Nitro Enclaves)
+- Cross-cloud governance enforcement
 
-**Impact:**
-Demonstrates enterprise-grade enforcement maturity,
-distributed verification, and multi-node resilience.
+This architecture provides enterprise-grade verification and multi-cloud governance resilience.
 
-### Use Cases: Where CEGP Adds Value
+## Architectural Goal
 
-CEGP is designed to embed governance directly into execution infrastructure. Example scenarios include:
+CEGP addresses a core challenge in autonomous AI systems:
+
+> How do you maintain deterministic control over probabilistic agents interacting across tools, agents, and infrastructure?
+
+The protocol introduces compute envelopes and escalation governance as a form of **fault containment infrastructure** for AI systems, preventing uncontrolled capability expansion and cascading failures across agent networks.
+
+## Use Cases
+
+CEGP is designed to embed governance directly into execution infrastructure.
 
 - **AI Agent Platforms**  
   Multi-agent orchestration environments where persistent agents require capability-tiered constraints.
 
 - **Sovereign AI Infrastructure**  
-  Government or regulated cloud deployments where deterministic control over compute escalation is necessary.
+  Government or regulated cloud deployments requiring deterministic compute escalation control.
 
 - **Regulated Financial AI Systems**  
-  Automated trading, treasury operations, or multi-tenant financial computation with audit and escalation requirements.
+  Automated trading, treasury operations, or financial computation requiring auditable execution boundaries.
 
 - **Multi-Tenant Model Hosting**  
-  AI marketplaces or enterprise SaaS where isolated compute environments must enforce capability boundaries.
+  AI marketplaces or enterprise SaaS environments where compute isolation and escalation governance are required.
 
 - **Critical Infrastructure AI**  
-  Industrial, energy, or healthcare AI where compute activation and escalation must be deterministic and auditable.
+  Energy, healthcare, and industrial AI systems where compute activation must be deterministic and auditable.
 
-### Objective
+## Objective
 
-Align governance with AI system capability, embedding enforcement into compute and orchestration infrastructure rather than relying on post-hoc policy.
+Align governance with system capability and infrastructure control, embedding enforcement directly into compute orchestration layers rather than relying on post-hoc monitoring or model-level alignment.
 
-### Audience
+## Audience
 
-Engineers, architects, and institutional leaders exploring high-assurance governance infrastructure.
+Engineers, system architects, and institutional leaders exploring high-assurance governance infrastructure for autonomous AI systems.
 
-### Full Architecture & Research Documentation
+## Full Architecture & Research Documentation
 
 For the complete architecture and research context — including the AI agent spectrum, capability-tiered governance framework, enforcement primitives, the full CEGP specification, deployment models, threat modeling, jurisdictional considerations, and architecture diagrams — see the full documentation:
 
