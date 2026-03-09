@@ -13,14 +13,14 @@ CEGP introduces structured enforcement mechanisms that link infrastructure capab
 
 Rather than attempting to regulate model cognition or output behavior, CEGP governs the infrastructure conditions under which autonomous systems may scale operational capability.
 
-The protocol operates through signed **capability envelopes** that define explicit boundaries on system resources, operational scope, and authorized autonomy levels.
+The protocol operates through signed **compute envelopes** that define explicit boundaries on system resources, operational scope, and authorized autonomy levels.
 
 Expansion beyond these boundaries requires explicit governance escalation.
 
 This design embeds governance directly into infrastructure control surfaces, allowing enforcement to occur **before execution** and **during runtime**, rather than relying on policy interpretation after deployment.
 
-The normative structure of capability envelopes is defined in:  
-→ protocols/cegp/cegp-envelope_schema.md
+The normative structure of compute envelopes is defined in:  
+→ [protocols/cegp/compute-envelope_schema.md](protocols/cegp/compute-envelope_schema.md)
 
 ## Design Principles
 
@@ -90,11 +90,11 @@ CEGP operates across four operational layers.
 
 Each layer enforces constraints on system capability expansion.
 
-## Capability Envelopes
+## Compute Envelopes
 
-The core enforcement primitive in CEGP is the **Capability Envelope**.
+The core enforcement primitive in CEGP is the **Compute Envelope**.
 
-A capability envelope defines the authorized operational boundaries for an AI system.  
+A compute envelope defines the authorized operational boundaries for an AI system.  
 It acts as a signed governance artifact that specifies:
 
 - compute limits  
@@ -105,13 +105,13 @@ It acts as a signed governance artifact that specifies:
 
 Compute resources and system behaviors cannot exceed the defined envelope without triggering an escalation request.
 
-The formal structure of capability envelopes is defined in:  
-→ protocols/cegp/cegp-envelope_schema.md
+The formal structure of compute envelopes is defined in:  
+→ [protocols/cegp/compute-envelope_schema.md](protocols/cegp/compute-envelope_schema.md)
 
 **Example simplified envelope:**
 
 ```
-Capability Envelope
+Compute Envelope
 
 System ID: agent_cluster_07
 Capability Tier: Tier 2
@@ -124,7 +124,7 @@ Authorized By:
 Infrastructure Governance Board
 ```
 
-Capability envelopes act as the primary enforcement artifact within the CEGP architecture.
+Compute envelopes act as the primary enforcement artifact within the CEGP architecture.
 
 ## Escalation Requests
 
@@ -151,7 +151,7 @@ Requested Compute: 256 GPU
 Justification: multi-agent coordination research
 ```
 
-Escalation decisions may update or replace the system's capability envelope.
+Escalation decisions may update or replace the system's compute envelope.
 
 ## Governance Thresholds
 
@@ -170,7 +170,7 @@ Organizations define their own thresholds based on risk tolerance and institutio
 
 ## Runtime Monitoring
 
-Once deployed, systems operate under continuous capability envelope enforcement.
+Once deployed, systems operate under continuous compute envelope enforcement.
 
 Runtime monitoring may track:
 
@@ -209,7 +209,7 @@ CEGP addresses governance failures arising from uncontrolled capability expansio
 
 - **Silent Capability Expansion**  
   AI systems gaining operational power without institutional oversight.  
-  *Mitigation:* Capability envelopes require explicit authorization for scaling.
+  *Mitigation:* Compute envelopes require explicit authorization for scaling.
 
 - **Infrastructure Bypass**  
   Operators attempting to bypass governance constraints.  
@@ -238,7 +238,7 @@ The protocol governs infrastructure conditions, not subjective behavior.
 
 Planned areas of development include:
 
-- formal capability envelope schema standardization  
+- formal compute envelope schema standardization  
 - orchestration layer integrations  
 - enterprise governance tooling  
 - distributed runtime verification mechanisms (DRVL)  
