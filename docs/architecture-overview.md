@@ -201,6 +201,8 @@ As agents scale in autonomy, compute requirements increase.
 As compute requirements increase, governance friction increases.  
 Escalation becomes progressively constrained, auditable, and expensive.
 
+This mechanism transforms governance from a policy layer into a **deterministic control plane for autonomous compute systems**.
+
 Governance therefore attaches to **deterministic infrastructure boundaries**, not to subjective interpretation of model behavior.
 
 CEGP is designed to be:
