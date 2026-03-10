@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "action": "DELETE",
+      "tables": ["users", "orders"],
+      "environment": "production",
+      "effect": "deny",
+      "reason": "Destructive operations require escalation"
+    }
+  ]
+}
