@@ -24,6 +24,13 @@ escalation_queue = []
 escalation_counter = 0
 
 
+def publish_signed_event(event_data):
+    """Helper to add policy hash and signature before publishing."""
+    event_data["policy"] = drvl.policy_hash
+    event_data["signature"] = drvl.sign_event(event_data)
+    publish(event_data)
+
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -57,30 +64,24 @@ def run_demo():
         if rand < 0.35:
             status = "APPROVED"
             result = db.execute(action, table)
-            publish_event = {
+            publish_signed_event({
                 "action": action,
                 "table": table,
                 "status": "EXECUTED",
                 "message": "Auto-approved (demo)",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S"),
-                "policy": policy_hash
-            }
-            publish_event["signature"] = drvl.sign_event(publish_event)
-            publish(publish_event)
+                "timestamp": time.strftime("%H:%M:%S")
+            })
         elif rand < 0.70:
             status = "DENIED"
-            publish_event = {
+            publish_signed_event({
                 "action": action,
                 "table": table,
                 "status": "BLOCKED",
                 "message": "Auto-denied (demo)",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S"),
-                "policy": policy_hash
-            }
-            publish_event["signature"] = drvl.sign_event(publish_event)
-            publish(publish_event)
+                "timestamp": time.strftime("%H:%M:%S")
+            })
             result = None
         else:
             status = "PENDING"
@@ -99,20 +100,17 @@ def run_demo():
             status = "BLOCKED"
             result = None
 
-    # Final log & publish (only once!)
+    # Final log & signed publish
     log_event(action, table, status, message)
 
-    publish_event = {
+    publish_signed_event({
         "action": action,
         "table": table,
         "status": status,
         "message": message,
         "request_id": req_id,
-        "timestamp": time.strftime("%H:%M:%S"),
-        "policy": policy_hash
-    }
-    publish_event["signature"] = drvl.sign_event(publish_event)
-    publish(publish_event)
+        "timestamp": time.strftime("%H:%M:%S")
+    })
 
     return jsonify({
         "action": action,
@@ -131,7 +129,14 @@ def run_demo():
         ],
         "llm_error": llm_error,
         "policy": policy_hash,
-        "signature": publish_event["signature"]
+        "signature": drvl.sign_event({
+            "action": action,
+            "table": table,
+            "status": status,
+            "message": message,
+            "request_id": req_id,
+            "timestamp": time.strftime("%H:%M:%S")
+        })
     })
 
 
@@ -142,17 +147,14 @@ def approve_request(req_id):
             req["status"] = "APPROVED"
             result = db.execute(req["action"], req["table"])
 
-            publish_event = {
+            publish_signed_event({
                 "action": req["action"],
                 "table": req["table"],
                 "status": "EXECUTED",
                 "message": "Escalation manually approved",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S"),
-                "policy": drvl.policy_hash
-            }
-            publish_event["signature"] = drvl.sign_event(publish_event)
-            publish(publish_event)
+                "timestamp": time.strftime("%H:%M:%S")
+            })
 
             escalation_queue.remove(req)
 
@@ -178,17 +180,14 @@ def deny_request(req_id):
         if req["id"] == req_id and req["status"] == "PENDING":
             req["status"] = "DENIED"
 
-            publish_event = {
+            publish_signed_event({
                 "action": req["action"],
                 "table": req["table"],
                 "status": "BLOCKED",
                 "message": "Escalation denied by operator",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S"),
-                "policy": drvl.policy_hash
-            }
-            publish_event["signature"] = drvl.sign_event(publish_event)
-            publish(publish_event)
+                "timestamp": time.strftime("%H:%M:%S")
+            })
 
             escalation_queue.remove(req)
 
