@@ -40,10 +40,15 @@
             border-radius: 6px;
             cursor: pointer;
             color: white;
-            transition: background 0.2s ease;
+            transition: all 0.2s ease;
         }
-        button:hover {
+        button:hover:not(:disabled) {
             opacity: 0.92;
+        }
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #6c757d !important;
         }
         .btn-run    { background: #0d6efd; }
         .btn-auto   { background: #343a40; }
@@ -51,16 +56,12 @@
 
         .btn-approve {
             background: #198754;
-            color: white;
             padding: 6px 14px;
-            border-radius: 4px;
             font-size: 13px;
         }
         .btn-deny {
             background: #dc3545;
-            color: white;
             padding: 6px 14px;
-            border-radius: 4px;
             font-size: 13px;
         }
 
@@ -167,7 +168,7 @@
             font-size: 1.1rem;
         }
 
-        /* LLM toggle panel */
+        /* LLM panel */
         #llm-panel {
             margin: 24px auto;
             max-width: 600px;
@@ -183,7 +184,7 @@
         }
         #llm-key-panel select,
         #llm-key-panel input[type="password"] {
-            padding: 8px;
+            padding: 8px 12px;
             font-size: 14px;
             border: 1px solid #ced4da;
             border-radius: 4px;
@@ -200,6 +201,14 @@
             font-size: 0.9rem;
             min-height: 20px;
         }
+        .warning-text {
+            font-size: 0.85rem;
+            color: #856404;
+            background: #fff3cd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
     </style>
 </head>
 <body>
@@ -212,6 +221,9 @@
         <input type="checkbox" id="use-llm-toggle"> Use real LLM instead of probabilistic stub
     </label>
     <div id="llm-key-panel">
+        <div class="warning-text">
+            <strong>Warning:</strong> Using real LLM will consume your API provider's tokens and may incur costs.
+        </div>
         <select id="llm-provider">
             <option value="openai">OpenAI (GPT-4o / 4o-mini)</option>
             <option value="anthropic">Anthropic (Claude 3.5 Sonnet)</option>
@@ -294,6 +306,9 @@ document.getElementById("use-llm-toggle").onchange = function() {
     if (!this.checked) {
         document.getElementById("llm-status").textContent = "";
         document.getElementById("llm-error").textContent = "";
+        document.getElementById("apply-key-btn").disabled = false;
+        document.getElementById("apply-key-btn").textContent = "Apply Key";
+        document.getElementById("apply-key-btn").style.opacity = "1";
     }
 };
 
@@ -307,9 +322,9 @@ function submitApiKey() {
         return;
     }
 
-    // Disable button during request to prevent double-click
     btn.disabled = true;
     btn.textContent = "Applying...";
+    btn.style.opacity = "0.6";
 
     fetch("/set_llm_key", {
         method: "POST",
@@ -320,11 +335,13 @@ function submitApiKey() {
     .then(data => {
         btn.disabled = false;
         btn.textContent = "Apply Key";
+        btn.style.opacity = "1";
 
         if (data.status === "ok") {
             document.getElementById("llm-status").textContent = "✓ LLM mode active — real model will be used for future actions";
             document.getElementById("llm-status").style.color = "#198754";
             document.getElementById("llm-error").textContent = "";
+            document.getElementById("api-key-input").value = ""; // clear key after success
         } else {
             document.getElementById("llm-error").textContent = data.error || "Failed to activate LLM mode";
             alert("Error: " + (data.error || "Failed to activate LLM mode"));
@@ -333,6 +350,7 @@ function submitApiKey() {
     .catch(err => {
         btn.disabled = false;
         btn.textContent = "Apply Key";
+        btn.style.opacity = "1";
         document.getElementById("llm-error").textContent = "Connection error — could not reach server";
         alert("Connection error — could not set API key");
         console.error(err);
@@ -344,15 +362,15 @@ let speed = 1800;
 
 const els = {
     executed: document.getElementById("executedCount"),
-    blocked:  document.getElementById("blockedCount"),
+    blocked: document.getElementById("blockedCount"),
     approved: document.getElementById("approvedCount"),
     totalEsc: document.getElementById("totalEscalations"),
-    pending:  document.getElementById("pendingCount"),
-    alerts:   document.getElementById("alerts"),
-    events:   document.getElementById("events"),
+    pending: document.getElementById("pendingCount"),
+    alerts: document.getElementById("alerts"),
+    events: document.getElementById("events"),
     dec: {
         action: document.getElementById("decAction"),
-        rule:   document.getElementById("decRule"),
+        rule: document.getElementById("decRule"),
         result: document.getElementById("decResult")
     }
 };
@@ -400,7 +418,7 @@ function handleResponse(data) {
     let eventClass = "";
     let alertText = "";
     let incExecuted = false;
-    let incBlocked  = false;
+    let incBlocked = false;
     let incApproved = false;
 
     switch (data.status) {
@@ -439,19 +457,18 @@ function handleResponse(data) {
     const errorDiv = document.getElementById("llm-error");
     if (data.llm_error) {
         errorDiv.textContent = data.llm_error;
-        // Flash in main alerts too
         els.alerts.textContent = data.llm_error;
         setTimeout(() => {
             if (els.alerts.textContent === data.llm_error) {
                 els.alerts.textContent = "";
             }
-        }, 8000);  // longer timeout for errors
+        }, 8000);
     } else {
         errorDiv.textContent = "";
     }
 
     if (incExecuted) els.executed.textContent = Number(els.executed.textContent) + 1;
-    if (incBlocked)  els.blocked.textContent  = Number(els.blocked.textContent) + 1;
+    if (incBlocked) els.blocked.textContent = Number(els.blocked.textContent) + 1;
     if (incApproved) els.approved.textContent = Number(els.approved.textContent) + 1;
 
     const line = document.createElement("div");
@@ -526,7 +543,6 @@ function deny(requestId) {
         .catch(err => console.error("Deny failed:", err));
 }
 
-// SSE for real-time updates
 const evtSource = new EventSource("/events");
 evtSource.onmessage = event => {
     try {
@@ -535,11 +551,8 @@ evtSource.onmessage = event => {
         console.error("SSE parse error:", e);
     }
 };
-evtSource.onerror = () => {
-    console.warn("SSE connection lost – reconnecting...");
-};
+evtSource.onerror = () => console.warn("SSE connection lost – reconnecting...");
 
-// Initial queue load
 window.addEventListener("load", () => {
     fetch("/status")
         .then(r => r.json())
