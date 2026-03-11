@@ -2,12 +2,14 @@ import json
 
 class DRVL:
     """
-    Distributed Runtime Verification Layer: checks actions against policy.
+    Distributed Runtime Verification Layer with simple escalation support.
     """
-    def __init__(self):
-        self.restricted_ops = {"DELETE": "requires escalation", "DROP": "forbidden"}
+    BLOCKED_ACTIONS = {
+        "DELETE": "Requires escalation",
+        "DROP": "Forbidden operation"
+    }
 
-    def verify(self, action, table, environment):
-        if action in self.restricted_ops:
-            return False, self.restricted_ops[action]
-        return True, "Policy allowed"
+    def verify(self, action, table, environment="production"):
+        if action in self.BLOCKED_ACTIONS:
+            return False, True, self.BLOCKED_ACTIONS[action]  # allowed=False, needs_escalation=True
+        return True, False, "Allowed operation"
