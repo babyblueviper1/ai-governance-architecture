@@ -8,31 +8,49 @@ Architecture research exploring **deterministic governance** for autonomous AI s
 
 ## Overview
 
-As AI systems become increasingly autonomous, traditional policy guidance is no longer sufficient. Governance must evolve into **deterministic control infrastructure** that enforces hard boundaries at runtime.
+As AI systems become increasingly autonomous, traditional policy guidance is no longer sufficient. Governance must evolve into **deterministic control infrastructure** that enforces hard, verifiable boundaries at runtime.
 
-The **Compute Escalation Governance Protocol (CEGP)** defines a control-plane architecture in which:
+The **Compute Escalation Governance Protocol (CEGP)** introduces a control-plane architecture where:
 
 - AI agents operate strictly within **signed compute envelopes**  
 - These envelopes cryptographically enforce capability, compute, memory, network, and action limits at the orchestration layer  
 - Any attempt to exceed the envelope triggers an **explicit escalation request**  
-- Escalation requests are validated (via policy engine or human-in-the-loop governance) before expanded capabilities are granted
+- Escalation requests are validated (via policy engine or human-in-the-loop governance) before expanded capabilities are granted  
 
-This creates a verifiable, auditable path for capability growth while preventing unauthorized or unsafe expansion.
+This creates a strong, auditable path for capability growth while preventing unauthorized or unsafe expansion.
 
 ## Live Demo — DRVL Governance with Escalation
 
-🚀 **DRVL Governance Demo** ([demo/](demo/)) — watch a **probabilistic AI agent** interact with a database under deterministic runtime policies.  
+🎮 **Try it live (no installation needed!)**  
+https://drvl-demo.onrender.com/
 
-### New Escalation Features
-- Restricted actions (`DELETE` / `DROP`) generate **escalation requests**.  
-- Every **3rd request is automatically approved** for demo purposes.  
-- Manual **Approve button** allows simulated human intervention.  
-- Executed, blocked, and approved actions appear **live** in the dashboard.  
+*(First load may take 10–30 seconds due to Render free-tier spin-up. Subsequent visits are instant.)*
 
-This demo illustrates the core thesis:  
-> **Deterministic enforcement controlling a probabilistic AI agent**, including escalation workflows and policy approvals.
+Watch a **probabilistic AI agent** perform database actions in real time under **deterministic DRVL governance**, complete with realistic escalation handling.
 
-### Quick Start
+### Escalation & Auto-Decision Features
+- `DELETE` operations trigger **escalation requests**  
+- `DROP` operations are always **forbidden** (instantly blocked)  
+- For escalations (DELETE), the backend applies probabilistic decisions (demo realism):  
+  - **~35% auto-approved** → executed immediately (green)  
+  - **~35% auto-denied** → blocked immediately (red)  
+  - **~30% pending** → appear in the live queue with **Approve** and **Deny** buttons for manual human-in-the-loop control  
+
+### What You’ll See in the Dashboard
+- Live stream of executed (green), blocked (red), pending (yellow), and approved (bold green) actions  
+- Real-time escalation queue with Approve/Deny controls  
+- Execution / block / approved counters  
+- Detailed policy decision explanations  
+- Alerts for blocked or denied actions  
+- Autonomous mode with adjustable speed slider  
+
+This demo clearly illustrates the core thesis:
+
+> **Deterministic enforcement controlling a probabilistic AI agent**,  
+> combining automatic policy decisions, probabilistic auto-handling of edge cases,  
+> and human-in-the-loop oversight via escalation workflows.
+
+### Quick Start (Local Run)
 
 ```bash
 cd demo
