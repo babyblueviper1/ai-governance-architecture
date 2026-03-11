@@ -2,7 +2,7 @@
 
 ![CEGP + DRVL Architecture](docs/cegp-architecture.png)
 
-> AI Agent → DRVL → Database → Event Bus → Governance Dashboar
+> AI Agent → DRVL → Database → Event Bus → Governance Dashboard
 
 Architecture research exploring **deterministic governance** for autonomous AI systems through the **Compute Escalation Governance Protocol (CEGP)** and runtime verification.
 
@@ -26,27 +26,35 @@ https://drvl-demo.onrender.com/
 
 *(First load may take 10–30 seconds due to Render free-tier spin-up. Subsequent visits are instant.)*
 
-Watch a **probabilistic AI agent** perform database actions in real time under **deterministic DRVL governance**, complete with realistic escalation handling.
+Watch a **probabilistic (or real frontier-model) AI agent** perform database actions in real time under **deterministic DRVL governance**.
+
+### New: Real LLM Mode (bring your own key)
+
+- Toggle on → paste your API key (OpenAI, Anthropic, xAI Grok, Google Gemini)  
+- Agent now uses a **real LLM** for action decisions — unpredictable, realistic frontier-model behavior  
+- **Warning:** This consumes your API provider's tokens and may incur costs. Default mode (simulation) is free and token-free.  
+- Key is sent once to the server, never stored or logged — only used for your session
 
 ### Escalation & Auto-Decision Features
 - `DELETE` operations trigger **escalation requests**  
 - `DROP` operations are always **forbidden** (instantly blocked)  
-- For escalations (DELETE), the backend applies probabilistic decisions (demo realism):  
+- For escalations (DELETE), backend applies probabilistic decisions (demo realism):  
   - **~35% auto-approved** → executed immediately (green)  
   - **~35% auto-denied** → blocked immediately (red)  
-  - **~30% pending** → appear in the live queue with **Approve** and **Deny** buttons for manual human-in-the-loop control  
+  - **~30% pending** → appear in live queue with **Approve** and **Deny** buttons for manual control  
 
 ### What You’ll See in the Dashboard
-- Live stream of executed (green), blocked (red), pending (yellow), and approved (bold green) actions  
+- Live stream of executed (green), blocked (red), pending (yellow), approved (bold green) actions  
 - Real-time escalation queue with Approve/Deny controls  
 - Execution / block / approved counters  
 - Detailed policy decision explanations  
 - Alerts for blocked or denied actions  
 - Autonomous mode with adjustable speed slider  
+- LLM mode status + error feedback
 
 This demo clearly illustrates the core thesis:
 
-> **Deterministic enforcement controlling a probabilistic AI agent**,  
+> **Deterministic enforcement controlling a probabilistic — or real frontier — AI agent**,  
 > combining automatic policy decisions, probabilistic auto-handling of edge cases,  
 > and human-in-the-loop oversight via escalation workflows.
 
@@ -54,7 +62,7 @@ This demo clearly illustrates the core thesis:
 
 ```bash
 cd demo
-pip install flask
+pip install flask openai  # openai only needed for real LLM mode
 python app.py
 ```
 
@@ -73,13 +81,13 @@ http://localhost:10000
   Agents must formally request (and often justify) expanded privileges when they reach the limits of their current envelope.
 
 - **Distributed Runtime Verification Layer (DRVL)**  
-  A runtime interception and enforcement layer that monitors AI actions, applies policy rules, emits governance events, and provides explainability and observability.
+  Runtime interception and enforcement layer that monitors AI actions, applies policy rules, emits governance events, and provides explainability and observability.
 
 ## Repository Structure
 
 ```
 .
-├── demo/                    # DRVL runtime governance demo (Flask dashboard + simulation)
+├── demo/                    # DRVL runtime governance demo (Flask dashboard + LLM toggle)
 ├── docs/                    # Architecture diagrams, threat models, research notes
 ├── protocols/               # CEGP protocol definitions and message schemas
 ├── architecture-overview.md # Detailed architecture documentation
@@ -96,7 +104,7 @@ For in-depth coverage including:
 - Threat modeling and attack surface analysis  
 - Integration with existing orchestration systems  
 
-See the complete document:  
+See:  
 [architecture-overview.md](https://github.com/babyblueviper1/ai-governance-architecture/blob/main/architecture-overview.md)
 
 ## License
