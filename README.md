@@ -31,7 +31,7 @@ Watch a **probabilistic (or real frontier-model) AI agent** perform database act
 ### New: Real LLM Mode (bring your own key)
 
 - Toggle on → paste your **OpenAI** API key  
-- **Demo currently only supports OpenAI** (GPT-4o / 4o-mini).  
+- **Demo currently supports OpenAI** (GPT-4o / 4o-mini).  
 - Actions become truly non-deterministic (and occasionally risky — perfect to see DRVL govern real frontier-model behavior)  
 - **Warning:** Using real LLM will consume your OpenAI tokens and may incur costs. The default simulation mode uses **no tokens**.  
 - Key is sent once to the server, never stored or logged — only used for your session.
