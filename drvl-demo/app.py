@@ -214,20 +214,24 @@ def view_logs():
 
 @app.route("/set_llm_key", methods=["POST"])
 def set_llm_key():
-    data = request.json
+    if not request.is_json:
+        return jsonify({"status": "error", "error": "Request must be JSON"}), 400
+
+    data = request.get_json()
     provider = data.get("provider")
     api_key = data.get("api_key")
 
-    if not api_key or not provider:
-        return jsonify({"status": "error", "error": "Missing key or provider"}), 400
+    if not provider or not api_key:
+        return jsonify({"status": "error", "error": "Missing provider or api_key"}), 400
 
-    # Optional: add rate-limiting / IP check here in production demo
     try:
         global agent
         agent.set_llm(provider, api_key)
         return jsonify({"status": "ok"})
     except ValueError as e:
         return jsonify({"status": "error", "error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"status": "error", "error": f"Server error: {str(e)}"}), 500
 
 
 @app.route("/events")
