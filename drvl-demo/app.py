@@ -180,4 +180,34 @@ def get_status():
         "escalation_queue": [
             {
                 "request_id": req["id"],
-                "action": req
+                "action": req["action"],
+                "table": req["table"],
+                "status": req["status"]
+            } for req in escalation_queue
+        ]
+    })
+
+@app.route("/logs")
+def view_logs():
+    try:
+        with open("drvl_events.log", "r") as f:
+            logs = f.read()
+    except:
+        logs = "No events yet."
+    return f"<pre>{logs}</pre>"
+
+@app.route("/events")
+def stream_events():
+    def event_stream():
+        last_index = 0
+        while True:
+            events = get_events()
+            if len(events) > last_index:
+                event = events[last_index]
+                last_index += 1
+                yield f"data: {json.dumps(event)}\n\n"
+            time.sleep(0.5)  # faster polling for demo feel
+    return Response(event_stream(), mimetype="text/event-stream")
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000, debug=True)
