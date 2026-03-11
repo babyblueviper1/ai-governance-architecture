@@ -215,15 +215,18 @@ html
 <div class="panel">
     <h2>Escalation Queue</h2>
     
-    <p style="color: #6c757d; font-size: 0.95rem; margin: 8px 0 16px; text-align: center;">
-        <em>For demo purposes:</em> DELETE operations require escalation. The backend <strong>auto-approves every 3rd request (~33%)</strong>, 
-        while others stay pending for manual Approve or Deny.
+    <p style="color: #6c757d; font-size: 0.95rem; margin: 8px 0 16px; text-align: center; max-width: 680px; margin-left: auto; margin-right: auto;">
+        <em>For demo purposes:</em> When escalation is required (DELETE operations), the backend 
+        <strong>auto-approves ~35%</strong>, 
+        <strong>auto-denies ~35%</strong>, 
+        and leaves <strong>~30% pending</strong> for manual Approve or Deny.
     </p>
 
     <div class="stats-row">
         Total escalations: <b><span id="totalEscalations">0</span></b> 
         Pending now: <b><span id="pendingCount">0</span></b>
     </div>
+    
     <div id="escalationQueue"></div>
 </div>
 
