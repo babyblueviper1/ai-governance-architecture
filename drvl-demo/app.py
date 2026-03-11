@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, render_template, Response, request
 import json
 import time
-import random  # ← Added this!
+import random
 
 from agent import ProbabilisticAgent
 from drvl import DRVL
@@ -21,14 +21,24 @@ drvl = DRVL()
 escalation_queue = []
 escalation_counter = 0
 
+
 @app.route("/")
 def home():
     return render_template("index.html")
 
+
 @app.route("/run")
 def run_demo():
     global escalation_counter
+
+    llm_error = None
     action, table = agent.generate_action()
+
+    # Capture LLM fallback error if it occurred
+    if hasattr(agent, "last_llm_error") and agent.last_llm_error:
+        llm_error = agent.last_llm_error
+        agent.last_llm_error = None  # clear after use
+
     allowed, needs_escalation, message = drvl.verify(action, table, environment)
 
     status = ""
@@ -106,8 +116,10 @@ def run_demo():
                 "table": req["table"],
                 "status": req["status"]
             } for req in escalation_queue
-        ]
+        ],
+        "llm_error": llm_error  # Will be None or a string if LLM failed
     })
+
 
 @app.route("/approve/<int:req_id>", methods=["POST"])
 def approve_request(req_id):
@@ -142,6 +154,7 @@ def approve_request(req_id):
 
     return jsonify({"status": "not_found", "id": req_id}), 404
 
+
 @app.route("/deny/<int:req_id>", methods=["POST"])
 def deny_request(req_id):
     for req in escalation_queue[:]:
@@ -174,6 +187,7 @@ def deny_request(req_id):
 
     return jsonify({"status": "not_found", "id": req_id}), 404
 
+
 @app.route("/status")
 def get_status():
     return jsonify({
@@ -187,14 +201,34 @@ def get_status():
         ]
     })
 
+
 @app.route("/logs")
 def view_logs():
     try:
         with open("drvl_events.log", "r") as f:
             logs = f.read()
-    except:
+    except Exception:
         logs = "No events yet."
     return f"<pre>{logs}</pre>"
+
+
+@app.route("/set_llm_key", methods=["POST"])
+def set_llm_key():
+    data = request.json
+    provider = data.get("provider")
+    api_key = data.get("api_key")
+
+    if not api_key or not provider:
+        return jsonify({"status": "error", "error": "Missing key or provider"}), 400
+
+    # Optional: add rate-limiting / IP check here in production demo
+    try:
+        global agent
+        agent.set_llm(provider, api_key)
+        return jsonify({"status": "ok"})
+    except ValueError as e:
+        return jsonify({"status": "error", "error": str(e)}), 400
+
 
 @app.route("/events")
 def stream_events():
@@ -206,8 +240,9 @@ def stream_events():
                 event = events[last_index]
                 last_index += 1
                 yield f"data: {json.dumps(event)}\n\n"
-            time.sleep(0.5)  # faster polling for demo feel
+            time.sleep(0.5)  # faster polling for responsive demo feel
     return Response(event_stream(), mimetype="text/event-stream")
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
