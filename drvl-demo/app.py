@@ -1,109 +1,264 @@
-from flask import Flask, jsonify, render_template, Response
-import json
-import time
+<!DOCTYPE html>
+<html>
+<head>
+<title>DRVL AI Governance Demo</title>
 
-from agent import Agent
-from database import Database
-from drvl import DRVL
-from audit import log_event
-from event_bus import publish, subscribe, get_events
-from flask import Flask, jsonify, render_template
+<style>
 
-from agent import Agent
-from database import Database
-from drvl import DRVL
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 40px;
+    background: #f4f6f8;
+}
 
-from event_bus import publish, subscribe
-from audit import handle_event
+h1 {
+    margin-bottom: 5px;
+}
 
-app = Flask(__name__)
+p {
+    color: #555;
+}
 
-# register event subscriber
-subscribe(handle_event)
+button {
+    padding: 12px 25px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    transition: opacity 0.2s;
+}
 
-environment = "production"
+button:hover {
+    opacity: 0.9;
+}
 
+.run-btn { background: #2d7ef7; color: white; }
+.auto-btn { background: #222; color: white; }
+.stop-btn { background: #cc3b3b; color: white; }
 
-@app.route("/")
-def home():
-    return render_template("index.html")
+#controls {
+    margin-top: 10px;
+}
 
+#stats {
+    margin-top: 20px;
+    font-size: 18px;
+}
 
-@app.route("/run")
-def run_demo():
+.stat {
+    margin: 0 15px;
+}
 
-    agent = Agent()
-    db = Database()
-    drvl = DRVL()
+.executed { color: #1a7f37; }
+.blocked { color: #c62828; }
 
-    action, table = agent.generate_action()
+#policy {
+    width: 500px;
+    margin: 30px auto;
+    text-align: left;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+    font-family: monospace;
+}
 
-    allowed, message = drvl.verify(action, table, environment)
+.policy-allowed {
+    color: #1a7f37;
+}
 
-    if not allowed:
+.policy-blocked {
+    color: #c62828;
+}
 
-        publish({
-            "action": action,
-            "table": table,
-            "status": "BLOCKED",
-            "message": message
-        })
+#alerts {
+    margin: 15px auto;
+    width: 500px;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #c62828;
+    background: #ffebee;
+    border-radius: 6px;
+    min-height: 24px;
+}
 
-        return jsonify({
-            "action": action,
-            "table": table,
-            "status": "blocked",
-            "reason": message
-        })
+#events {
+    margin: 30px auto;
+    width: 700px;
+    text-align: left;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    height: 320px;
+    overflow-y: auto;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
+    font-family: monospace;
+}
 
-    result = db.execute(action, table)
+.event-line {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+}
 
-    publish({
-        "action": action,
-        "table": table,
-        "status": "EXECUTED",
-        "message": "Policy allowed"
-    })
+.event-executed { color: #1a7f37; }
+.event-blocked { color: #c62828; font-weight: bold; }
 
-    return jsonify({
-        "action": action,
-        "table": table,
-        "status": "executed",
-        "result": result
-    })
+#result {
+    margin-top: 15px;
+}
 
+</style>
+</head>
 
-@app.route("/logs")
-def view_logs():
+<body>
 
-    try:
-        with open("drvl_events.log", "r") as f:
-            logs = f.read()
-    except:
-        logs = "No events yet."
+<h1>Distributed Runtime Verification Layer</h1>
+<p>Monitoring AI actions under DRVL governance</p>
 
-    return f"<pre>{logs}</pre>"
+<button class="run-btn" onclick="runDemo()">Run AI Action</button>
+<button class="auto-btn" onclick="startAuto()">Start Autonomous Mode</button>
+<button class="stop-btn" onclick="stopAuto()">Stop Autonomous Mode</button>
 
-@app.route("/events")
-def stream_events():
+<div id="controls">
+<label>AI Speed:</label>
 
-    def event_stream():
-        last_index = 0
+<input
+type="range"
+min="500"
+max="5000"
+step="500"
+value="2000"
+id="speedSlider"
+/>
 
-        while True:
-            events = get_events()
+<span id="speedValue">2.0s</span>
+</div>
 
-            if len(events) > last_index:
+<div id="stats">
+<span class="stat executed">Executed: <span id="executedCount">0</span></span>
+<span class="stat blocked">Blocked: <span id="blockedCount">0</span></span>
+</div>
 
-                event = events[last_index]
-                last_index += 1
+<div id="result"></div>
 
-                yield f"data: {json.dumps(event)}\n\n"
+<h2>Active Governance Policies</h2>
 
-            time.sleep(1)
+<div id="policy">
+<div class="policy-allowed">✓ READ operations allowed</div>
+<div class="policy-allowed">✓ UPDATE operations allowed</div>
+<div class="policy-blocked">✗ DELETE requires escalation</div>
+<div class="policy-blocked">✗ DROP operations forbidden</div>
+</div>
 
-    return Response(event_stream(), mimetype="text/event-stream")
+<div id="alerts"></div>
 
+<h2>Live Governance Events</h2>
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+<div id="events"></div>
+
+<script>
+
+let autoInterval = null
+let executedCount = 0
+let blockedCount = 0
+let speed = 2000
+
+const eventBox = document.getElementById("events")
+
+async function runDemo() {
+
+    const response = await fetch("/run")
+    const data = await response.json()
+
+    document.getElementById("result").innerHTML =
+        "<pre>" + JSON.stringify(data, null, 2) + "</pre>"
+}
+
+function startAuto() {
+
+    if (autoInterval) return
+
+    autoInterval = setInterval(runDemo, speed)
+}
+
+function stopAuto() {
+
+    clearInterval(autoInterval)
+    autoInterval = null
+}
+
+const slider = document.getElementById("speedSlider")
+const speedDisplay = document.getElementById("speedValue")
+
+slider.oninput = function() {
+
+    speed = parseInt(this.value)
+
+    speedDisplay.innerText = (speed / 1000).toFixed(1) + "s"
+
+    if (autoInterval) {
+
+        stopAuto()
+        autoInterval = setInterval(runDemo, speed)
+    }
+}
+
+const source = new EventSource("/events")
+
+source.onmessage = function(event) {
+
+    const data = JSON.parse(event.data)
+
+    const line = document.createElement("div")
+
+    if (data.status === "BLOCKED") {
+
+        line.className = "event-line event-blocked"
+
+        blockedCount++
+        document.getElementById("blockedCount").innerText = blockedCount
+
+        const alertBox = document.getElementById("alerts")
+
+        alertBox.innerText =
+            "⚠️ High-risk action blocked: " +
+            data.action +
+            " " +
+            data.table
+
+        setTimeout(() => {
+            alertBox.innerText = ""
+        }, 4000)
+
+    } else {
+
+        line.className = "event-line event-executed"
+
+        executedCount++
+        document.getElementById("executedCount").innerText = executedCount
+    }
+
+    line.innerText =
+        data.timestamp +
+        " | " +
+        data.status +
+        " | " +
+        data.action +
+        " " +
+        data.table
+
+    eventBox.prepend(line)
+
+    // Prevent infinite event growth
+    if (eventBox.children.length > 100) {
+        eventBox.removeChild(eventBox.lastChild)
+    }
+}
+
+</script>
+
+</body>
+</html>
