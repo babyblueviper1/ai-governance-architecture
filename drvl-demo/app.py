@@ -3,8 +3,20 @@ from agent import Agent
 from database import Database
 from drvl import DRVL
 from audit import log_event
+from event_bus import publish, subscribe
+from flask import Flask, jsonify, render_template
+
+from agent import Agent
+from database import Database
+from drvl import DRVL
+
+from event_bus import publish, subscribe
+from audit import handle_event
 
 app = Flask(__name__)
+
+# register event subscriber
+subscribe(handle_event)
 
 environment = "production"
 
@@ -27,7 +39,12 @@ def run_demo():
 
     if not allowed:
 
-        log_event(action, table, "BLOCKED", message)
+        publish({
+            "action": action,
+            "table": table,
+            "status": "BLOCKED",
+            "message": message
+        })
 
         return jsonify({
             "action": action,
@@ -38,7 +55,12 @@ def run_demo():
 
     result = db.execute(action, table)
 
-    log_event(action, table, "EXECUTED", "Policy allowed")
+    publish({
+        "action": action,
+        "table": table,
+        "status": "EXECUTED",
+        "message": "Policy allowed"
+    })
 
     return jsonify({
         "action": action,
@@ -46,7 +68,7 @@ def run_demo():
         "status": "executed",
         "result": result
     })
-    
+
 
 @app.route("/logs")
 def view_logs():
@@ -58,7 +80,6 @@ def view_logs():
         logs = "No events yet."
 
     return f"<pre>{logs}</pre>"
-
 
 
 if __name__ == "__main__":
