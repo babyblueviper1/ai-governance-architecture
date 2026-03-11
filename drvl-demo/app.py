@@ -54,9 +54,18 @@ def run_demo():
     result = None
     req_id = None
 
+    # Prepare base event (used for publish + response)
+    event = {
+        "action": action,
+        "table": table,
+        "timestamp": time.strftime("%H:%M:%S"),
+        "request_id": req_id
+    }
+
     if needs_escalation:
         escalation_counter += 1
         req_id = escalation_counter
+        event["request_id"] = req_id
 
         # Demo: probabilistic auto-decision for escalations (DELETE)
         # ~35% auto-approve, ~35% auto-deny, ~30% pending/manual
@@ -64,30 +73,16 @@ def run_demo():
         if rand < 0.35:
             status = "APPROVED"
             result = db.execute(action, table)
-            event = {
-                "action": action,
-                "table": table,
+            event.update({
                 "status": "EXECUTED",
-                "message": "Auto-approved (demo)",
-                "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S"),
-                "policy": policy_hash
-            }
-            event["signature"] = drvl.sign_event(event)
-            publish(event)
+                "message": "Auto-approved (demo)"
+            })
         elif rand < 0.70:
             status = "DENIED"
-            event = {
-                "action": action,
-                "table": table,
+            event.update({
                 "status": "BLOCKED",
-                "message": "Auto-denied (demo)",
-                "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S"),
-                "policy": policy_hash
-            }
-            event["signature"] = drvl.sign_event(event)
-            publish(event)
+                "message": "Auto-denied (demo)"
+            })
             result = None
         else:
             status = "PENDING"
@@ -97,18 +92,10 @@ def run_demo():
                 "table": table,
                 "status": status
             })
-            # For pending, we still publish a base event (no execution yet)
-            event = {
-                "action": action,
-                "table": table,
+            event.update({
                 "status": "PENDING",
-                "message": "Escalation pending",
-                "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S"),
-                "policy": policy_hash
-            }
-            event["signature"] = drvl.sign_event(event)
-            publish(event)
+                "message": "Escalation pending"
+            })
     else:
         # Non-escalation path: allowed or forbidden (e.g. DROP)
         if allowed:
@@ -118,20 +105,16 @@ def run_demo():
             status = "BLOCKED"
             result = None
 
-        # Publish the final event
-        event = {
-            "action": action,
-            "table": table,
+        event.update({
             "status": status,
-            "message": message,
-            "request_id": req_id,
-            "timestamp": time.strftime("%H:%M:%S"),
-            "policy": policy_hash
-        }
-        event["signature"] = drvl.sign_event(event)
-        publish(event)
+            "message": message
+        })
 
-    # Return the same event data to frontend
+    # Final log & signed publish
+    log_event(action, table, status, message)
+    publish_signed_event(event)
+
+    # Return consistent data
     return jsonify({
         "action": action,
         "table": table,
@@ -148,7 +131,7 @@ def run_demo():
             } for req in escalation_queue
         ],
         "llm_error": llm_error,
-        "policy": policy_hash,
+        "policy": drvl.policy_hash,
         "signature": event["signature"]
     })
 
@@ -160,14 +143,15 @@ def approve_request(req_id):
             req["status"] = "APPROVED"
             result = db.execute(req["action"], req["table"])
 
-            publish_signed_event({
+            event = {
                 "action": req["action"],
                 "table": req["table"],
                 "status": "EXECUTED",
                 "message": "Escalation manually approved",
                 "request_id": req_id,
                 "timestamp": time.strftime("%H:%M:%S")
-            })
+            }
+            publish_signed_event(event)
 
             escalation_queue.remove(req)
 
@@ -193,14 +177,15 @@ def deny_request(req_id):
         if req["id"] == req_id and req["status"] == "PENDING":
             req["status"] = "DENIED"
 
-            publish_signed_event({
+            event = {
                 "action": req["action"],
                 "table": req["table"],
                 "status": "BLOCKED",
                 "message": "Escalation denied by operator",
                 "request_id": req_id,
                 "timestamp": time.strftime("%H:%M:%S")
-            })
+            }
+            publish_signed_event(event)
 
             escalation_queue.remove(req)
 
@@ -232,6 +217,11 @@ def get_status():
             } for req in escalation_queue
         ]
     })
+
+
+@app.route("/policy_hash")
+def get_policy_hash():
+    return jsonify({"policy_hash": drvl.policy_hash})
 
 
 @app.route("/logs")
