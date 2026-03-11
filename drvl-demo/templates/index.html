@@ -219,7 +219,7 @@
             <option value="google">Google Gemini</option>
         </select>
         <input type="password" id="api-key-input" placeholder="Your API key" style="width: 260px; margin: 0 8px;">
-        <button onclick="submitApiKey()">Apply Key</button>
+        <button id="apply-key-btn" onclick="submitApiKey()">Apply Key</button>
         <p style="font-size: 0.85rem; color: #666; margin-top: 12px;">
             Your key is sent once to the server and never stored or logged. Only used for this session.
         </p>
@@ -300,10 +300,16 @@ document.getElementById("use-llm-toggle").onchange = function() {
 function submitApiKey() {
     const key = document.getElementById("api-key-input").value.trim();
     const provider = document.getElementById("llm-provider").value;
+    const btn = document.getElementById("apply-key-btn");
+
     if (!key) {
         alert("Please enter a valid API key");
         return;
     }
+
+    // Disable button during request to prevent double-click
+    btn.disabled = true;
+    btn.textContent = "Applying...";
 
     fetch("/set_llm_key", {
         method: "POST",
@@ -312,14 +318,22 @@ function submitApiKey() {
     })
     .then(r => r.json())
     .then(data => {
+        btn.disabled = false;
+        btn.textContent = "Apply Key";
+
         if (data.status === "ok") {
             document.getElementById("llm-status").textContent = "✓ LLM mode active — real model will be used for future actions";
             document.getElementById("llm-status").style.color = "#198754";
+            document.getElementById("llm-error").textContent = "";
         } else {
+            document.getElementById("llm-error").textContent = data.error || "Failed to activate LLM mode";
             alert("Error: " + (data.error || "Failed to activate LLM mode"));
         }
     })
     .catch(err => {
+        btn.disabled = false;
+        btn.textContent = "Apply Key";
+        document.getElementById("llm-error").textContent = "Connection error — could not reach server";
         alert("Connection error — could not set API key");
         console.error(err);
     });
