@@ -1,231 +1,371 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>DRVL AI Governance Demo</title>
+    <meta charset="UTF-8">
+    <title>DRVL Governance Demo — Probabilistic Agent</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 40px;
-            background: #f4f6f8;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f8f9fa;
+            color: #212529;
+            margin: 0;
+            padding: 30px 20px;
+            line-height: 1.5;
         }
-        h1 { margin-bottom: 5px; }
-        p { color: #555; }
+        h1 { margin: 0 0 8px; font-size: 2.1rem; }
+        .subtitle { color: #6c757d; margin-bottom: 24px; }
 
+        .controls {
+            margin: 24px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+        }
         button {
-            padding: 12px 25px;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
+            padding: 10px 22px;
+            font-size: 15px;
+            font-weight: 500;
             border: none;
             border-radius: 6px;
+            cursor: pointer;
+            color: white;
         }
+        .btn-run    { background: #0d6efd; }
+        .btn-auto   { background: #343a40; }
+        .btn-stop   { background: #dc3545; }
+        .btn-approve { background: #198754; font-size: 13px; padding: 6px 14px; }
 
-        .run-btn { background: #2d7ef7; color: white; }
-        .auto-btn { background: #222; color: white; }
-        .stop-btn { background: #cc3b3b; color: white; }
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        input[type="range"] { width: 180px; }
 
-        #controls { margin-top: 10px; }
-        #stats { margin-top: 20px; font-size: 18px; }
-        .stat { margin: 0 15px; }
-        .executed { color: #1a7f37; }
-        .blocked { color: #c62828; }
-        .approved { color: #1a7f37; font-weight: bold; }
-        .pending { color: #f2a900; font-weight: bold; }
+        #stats {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            font-size: 1.1rem;
+            margin: 24px 0;
+            font-weight: 600;
+        }
+        .stat-executed { color: #198754; }
+        .stat-blocked  { color: #dc3545; }
+        .stat-approved { color: #198754; }
 
-        #policy, #decision, #events, #escalationQueue, #escalationStats {
-            width: 700px;
-            margin: 20px auto;
-            text-align: left;
+        .panel {
+            max-width: 780px;
+            margin: 28px auto;
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
-            font-family: monospace;
-            overflow-y: auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 24px;
         }
 
-        #events { height: 250px; }
-        .event-line { padding: 4px 0; border-bottom: 1px solid #eee; }
+        #policy div {
+            margin: 10px 0;
+            font-size: 1.05rem;
+        }
+        .allowed  { color: #198754; }
+        .restricted { color: #dc3545; }
 
         #alerts {
-            margin: 15px auto;
-            width: 700px;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 16px;
-            color: #c62828;
-            background: #ffebee;
+            min-height: 28px;
+            padding: 12px;
+            margin: 16px auto;
+            max-width: 780px;
             border-radius: 6px;
-            min-height: 24px;
+            font-weight: 600;
+            background: #f8d7da;
+            color: #721c24;
+            text-align: center;
         }
+
+        #decision {
+            font-size: 1.05rem;
+        }
+        #decision b { color: #343a40; }
+
+        .event-line {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+        #events {
+            max-height: 320px;
+            overflow-y: auto;
+            background: #f1f3f5;
+            border-radius: 8px;
+            padding: 8px;
+        }
+        .event-executed { background: #d4edda; color: #155724; }
+        .event-blocked  { background: #f8d7da; color: #721c24; }
+        .event-pending  { background: #fff3cd; color: #856404; }
+        .event-approved { background: #cce5ff; color: #004085; font-weight: 600; }
+
+        .queue-item {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .queue-item.pending  { background: #fff3cd; border-color: #ffeeba; }
+        .queue-item.approved { background: #d4edda; border-color: #c3e6cb; font-weight: 500; }
+        .queue-item.denied   { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+
+        .stats-row { margin-bottom: 16px; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
-<h1>Distributed Runtime Verification Layer</h1>
-<p>Monitoring AI actions under DRVL governance</p>
+<h1>DRVL Governance Demo</h1>
+<div class="subtitle">Deterministic runtime governance of a probabilistic AI agent</div>
 
-<button class="run-btn" onclick="runDemo()">Run AI Action</button>
-<button class="auto-btn" onclick="startAuto()">Start Autonomous Mode</button>
-<button class="stop-btn" onclick="stopAuto()">Stop Autonomous Mode</button>
+<div class="controls">
+    <button class="btn-run"  onclick="triggerAction()">Run AI Action</button>
+    <button class="btn-auto" onclick="startAuto()">Start Autonomous Mode</button>
+    <button class="btn-stop" onclick="stopAuto()">Stop Autonomous Mode</button>
 
-<div id="controls">
-    <label>AI Speed:</label>
-    <input type="range" min="500" max="5000" step="500" value="2000" id="speedSlider">
-    <span id="speedValue">2.0s</span>
+    <div class="speed-control">
+        <label>Interval:</label>
+        <input type="range" min="600" max="5000" step="300" value="1800" id="speedSlider">
+        <span id="speedValue">1.8 s</span>
+    </div>
 </div>
 
 <div id="stats">
-    <span class="stat executed">Executed: <span id="executedCount">0</span></span>
-    <span class="stat blocked">Blocked: <span id="blockedCount">0</span></span>
-    <span class="stat approved">Approved: <span id="approvedCount">0</span></span>
+    <span class="stat-executed">Executed: <span id="executedCount">0</span></span>
+    <span class="stat-blocked">Blocked: <span id="blockedCount">0</span></span>
+    <span class="stat-approved">Approved: <span id="approvedCount">0</span></span>
 </div>
 
-<h2>Active Governance Policies</h2>
-<div id="policy">
-    <div class="executed">✓ READ allowed</div>
-    <div class="executed">✓ UPDATE allowed</div>
-    <div class="blocked">✗ DELETE requires escalation</div>
-    <div class="blocked">✗ DROP forbidden</div>
+<div class="panel">
+    <h2>Active Governance Policies</h2>
+    <div class="allowed">✓ READ   — Allowed</div>
+    <div class="allowed">✓ UPDATE — Allowed</div>
+    <div class="restricted">✗ DELETE — Requires escalation</div>
+    <div class="restricted">✗ DROP   — Forbidden</div>
 </div>
 
 <div id="alerts"></div>
 
-<h2>Policy Decision</h2>
-<div id="decision">
-    <div><b>AI Action:</b> <span id="decisionAction">—</span></div>
-    <div><b>Policy Rule:</b> <span id="decisionRule">—</span></div>
-    <div><b>Decision:</b> <span id="decisionResult">—</span></div>
+<div class="panel">
+    <h2>Latest Policy Decision</h2>
+    <div id="decision">
+        <div><b>Action:</b> <span id="decAction">—</span></div>
+        <div><b>Rule / Status:</b> <span id="decRule">—</span></div>
+        <div><b>Result:</b> <span id="decResult">—</span></div>
+    </div>
 </div>
 
-<h2>Escalation Requests</h2>
-<p><i>Note: Every 3rd request is automatically approved for demo purposes.</i></p>
-<div id="escalationStats">
-    Total Escalation Requests: <span id="totalEscalations">0</span>
+<div class="panel">
+    <h2>Escalation Queue</h2>
+    <div class="stats-row">
+        Total escalations: <b><span id="totalEscalations">0</span></b>  
+        Pending now: <b><span id="pendingCount">0</span></b>
+    </div>
+    <div id="escalationQueue"></div>
 </div>
-<div id="escalationQueue"></div>
 
-<h2>Live Governance Events</h2>
-<div id="events"></div>
+<div class="panel">
+    <h2>Live Governance Events</h2>
+    <div id="events"></div>
+</div>
 
 <script>
 let autoInterval = null;
-let speed = 2000;
+let speed = 1800;
 
-let executedCount = 0;
-let blockedCount = 0;
-let approvedCount = 0;
-let escalation_queue = [];
-let eventCounter = 0;
+const els = {
+    executed: document.getElementById("executedCount"),
+    blocked:  document.getElementById("blockedCount"),
+    approved: document.getElementById("approvedCount"),
+    totalEsc: document.getElementById("totalEscalations"),
+    pending:  document.getElementById("pendingCount"),
+    alerts:   document.getElementById("alerts"),
+    events:   document.getElementById("events"),
+    dec: {
+        action: document.getElementById("decAction"),
+        rule:   document.getElementById("decRule"),
+        result: document.getElementById("decResult")
+    }
+};
 
-const eventBox = document.getElementById("events");
-const decisionAction = document.getElementById("decisionAction");
-const decisionRule = document.getElementById("decisionRule");
-const decisionResult = document.getElementById("decisionResult");
-const alertBox = document.getElementById("alerts");
+const slider = document.getElementById("speedSlider");
+const speedVal = document.getElementById("speedValue");
 
-function runDemo() {
+slider.oninput = () => {
+    speed = parseInt(slider.value);
+    speedVal.textContent = (speed / 1000).toFixed(1) + " s";
+    if (autoInterval) {
+        stopAuto();
+        startAuto();
+    }
+};
+
+function triggerAction() {
     fetch("/run")
         .then(r => r.json())
-        .then(data => {
-            if(!data.timestamp) data.timestamp = new Date().toLocaleTimeString();
-
-            // Simulate every other pending request being denied
-            if(data.status.toUpperCase() === "PENDING") {
-                eventCounter++;
-                if(eventCounter % 2 === 0) {
-                    data.status = "BLOCKED";
-                    data.message = "Denied for demo";
-                    blockedCount++;
-                    document.getElementById("blockedCount").innerText = blockedCount;
-                }
-            }
-
-            updateDashboard(data);
-
-            if(data.status.toUpperCase() === "PENDING" || data.status.toUpperCase() === "APPROVED") {
-                escalation_queue.push(data);
-            }
-
-            updateEscalationQueue();
-        });
+        .then(handleResponse)
+        .catch(err => console.error("Run failed:", err));
 }
 
 function startAuto() {
-    if(autoInterval) return;
-    autoInterval = setInterval(runDemo, speed);
+    if (autoInterval) return;
+    autoInterval = setInterval(triggerAction, speed);
 }
 
 function stopAuto() {
-    clearInterval(autoInterval);
-    autoInterval = null;
-}
-
-const slider = document.getElementById("speedSlider");
-const speedDisplay = document.getElementById("speedValue");
-slider.oninput = function() {
-    speed = parseInt(this.value);
-    speedDisplay.innerText = (speed / 1000).toFixed(1) + "s";
-    if(autoInterval) {
-        stopAuto();
-        autoInterval = setInterval(runDemo, speed);
+    if (autoInterval) {
+        clearInterval(autoInterval);
+        autoInterval = null;
     }
 }
 
-function updateDashboard(data) {
-    const actionText = data.action + " " + data.table;
-    decisionAction.innerText = actionText;
+function handleResponse(data) {
+    if (!data || !data.action) return;
 
-    if(data.status.toUpperCase() === "BLOCKED") {
-        decisionRule.innerText = "Restricted operation";
-        decisionResult.innerText = "BLOCKED by DRVL policy";
-        addEventLine(data, "event-blocked");
-    } else if(data.status.toUpperCase() === "PENDING") {
-        decisionRule.innerText = "Pending escalation";
-        decisionResult.innerText = "Awaiting approval";
-        addEventLine(data, "event-pending");
-    } else if(data.status.toUpperCase() === "APPROVED") {
-        decisionRule.innerText = "Escalation approved";
-        decisionResult.innerText = "EXECUTED after approval";
-        addEventLine(data, "event-approved");
-    } else {
-        decisionRule.innerText = "Allowed operation";
-        decisionResult.innerText = "EXECUTED under policy";
-        addEventLine(data, "event-executed");
+    const ts = data.timestamp || new Date().toLocaleTimeString([], {hour12: false});
+    const actionStr = `${data.action} ${data.table || ''}`.trim();
+
+    els.dec.action.textContent = actionStr;
+    els.dec.result.textContent = data.status;
+
+    let eventClass = "";
+    let alertText = "";
+    let incrementExecuted = false;
+    let incrementBlocked = false;
+    let incrementApproved = false;
+
+    switch (data.status) {
+        case "EXECUTED":
+            els.dec.rule.textContent = data.message || "Allowed by policy";
+            eventClass = "event-executed";
+            incrementExecuted = true;
+            break;
+        case "BLOCKED":
+            els.dec.rule.textContent = data.message || "Forbidden / restricted";
+            eventClass = "event-blocked";
+            incrementBlocked = true;
+            alertText = `Blocked: ${actionStr}`;
+            break;
+        case "PENDING":
+            els.dec.rule.textContent = "Escalation required";
+            eventClass = "event-pending";
+            alertText = `Pending escalation: ${actionStr}`;
+            break;
+        case "APPROVED":
+            els.dec.rule.textContent = data.message || "Escalation approved";
+            eventClass = "event-approved";
+            incrementApproved = true;
+            break;
+        default:
+            eventClass = "event-pending";
     }
-}
 
-function addEventLine(data, className) {
+    // Update counters
+    if (incrementExecuted) els.executed.textContent = Number(els.executed.textContent) + 1;
+    if (incrementBlocked)  els.blocked.textContent  = Number(els.blocked.textContent) + 1;
+    if (incrementApproved) els.approved.textContent = Number(els.approved.textContent) + 1;
+
+    // Add event line with timestamp
     const line = document.createElement("div");
-    line.className = "event-line " + className;
-    line.innerText = `${data.timestamp} | ${data.status} | ${data.action} ${data.table}`;
-    eventBox.prepend(line);
-    if(eventBox.children.length > 100) eventBox.removeChild(eventBox.lastChild);
+    line.className = `event-line ${eventClass}`;
+    line.innerHTML = `<span style="opacity:0.7">[${ts}]</span> ${data.status.padEnd(10)} ${actionStr}`;
+    els.events.prepend(line);
+    if (els.events.children.length > 200) els.events.removeChild(els.events.lastChild);
+
+    if (alertText) {
+        els.alerts.textContent = alertText;
+        setTimeout(() => els.alerts.textContent = "", 4800);
+    }
+
+    // Update queue if provided
+    if (data.escalation_queue) {
+        renderQueue(data.escalation_queue);
+    }
 }
 
-function updateEscalationQueue() {
-    const queueDiv = document.getElementById("escalationQueue");
-    const totalSpan = document.getElementById("totalEscalations");
-    totalSpan.innerText = escalation_queue.length;
-    queueDiv.innerHTML = "";
-    escalation_queue.forEach(req => {
+function renderQueue(queue) {
+    const container = document.getElementById("escalationQueue");
+    container.innerHTML = "";
+    let pendingCount = 0;
+
+    queue.forEach(item => {
         const div = document.createElement("div");
-        div.innerHTML = `ID: ${req.request_id} | ${req.action} ${req.table} | Status: ${req.status}`;
-        if(req.status === "PENDING") {
+        div.className = `queue-item ${item.status.toLowerCase()}`;
+
+        let statusDisplay = item.status;
+        if (item.status === "APPROVED") statusDisplay = "Approved";
+        if (item.status === "PENDING") statusDisplay = "Pending";
+
+        div.innerHTML = `
+            <div>
+                <b>ID ${item.request_id}</b> — 
+                ${item.action} ${item.table}
+                <span style="margin-left:16px; opacity:0.8;">${statusDisplay}</span>
+            </div>
+        `;
+
+        if (item.status === "PENDING") {
+            pendingCount++;
             const btn = document.createElement("button");
-            btn.innerText = "Approve";
-            btn.onclick = () => {
-                fetch(`/approve/${req.request_id}`).then(r => r.json()).then(data => {
-                    req.status = "APPROVED";
-                    updateEscalationQueue();
-                });
-            };
+            btn.className = "btn-approve";
+            btn.textContent = "Approve";
+            btn.onclick = () => approve(item.request_id);
             div.appendChild(btn);
         }
-        queueDiv.appendChild(div);
+
+        container.appendChild(div);
     });
+
+    els.totalEsc.textContent = queue.length;
+    els.pending.textContent = pendingCount;
 }
+
+function approve(requestId) {
+    fetch(`/approve/${requestId}`, { method: "POST" })
+        .then(r => r.json())
+        .then(data => {
+            if (data.escalation_queue) {
+                renderQueue(data.escalation_queue);
+            }
+        })
+        .catch(err => console.error("Approve failed:", err));
+}
+
+// Real-time updates via SSE
+const evtSource = new EventSource("/events");
+evtSource.onmessage = function(event) {
+    try {
+        const data = JSON.parse(event.data);
+        handleResponse(data);
+    } catch (e) {
+        console.error("SSE parse error:", e);
+    }
+};
+evtSource.onerror = function() {
+    console.warn("SSE connection lost – reconnecting...");
+};
+
+// Initial load
+window.addEventListener("load", () => {
+    fetch("/status")
+        .then(r => r.json())
+        .then(data => {
+            if (data.escalation_queue) renderQueue(data.escalation_queue);
+        })
+        .catch(() => {});
+});
 </script>
 </body>
 </html>
