@@ -2,10 +2,10 @@ from flask import Flask, jsonify, render_template, Response
 import json, time
 
 from agent import ProbabilisticAgent
-from database import Database
 from drvl import DRVL
-from event_bus import publish, subscribe, get_events
 from audit import handle_event, log_event
+from event_bus import publish, subscribe, get_events
+from database import Database
 
 app = Flask(__name__)
 subscribe(handle_event)
@@ -15,39 +15,78 @@ agent = ProbabilisticAgent()
 db = Database()
 drvl = DRVL()
 
-# -----------------------------
-# Routes
-# -----------------------------
+# Escalation tracking
+escalation_queue = []
+escalation_counter = 0
+
 @app.route("/")
 def home():
     return render_template("index.html")
 
 @app.route("/run")
 def run_demo():
+    global escalation_counter
     action, table = agent.generate_action()
-    allowed, message = drvl.verify(action, table, environment)
-    status = "EXECUTED" if allowed else "BLOCKED"
+    allowed, needs_escalation, message = drvl.verify(action, table, environment)
 
-    # Log & publish event
+    status = ""
+    result = None
+    req_id = None
+
+    if needs_escalation:
+        escalation_counter += 1
+        req_id = escalation_counter
+        # auto-approve every 3rd request
+        status = "APPROVED" if escalation_counter % 3 == 0 else "PENDING"
+
+        escalation_queue.append({
+            "id": req_id,
+            "action": action,
+            "table": table,
+            "status": status
+        })
+
+        if status == "APPROVED":
+            result = db.execute(action, table)
+
+    else:
+        status = "EXECUTED"
+        result = db.execute(action, table)
+
+    # log and publish
     log_event(action, table, status, message)
     publish({
         "action": action,
         "table": table,
         "status": status,
         "message": message,
-        "timestamp": db.get_timestamp()
+        "request_id": req_id
     })
-
-    # Only execute if allowed
-    result = db.execute(action, table) if allowed else None
 
     return jsonify({
         "action": action,
         "table": table,
-        "status": status,
+        "status": status.lower(),
         "message": message,
-        "result": result
+        "result": result,
+        "request_id": req_id
     })
+
+@app.route("/approve/<int:req_id>")
+def approve_request(req_id):
+    for req in escalation_queue:
+        if req["id"] == req_id:
+            req["status"] = "APPROVED"
+            db.execute(req["action"], req["table"])
+            publish({
+                "action": req["action"],
+                "table": req["table"],
+                "status": "EXECUTED",
+                "message": "Escalation approved"
+            })
+            escalation_queue.remove(req)
+            return jsonify({"status": "approved", "id": req_id})
+    return jsonify({"status": "not found", "id": req_id})
 
 @app.route("/logs")
 def view_logs():
@@ -71,8 +110,5 @@ def stream_events():
             time.sleep(1)
     return Response(event_stream(), mimetype="text/event-stream")
 
-# -----------------------------
-# Run
-# -----------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
