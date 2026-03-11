@@ -4,15 +4,21 @@
 <title>DRVL AI Governance Demo</title>
 
 <style>
+
 body {
     font-family: Arial, sans-serif;
     text-align: center;
-    margin-top: 50px;
+    margin-top: 40px;
     background: #f4f6f8;
 }
 
-h1 { margin-bottom: 5px; }
-p { color: #555; }
+h1 {
+    margin-bottom: 5px;
+}
+
+p {
+    color: #555;
+}
 
 button {
     padding: 12px 25px;
@@ -21,18 +27,30 @@ button {
     cursor: pointer;
     border: none;
     border-radius: 6px;
+    transition: opacity 0.2s;
 }
+
+button:hover {
+    opacity: 0.9;
+}
+
 .run-btn { background: #2d7ef7; color: white; }
 .auto-btn { background: #222; color: white; }
 .stop-btn { background: #cc3b3b; color: white; }
 
-#controls { margin-top: 10px; }
+#controls {
+    margin-top: 10px;
+}
 
 #stats {
     margin-top: 20px;
     font-size: 18px;
 }
-.stat { margin: 0 15px; }
+
+.stat {
+    margin: 0 15px;
+}
+
 .executed { color: #1a7f37; }
 .blocked { color: #c62828; }
 
@@ -46,8 +64,26 @@ button {
     box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
     font-family: monospace;
 }
-.policy-allowed { color: #1a7f37; }
-.policy-blocked { color: #c62828; }
+
+.policy-allowed {
+    color: #1a7f37;
+}
+
+.policy-blocked {
+    color: #c62828;
+}
+
+#alerts {
+    margin: 15px auto;
+    width: 500px;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    color: #c62828;
+    background: #ffebee;
+    border-radius: 6px;
+    min-height: 24px;
+}
 
 #events {
     margin: 30px auto;
@@ -56,24 +92,24 @@ button {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    height: 300px;
-    overflow-y: scroll;
+    height: 320px;
+    overflow-y: auto;
     box-shadow: 0px 3px 10px rgba(0,0,0,0.1);
     font-family: monospace;
 }
-.event-line { padding: 4px 0; border-bottom: 1px solid #eee; }
+
+.event-line {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+}
+
 .event-executed { color: #1a7f37; }
 .event-blocked { color: #c62828; font-weight: bold; }
 
-#alerts {
-    color: #c62828;
-    font-weight: bold;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: background 0.3s;
+#result {
+    margin-top: 15px;
 }
 
-#result { margin-top: 15px; }
 </style>
 </head>
 
@@ -88,7 +124,16 @@ button {
 
 <div id="controls">
 <label>AI Speed:</label>
-<input type="range" min="500" max="5000" step="500" value="2000" id="speedSlider"/>
+
+<input
+type="range"
+min="500"
+max="5000"
+step="500"
+value="2000"
+id="speedSlider"
+/>
+
 <span id="speedValue">2.0s</span>
 </div>
 
@@ -100,6 +145,7 @@ button {
 <div id="result"></div>
 
 <h2>Active Governance Policies</h2>
+
 <div id="policy">
 <div class="policy-allowed">✓ READ operations allowed</div>
 <div class="policy-allowed">✓ UPDATE operations allowed</div>
@@ -110,67 +156,89 @@ button {
 <div id="alerts"></div>
 
 <h2>Live Governance Events</h2>
+
 <div id="events"></div>
 
 <script>
-let autoInterval = null;
-let executedCount = 0;
-let blockedCount = 0;
-let speed = 2000;
 
-const eventBox = document.getElementById("events");
+let autoInterval = null
+let executedCount = 0
+let blockedCount = 0
+let speed = 2000
+
+const eventBox = document.getElementById("events")
 
 async function runDemo() {
-    const response = await fetch("/run");
-    const data = await response.json();
+
+    const response = await fetch("/run")
+    const data = await response.json()
+
     document.getElementById("result").innerHTML =
-        "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+        "<pre>" + JSON.stringify(data, null, 2) + "</pre>"
 }
 
 function startAuto() {
-    if (autoInterval) return;
-    autoInterval = setInterval(runDemo, speed);
+
+    if (autoInterval) return
+
+    autoInterval = setInterval(runDemo, speed)
 }
 
 function stopAuto() {
-    clearInterval(autoInterval);
-    autoInterval = null;
+
+    clearInterval(autoInterval)
+    autoInterval = null
 }
 
-const slider = document.getElementById("speedSlider");
-const speedDisplay = document.getElementById("speedValue");
+const slider = document.getElementById("speedSlider")
+const speedDisplay = document.getElementById("speedValue")
 
 slider.oninput = function() {
-    speed = parseInt(this.value);
-    speedDisplay.innerText = (speed / 1000).toFixed(1) + "s";
+
+    speed = parseInt(this.value)
+
+    speedDisplay.innerText = (speed / 1000).toFixed(1) + "s"
+
     if (autoInterval) {
-        stopAuto();
-        autoInterval = setInterval(runDemo, speed);
+
+        stopAuto()
+        autoInterval = setInterval(runDemo, speed)
     }
 }
 
-const source = new EventSource("/events");
+const source = new EventSource("/events")
 
 source.onmessage = function(event) {
-    const data = JSON.parse(event.data);
-    const line = document.createElement("div");
 
-    const alertBox = document.getElementById("alerts");
+    const data = JSON.parse(event.data)
+
+    const line = document.createElement("div")
 
     if (data.status === "BLOCKED") {
-        line.className = "event-line event-blocked";
-        blockedCount++;
-        document.getElementById("blockedCount").innerText = blockedCount;
 
-        // High-risk alert flash
-        alertBox.innerText = "⚠️ High-risk action blocked: " + data.action + " " + data.table;
-        alertBox.style.background = "#ffebee";
-        setTimeout(() => alertBox.innerText = "", 4000);
-        setTimeout(() => alertBox.style.background = "", 400);
+        line.className = "event-line event-blocked"
+
+        blockedCount++
+        document.getElementById("blockedCount").innerText = blockedCount
+
+        const alertBox = document.getElementById("alerts")
+
+        alertBox.innerText =
+            "⚠️ High-risk action blocked: " +
+            data.action +
+            " " +
+            data.table
+
+        setTimeout(() => {
+            alertBox.innerText = ""
+        }, 4000)
+
     } else {
-        line.className = "event-line event-executed";
-        executedCount++;
-        document.getElementById("executedCount").innerText = executedCount;
+
+        line.className = "event-line event-executed"
+
+        executedCount++
+        document.getElementById("executedCount").innerText = executedCount
     }
 
     line.innerText =
@@ -180,10 +248,16 @@ source.onmessage = function(event) {
         " | " +
         data.action +
         " " +
-        data.table;
+        data.table
 
-    eventBox.prepend(line);
+    eventBox.prepend(line)
+
+    // Prevent infinite event growth
+    if (eventBox.children.length > 100) {
+        eventBox.removeChild(eventBox.lastChild)
+    }
 }
+
 </script>
 
 </body>
