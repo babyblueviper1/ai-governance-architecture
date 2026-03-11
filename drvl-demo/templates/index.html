@@ -493,11 +493,10 @@ function startAuto() {
 
     autoInterval = setInterval(triggerAction, speed);
 
-    // Quick success feedback
     setTimeout(() => {
         btn.classList.remove("loading");
         btn.disabled = false;
-        btn.textContent = "Running Autonomous... (click Stop to end)";
+        btn.textContent = "Running Autonomous... (click Stop)";
     }, 600);
 }
 
@@ -591,8 +590,8 @@ function handleResponse(data) {
         ${data.status.padEnd(10)} 
         ${actionStr} 
         <span style="color:#6c757d; font-size:0.9rem;">
-            | policy=<code>${data.policy || '?'}</code> 
-            | sig=<code>${data.signature || '?'}</code>
+            | policy=<code>${data.policy || '—'}</code> 
+            | sig=<code>${data.signature || '—'}</code>
         </span>
     `;
     els.events.prepend(line);
