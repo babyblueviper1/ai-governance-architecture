@@ -2,6 +2,8 @@ from flask import Flask, jsonify, render_template, Response, request
 import json
 import time
 import random
+import hashlib
+import hmac
 
 from agent import ProbabilisticAgent
 from drvl import DRVL
@@ -39,7 +41,7 @@ def run_demo():
         llm_error = agent.last_llm_error
         agent.last_llm_error = None  # clear after use
 
-    allowed, needs_escalation, message = drvl.verify(action, table, environment)
+    allowed, needs_escalation, message, policy_hash = drvl.verify(action, table, environment)
 
     status = ""
     result = None
@@ -55,24 +57,30 @@ def run_demo():
         if rand < 0.35:
             status = "APPROVED"
             result = db.execute(action, table)
-            publish({
+            publish_event = {
                 "action": action,
                 "table": table,
                 "status": "EXECUTED",
                 "message": "Auto-approved (demo)",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S")
-            })
+                "timestamp": time.strftime("%H:%M:%S"),
+                "policy": policy_hash
+            }
+            publish_event["signature"] = drvl.sign_event(publish_event)
+            publish(publish_event)
         elif rand < 0.70:
             status = "DENIED"
-            publish({
+            publish_event = {
                 "action": action,
                 "table": table,
                 "status": "BLOCKED",
                 "message": "Auto-denied (demo)",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S")
-            })
+                "timestamp": time.strftime("%H:%M:%S"),
+                "policy": policy_hash
+            }
+            publish_event["signature"] = drvl.sign_event(publish_event)
+            publish(publish_event)
             result = None
         else:
             status = "PENDING"
@@ -93,14 +101,18 @@ def run_demo():
 
     # Final log & publish (only once!)
     log_event(action, table, status, message)
-    publish({
+
+    publish_event = {
         "action": action,
         "table": table,
         "status": status,
         "message": message,
         "request_id": req_id,
-        "timestamp": time.strftime("%H:%M:%S")
-    })
+        "timestamp": time.strftime("%H:%M:%S"),
+        "policy": policy_hash
+    }
+    publish_event["signature"] = drvl.sign_event(publish_event)
+    publish(publish_event)
 
     return jsonify({
         "action": action,
@@ -117,7 +129,9 @@ def run_demo():
                 "status": req["status"]
             } for req in escalation_queue
         ],
-        "llm_error": llm_error  # Will be None or a string if LLM failed
+        "llm_error": llm_error,
+        "policy": policy_hash,
+        "signature": publish_event["signature"]
     })
 
 
@@ -128,14 +142,17 @@ def approve_request(req_id):
             req["status"] = "APPROVED"
             result = db.execute(req["action"], req["table"])
 
-            publish({
+            publish_event = {
                 "action": req["action"],
                 "table": req["table"],
                 "status": "EXECUTED",
                 "message": "Escalation manually approved",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S")
-            })
+                "timestamp": time.strftime("%H:%M:%S"),
+                "policy": drvl.policy_hash
+            }
+            publish_event["signature"] = drvl.sign_event(publish_event)
+            publish(publish_event)
 
             escalation_queue.remove(req)
 
@@ -161,14 +178,17 @@ def deny_request(req_id):
         if req["id"] == req_id and req["status"] == "PENDING":
             req["status"] = "DENIED"
 
-            publish({
+            publish_event = {
                 "action": req["action"],
                 "table": req["table"],
                 "status": "BLOCKED",
                 "message": "Escalation denied by operator",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S")
-            })
+                "timestamp": time.strftime("%H:%M:%S"),
+                "policy": drvl.policy_hash
+            }
+            publish_event["signature"] = drvl.sign_event(publish_event)
+            publish(publish_event)
 
             escalation_queue.remove(req)
 
