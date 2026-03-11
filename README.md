@@ -23,7 +23,7 @@ This creates a verifiable, auditable path for capability growth while preventing
 
 🚀 A minimal, self-contained demonstration of **DRVL runtime governance** is included in the `demo/` folder.
 
-Watch an autonomous AI agent perform database operations under active runtime policies. You can observe in real time:
+Watch a simulated autonomous agent perform database operations under active runtime policies. You can observe in real time:
 
 - Executed vs. blocked actions  
 - Policy decision explanations  
