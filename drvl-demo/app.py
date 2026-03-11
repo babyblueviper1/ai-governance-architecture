@@ -2,6 +2,7 @@ from flask import Flask, jsonify, render_template
 from agent import Agent
 from database import Database
 from drvl import DRVL
+from audit import log_event
 
 app = Flask(__name__)
 
@@ -25,6 +26,9 @@ def run_demo():
     allowed, message = drvl.verify(action, table, environment)
 
     if not allowed:
+
+        log_event(action, table, "BLOCKED", message)
+
         return jsonify({
             "action": action,
             "table": table,
@@ -34,12 +38,27 @@ def run_demo():
 
     result = db.execute(action, table)
 
+    log_event(action, table, "EXECUTED", "Policy allowed")
+
     return jsonify({
         "action": action,
         "table": table,
         "status": "executed",
         "result": result
     })
+    
+
+@app.route("/logs")
+def view_logs():
+
+    try:
+        with open("drvl_events.log", "r") as f:
+            logs = f.read()
+    except:
+        logs = "No events yet."
+
+    return f"<pre>{logs}</pre>"
+
 
 
 if __name__ == "__main__":
