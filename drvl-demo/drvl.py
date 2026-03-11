@@ -1,6 +1,7 @@
 import json
 import hashlib
 import hmac
+import time
 
 class DRVL:
     """
@@ -39,21 +40,21 @@ class DRVL:
 
         return True, False, "Allowed operation", self.policy_hash
 
-   def sign_event(self, event_data):
-    """HMAC-SHA256 signature with nonce and version for replay protection and schema tracking."""
-    payload = {
-        "version": "1.0",                  # bump this if policy schema or format ever changes
-        "nonce": str(time.time_ns()),      # nanosecond timestamp prevents replay attacks
-        **event_data                        # include all original event fields
-    }
-    
-    # Canonical JSON (sorted keys + UTF-8) — already good, but explicit
-    canonical = json.dumps(payload, sort_keys=True, separators=(',', ':')).encode('utf-8')
-    
-    signature = hmac.new(
-        self.signing_key,
-        canonical,
-        hashlib.sha256
-    ).hexdigest()[:12]  # 12 chars = good balance of security & readability for demo
-    
-    return signature
+    def sign_event(self, event_data):
+        """HMAC-SHA256 signature with nonce and version for replay protection and schema tracking."""
+        payload = {
+            "version": "1.0",                  # bump this if policy schema or format ever changes
+            "nonce": str(time.time_ns()),      # nanosecond timestamp prevents replay attacks
+            **event_data                       # include all original event fields
+        }
+        
+        # Canonical JSON (sorted keys + compact separators + UTF-8)
+        canonical = json.dumps(payload, sort_keys=True, separators=(',', ':')).encode('utf-8')
+        
+        signature = hmac.new(
+            self.signing_key,
+            canonical,
+            hashlib.sha256
+        ).hexdigest()[:12]  # 12 chars = good balance of security & readability for demo
+        
+        return signature
