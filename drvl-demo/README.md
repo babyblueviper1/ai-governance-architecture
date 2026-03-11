@@ -1,38 +1,38 @@
 # DRVL Governance Demo — Probabilistic Agent with Escalation
 
-This folder contains a **working demonstration** of the **Distributed Runtime Verification Layer (DRVL)** governing a **probabilistic AI agent**.  
+This folder contains a **minimal, self-contained demonstration** of the **Distributed Runtime Verification Layer (DRVL)** governing a **probabilistic AI agent**.
 
-The demo now includes **escalation requests** for restricted actions (`DELETE` / `DROP`) with:
+The agent occasionally attempts restricted database operations while DRVL enforces deterministic runtime policies — either executing, blocking, escalating, or auto-deciding based on simple rules.
 
-- Every **3rd request automatically approved** for demo purposes.  
-- Manual **Approve button** to simulate human review of other requests.  
-
-### Key Features
+## Key Features
 
 - **Probabilistic AI Agent**  
-  Occasionally attempts risky operations, showing DRVL enforcement in action.
+  Generates READ, UPDATE, DELETE, DROP actions with realistic bias toward risky operations.
 
-- **Deterministic Runtime Enforcement (DRVL)**  
-  All policy rules are applied deterministically; unsafe actions are blocked or escalated.
+- **Deterministic Runtime Enforcement**  
+  Policies are applied consistently: allowed → execute, forbidden → block, escalatable → decide.
 
-- **Escalation Requests**  
-  Restricted actions generate requests. Approved requests are executed; blocked requests remain pending until approved.
+- **Escalation Handling (for DELETE)**  
+  When escalation is required:  
+  - **~35% auto-approved** → executed immediately (green)  
+  - **~35% auto-denied** → blocked immediately (red)  
+  - **~30% pending** → wait for manual Approve / Deny via dashboard buttons
 
-- **Real-Time Dashboard**  
-  - Executed vs blocked actions  
-  - Escalation queue with manual approval  
-  - Alerts for high-risk actions  
-  - Counters for executed, blocked, and escalated actions  
-
-- **Autonomous Mode**  
-  The agent runs continuously, generating actions according to the slider speed.
+- **Real-Time Governance Dashboard**  
+  - Manual / autonomous action triggers  
+  - Speed control slider  
+  - Execution / block / approved counters  
+  - Active policies view  
+  - Latest decision panel with explanation  
+  - Live event stream with timestamps & color coding  
+  - Escalation queue showing pending requests + Approve/Deny buttons
 
 ## Architecture
 
 ```
 Probabilistic AI Agent
            ↓
-     DRVL Policy Engine  ← deterministic enforcement
+     DRVL Policy Engine  ← deterministic rules + auto-decision
            ↓
       Database Execution
            ↓
@@ -40,19 +40,6 @@ Probabilistic AI Agent
            ↓
    Governance Dashboard (browser)
 ```
-
-Core idea: **Deterministic enforcement over probabilistic behavior** — the foundational principle of safe runtime AI governance.
-
-## Demo UI Features
-
-- Manual AI action trigger  
-- Autonomous / continuous mode toggle  
-- AI action speed control (interval slider)  
-- Execution & block counters  
-- Currently active governance policies view  
-- Detailed policy decision & explanation panel  
-- Real-time event stream  
-- Live architecture diagram (updates with activity)
 
 ## Running the Demo
 
@@ -68,63 +55,55 @@ pip install flask
 python app.py
 ```
 
-### 3. Open the dashboard
+### 3. Open in browser
 
 http://localhost:10000
 
-You should see the interface load immediately.
+## Example Governance Rules
 
-## Example Governance Rules (enforced in this demo)
+| Operation | Result                  | Behavior in Demo                          |
+|-----------|-------------------------|-------------------------------------------|
+| READ      | Allowed                 | Executed (green)                          |
+| UPDATE    | Allowed                 | Executed (green)                          |
+| DELETE    | Requires escalation     | ~35% auto-approve, ~35% auto-deny, ~30% pending/manual |
+| DROP      | Forbidden               | Always blocked (red)                      |
 
-| Operation | Result              |
-|-----------|---------------------|
-| READ      | Allowed             |
-| UPDATE    | Allowed             |
-| DELETE    | Requires escalation |
-| DROP      | Forbidden           |
+**Demo note:** Escalation decisions (DELETE) are probabilistic for realism — auto-approved (~35%), auto-denied (~35%), or pending (~30%) for human-in-the-loop control.
 
-**Note:** For demo purposes, **every 3rd escalation request is automatically approved** to simulate a mix of automated and manual governance decisions.
+## Escalation Queue
 
-## Escalation Queue Panel
+- **Pending** requests show Approve (green) and Deny (red) buttons  
+- **Auto-approved** requests execute immediately (no queue entry)  
+- **Auto-denied** requests are blocked immediately (red event)  
+- Manual Approve → executes action (green)  
+- Manual Deny → blocks action (red)  
 
-The dashboard now features a **live Escalation Queue** section, providing real-time visibility and control over capability expansion requests:
-
-- **Pending requests** appear in the queue with an **Approve** button  
-- **Auto-approved requests** (every 3rd one) are executed immediately and marked as such  
-- **Human operators** (in demo mode: you) can manually approve any pending request by clicking Approve  
-- Clear visual feedback shows the status of each request:  
-  - **PENDING** — awaiting decision  
-  - **APPROVED** — escalation granted (auto or manual)  
-  - **EXECUTED** — expanded capabilities now active for the agent  
-
-This panel demonstrates how DRVL integrates escalation workflows — combining deterministic automation with human-in-the-loop oversight — to safely govern probabilistic AI behavior.
-
+This illustrates **automated + human governance** working together over unpredictable AI behavior.
 
 ## Folder Contents
 
 ```
 demo/
- ├── app.py               # Flask server + dashboard
- ├── agent.py             # Probabilistic AI agent logic
- ├── database.py          # Dummy database simulator
- ├── drvl.py              # Core deterministic policy engine
- ├── event_bus.py         # Simple event publishing
- ├── audit.py             # Decision & event logging
+ ├── app.py               # Flask server + dashboard endpoints
+ ├── agent.py             # Probabilistic AI agent
+ ├── database.py          # Dummy DB simulator
+ ├── drvl.py              # Policy verification engine
+ ├── event_bus.py         # Simple pub/sub for events
+ ├── audit.py             # Logging decisions
  ├── templates/
- │   └── index.html       # Dashboard frontend (HTML + JS)
- └── drvl_events.log      # Audit trail file (appended on run)
+ │   └── index.html       # Real-time dashboard (HTML + JS)
+ └── drvl_events.log      # Audit trail (appended on run)
 ```
 
 ## Purpose
 
-This edition explicitly highlights:
+This prototype clearly shows:
 
 **“Deterministic enforcement controlling a probabilistic AI agent.”**
 
-It provides a clean, reproducible prototype to demonstrate:
-
+It demonstrates:
 - Runtime policy enforcement on non-deterministic behavior  
-- Reliable risk containment (even when the agent tries dangerous things)  
-- Real-time auditability, explainability, and observability  
+- Automatic + manual risk containment  
+- Real-time observability, explainability, and human oversight  
 
-Not production code — a focused illustration of how DRVL can bring strong, verifiable governance to realistic, probabilistic autonomous systems.
+Not production-ready — a focused, runnable illustration of DRVL-style governance.
