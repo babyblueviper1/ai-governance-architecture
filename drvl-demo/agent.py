@@ -4,16 +4,16 @@ TABLES = ["users", "orders", "payments"]
 
 class ProbabilisticAgent:
     """
-    Simulated probabilistic AI agent.
-    Generates actions with bias probabilities to simulate risky behavior.
+    Simulated probabilistic AI agent for DRVL demo.
+    Generates actions with biased probabilities to show blocking.
     """
     def __init__(self):
-        # Probabilities must sum to 1
+        # Bias: increase chance of risky actions for demo visibility
         self.bias = {
-            "READ": 0.4,
-            "UPDATE": 0.45,
-            "DELETE": 0.1,
-            "DROP": 0.05
+            "READ": 0.2,
+            "UPDATE": 0.3,
+            "DELETE": 0.3,
+            "DROP": 0.2
         }
 
     def generate_action(self):
