@@ -41,6 +41,8 @@
             cursor: pointer;
             color: white;
             transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
         button:hover:not(:disabled) {
             opacity: 0.92;
@@ -49,6 +51,30 @@
             opacity: 0.6;
             cursor: not-allowed;
             background: #6c757d !important;
+        }
+        button:active:not(:disabled) {
+            transform: scale(0.98);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        button.loading {
+            background: #0d6efd !important;
+            color: white;
+        }
+        button.loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            border: 3px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            transform: translate(-50%, -50%);
+        }
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
         .btn-run    { background: #0d6efd; }
         .btn-auto   { background: #343a40; }
@@ -252,7 +278,7 @@
     <div id="llm-key-panel">
         <div class="warning-text">
             <strong>Warning:</strong> Using real LLM will consume your OpenAI tokens and may incur costs.<br>
-            Demo currently supports <strong>OpenAI</strong> (GPT-4o / 4o-mini).
+            Demo currently supports <strong>OpenAI only</strong> (GPT-4o / 4o-mini). Other providers coming soon.
         </div>
         <div class="llm-input-group">
             <select id="llm-provider">
@@ -323,7 +349,7 @@
     
     <div id="escalationQueue"></div>
 </div>
-    
+
 <div class="panel" style="background: #f8f9fa; border-left: 4px solid #0d6efd; padding: 16px; margin: 20px auto; max-width: 780px;">
     <h3 style="margin-top: 0; font-size: 1.1rem; color: #0d6efd;">Policy & Decision Integrity</h3>
     <p style="font-size: 0.95rem; color: #495057; margin: 8px 0;">
@@ -366,8 +392,8 @@ function submitApiKey() {
     }
 
     btn.disabled = true;
-    btn.textContent = "Applying...";
-    btn.style.opacity = "0.6";
+    btn.classList.add("loading");
+    btn.textContent = "";
 
     fetch("/set_llm_key", {
         method: "POST",
@@ -377,6 +403,7 @@ function submitApiKey() {
     .then(r => r.json())
     .then(data => {
         btn.disabled = false;
+        btn.classList.remove("loading");
         btn.textContent = "Apply Key";
         btn.style.opacity = "1";
 
@@ -392,6 +419,7 @@ function submitApiKey() {
     })
     .catch(err => {
         btn.disabled = false;
+        btn.classList.remove("loading");
         btn.textContent = "Apply Key";
         btn.style.opacity = "1";
         document.getElementById("llm-error").textContent = "Connection error — could not reach server";
@@ -431,22 +459,64 @@ slider.oninput = () => {
 };
 
 function triggerAction() {
+    const btn = document.querySelector(".btn-run");
+    if (btn.classList.contains("loading")) return;
+
+    btn.classList.add("loading");
+    btn.disabled = true;
+    btn.textContent = "";
+
     fetch("/run")
         .then(r => r.json())
-        .then(handleResponse)
-        .catch(err => console.error("Run failed:", err));
+        .then(data => {
+            handleResponse(data);
+            btn.classList.remove("loading");
+            btn.disabled = false;
+            btn.textContent = "Run AI Action";
+        })
+        .catch(err => {
+            console.error("Run failed:", err);
+            btn.classList.remove("loading");
+            btn.disabled = false;
+            btn.textContent = "Run AI Action";
+            alert("Action failed — check console");
+        });
 }
 
 function startAuto() {
     if (autoInterval) return;
+
+    const btn = document.querySelector(".btn-auto");
+    btn.classList.add("loading");
+    btn.disabled = true;
+    btn.textContent = "";
+
     autoInterval = setInterval(triggerAction, speed);
+
+    // Quick success feedback
+    setTimeout(() => {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        btn.textContent = "Running Autonomous... (click Stop to end)";
+    }, 600);
 }
 
 function stopAuto() {
-    if (autoInterval) {
-        clearInterval(autoInterval);
-        autoInterval = null;
-    }
+    if (!autoInterval) return;
+
+    clearInterval(autoInterval);
+    autoInterval = null;
+
+    const btn = document.querySelector(".btn-stop");
+    btn.classList.add("loading");
+    btn.disabled = true;
+    btn.textContent = "";
+
+    setTimeout(() => {
+        btn.classList.remove("loading");
+        btn.disabled = false;
+        btn.textContent = "Stop Autonomous Mode";
+    }, 400);
 }
 
 function handleResponse(data) {
@@ -517,14 +587,14 @@ function handleResponse(data) {
     const line = document.createElement("div");
     line.className = `event-line ${eventClass}`;
     line.innerHTML = `
-    <span style="opacity:0.7">[${ts}]</span> 
-    ${data.status.padEnd(10)} 
-    ${actionStr} 
-    <span style="color:#6c757d; font-size:0.9rem;">
-        | policy=<code>${data.policy || '?'}</code> 
-        | sig=<code>${data.signature || '?'}</code>
-    </span>
-`;
+        <span style="opacity:0.7">[${ts}]</span> 
+        ${data.status.padEnd(10)} 
+        ${actionStr} 
+        <span style="color:#6c757d; font-size:0.9rem;">
+            | policy=<code>${data.policy || '?'}</code> 
+            | sig=<code>${data.signature || '?'}</code>
+        </span>
+    `;
     els.events.prepend(line);
     if (els.events.children.length > 200) els.events.removeChild(els.events.lastChild);
 
