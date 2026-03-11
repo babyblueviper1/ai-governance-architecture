@@ -1,21 +1,13 @@
 import json
 
 class DRVL:
-
-    def __init__(self, policy_file="policies.json"):
-
-        with open(policy_file) as f:
-            self.policies = json.load(f)["rules"]
+    """
+    Distributed Runtime Verification Layer: checks actions against policy.
+    """
+    def __init__(self):
+        self.restricted_ops = {"DELETE": "requires escalation", "DROP": "forbidden"}
 
     def verify(self, action, table, environment):
-
-        for rule in self.policies:
-
-            if (
-                action == rule["action"]
-                and table in rule["tables"]
-                and environment == rule["environment"]
-            ):
-                return False, rule["reason"]
-
-        return True, "Allowed"
+        if action in self.restricted_ops:
+            return False, self.restricted_ops[action]
+        return True, "Policy allowed"
