@@ -336,6 +336,15 @@
     <div class="restricted">✗ DROP   — Forbidden</div>
 </div>
 
+<div class="panel" style="background: #f0f8ff; border-left: 4px solid #0d6efd; padding: 16px; margin: 16px auto; max-width: 780px;">
+    <p style="font-size: 1rem; font-weight: 500; margin: 0;">
+        Current Policy Hash: <code id="current-policy-hash" style="font-family: monospace; background: #e9ecef; padding: 2px 6px; border-radius: 4px;">—</code>
+    </p>
+    <p style="font-size: 0.85rem; color: #6c757d; margin-top: 8px;">
+        All events below must match this hash — if not, policy was modified.
+    </p>
+</div>
+
 <div id="alerts"></div>
 
 <div class="panel">
@@ -533,7 +542,6 @@ function stopAuto() {
     btn.textContent = "Start Autonomous Mode";
     btn.style.opacity = "1";
 
-    // Optional brief feedback
     els.alerts.textContent = "Autonomous mode stopped";
     setTimeout(() => els.alerts.textContent = "", 3000);
 }
@@ -693,10 +701,22 @@ evtSource.onmessage = event => {
 };
 evtSource.onerror = () => console.warn("SSE connection lost – reconnecting...");
 
+// Load current policy hash on page load
 window.addEventListener("load", () => {
+    fetch("/policy_hash")
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("current-policy-hash").textContent = data.policy_hash || "—";
+        })
+        .catch(() => {
+            document.getElementById("current-policy-hash").textContent = "Error loading";
+        });
+
     fetch("/status")
         .then(r => r.json())
         .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
         .catch(() => {});
 });
 </script>
+</body>
+</html>
