@@ -166,12 +166,60 @@
             margin-bottom: 16px;
             font-size: 1.1rem;
         }
+
+        /* LLM toggle panel */
+        #llm-panel {
+            margin: 24px auto;
+            max-width: 600px;
+            padding: 16px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #llm-key-panel {
+            margin-top: 12px;
+            display: none;
+        }
+        #llm-key-panel select,
+        #llm-key-panel input[type="password"] {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        #llm-status {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #198754;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
 
 <h1>DRVL Governance Demo</h1>
 <div class="subtitle">Deterministic runtime governance of a probabilistic AI agent</div>
+
+<div id="llm-panel">
+    <label style="font-weight: 500; display: block; margin-bottom: 8px;">
+        <input type="checkbox" id="use-llm-toggle"> Use real LLM instead of probabilistic stub
+    </label>
+    <div id="llm-key-panel">
+        <select id="llm-provider">
+            <option value="openai">OpenAI (GPT-4o / 4o-mini)</option>
+            <option value="anthropic">Anthropic (Claude 3.5 Sonnet)</option>
+            <option value="xai">xAI Grok</option>
+            <option value="google">Google Gemini</option>
+        </select>
+        <input type="password" id="api-key-input" placeholder="Your API key" style="width: 260px; margin: 0 8px;">
+        <button onclick="submitApiKey()">Apply Key</button>
+        <p style="font-size: 0.85rem; color: #666; margin-top: 12px;">
+            Your key is sent once to the server and never stored or logged. Only used for this session.
+        </p>
+        <div id="llm-status"></div>
+    </div>
+</div>
 
 <div class="controls">
     <button class="btn-run"  onclick="triggerAction()" aria-label="Trigger one AI action">Run AI Action</button>
@@ -228,14 +276,47 @@
     <div id="escalationQueue"></div>
 </div>
 
-
-
 <div class="panel">
     <h2>Live Governance Events</h2>
     <div id="events"></div>
 </div>
 
 <script>
+document.getElementById("use-llm-toggle").onchange = function() {
+    document.getElementById("llm-key-panel").style.display = this.checked ? "block" : "none";
+    if (!this.checked) {
+        document.getElementById("llm-status").textContent = "";
+    }
+};
+
+function submitApiKey() {
+    const key = document.getElementById("api-key-input").value.trim();
+    const provider = document.getElementById("llm-provider").value;
+    if (!key) {
+        alert("Please enter a valid API key");
+        return;
+    }
+
+    fetch("/set_llm_key", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider, api_key: key })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === "ok") {
+            document.getElementById("llm-status").textContent = "✓ LLM mode active — real model will be used for future actions";
+            document.getElementById("llm-status").style.color = "#198754";
+        } else {
+            alert("Error: " + (data.error || "Failed to activate LLM mode"));
+        }
+    })
+    .catch(err => {
+        alert("Connection error — could not set API key");
+        console.error(err);
+    });
+}
+
 let autoInterval = null;
 let speed = 1800;
 
