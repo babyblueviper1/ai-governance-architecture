@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from agent import Agent
 from database import Database
 from drvl import DRVL
@@ -7,9 +7,11 @@ app = Flask(__name__)
 
 environment = "production"
 
+
 @app.route("/")
 def home():
-    return "DRVL Demo Running"
+    return render_template("index.html")
+
 
 @app.route("/run")
 def run_demo():
@@ -23,7 +25,6 @@ def run_demo():
     allowed, message = drvl.verify(action, table, environment)
 
     if not allowed:
-
         return jsonify({
             "action": action,
             "table": table,
