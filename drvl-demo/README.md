@@ -1,29 +1,31 @@
-# DRVL Governance Demo — Probabilistic Agent Edition
+# DRVL Governance Demo — Probabilistic Agent with Escalation
 
-This folder contains a **minimal working demonstration** of the **Distributed Runtime Verification Layer (DRVL)** governing a **probabilistic AI agent**.
+This folder contains a **working demonstration** of the **Distributed Runtime Verification Layer (DRVL)** governing a **probabilistic AI agent**.  
 
-The demo simulates an autonomous agent performing database actions — where the agent **sometimes attempts risky or unsafe operations** — while DRVL enforces deterministic runtime governance policies in real time.
+The demo now includes **escalation requests** for restricted actions (`DELETE` / `DROP`) with:
 
-Actions are:
+- Every **3rd request automatically approved** for demo purposes.  
+- Manual **Approve button** to simulate human review of other requests.  
 
-- **Executed** if they comply with policy  
-- **Blocked** if they violate governance rules  
-
-All decisions, alerts, and explanations are streamed live to a browser-based **governance dashboard**.
-
-## Key Features
+### Key Features
 
 - **Probabilistic AI Agent**  
-  Deliberately introduces realistic, non-deterministic behavior by occasionally attempting high-risk operations (e.g. DELETE, DROP) — exactly like real-world frontier AI systems might.
+  Occasionally attempts risky operations, showing DRVL enforcement in action.
 
 - **Deterministic Runtime Enforcement (DRVL)**  
-  Applies policy rules consistently and verifiably — ensuring that even when the agent “misbehaves,” unsafe actions are blocked every time.
+  All policy rules are applied deterministically; unsafe actions are blocked or escalated.
 
-- **Real-Time Governance Dashboard**  
-  Watch executed vs. blocked actions, live alerts, counters, policy explanations, and event stream in one clean interface.
+- **Escalation Requests**  
+  Restricted actions generate requests. Approved requests are executed; blocked requests remain pending until approved.
+
+- **Real-Time Dashboard**  
+  - Executed vs blocked actions  
+  - Escalation queue with manual approval  
+  - Alerts for high-risk actions  
+  - Counters for executed, blocked, and escalated actions  
 
 - **Autonomous Mode**  
-  Agent runs continuously at adjustable speed — simulating persistent, long-running autonomous operation under governance.
+  The agent runs continuously, generating actions according to the slider speed.
 
 ## Architecture
 
@@ -80,6 +82,23 @@ You should see the interface load immediately.
 | UPDATE    | Allowed             |
 | DELETE    | Requires escalation |
 | DROP      | Forbidden           |
+
+**Note:** For demo purposes, **every 3rd escalation request is automatically approved** to simulate a mix of automated and manual governance decisions.
+
+## Escalation Queue Panel
+
+The dashboard now features a **live Escalation Queue** section, providing real-time visibility and control over capability expansion requests:
+
+- **Pending requests** appear in the queue with an **Approve** button  
+- **Auto-approved requests** (every 3rd one) are executed immediately and marked as such  
+- **Human operators** (in demo mode: you) can manually approve any pending request by clicking Approve  
+- Clear visual feedback shows the status of each request:  
+  - **PENDING** — awaiting decision  
+  - **APPROVED** — escalation granted (auto or manual)  
+  - **EXECUTED** — expanded capabilities now active for the agent  
+
+This panel demonstrates how DRVL integrates escalation workflows — combining deterministic automation with human-in-the-loop oversight — to safely govern probabilistic AI behavior.
+
 
 ## Folder Contents
 
