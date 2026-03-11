@@ -2,11 +2,15 @@ from datetime import datetime
 
 LOG_FILE = "drvl_events.log"
 
-def log_event(action, table, status, message):
+def handle_event(event):
 
-    timestamp = datetime.utcnow().isoformat()
-
-    log_line = f"{timestamp} | ACTION={action} | TABLE={table} | STATUS={status} | MESSAGE={message}\n"
+    log_line = (
+        f"{event['timestamp']} | "
+        f"ACTION={event['action']} | "
+        f"TABLE={event['table']} | "
+        f"STATUS={event['status']} | "
+        f"MESSAGE={event['message']}\n"
+    )
 
     with open(LOG_FILE, "a") as f:
         f.write(log_line)
