@@ -64,24 +64,30 @@ def run_demo():
         if rand < 0.35:
             status = "APPROVED"
             result = db.execute(action, table)
-            publish_signed_event({
+            event = {
                 "action": action,
                 "table": table,
                 "status": "EXECUTED",
                 "message": "Auto-approved (demo)",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S")
-            })
+                "timestamp": time.strftime("%H:%M:%S"),
+                "policy": policy_hash
+            }
+            event["signature"] = drvl.sign_event(event)
+            publish(event)
         elif rand < 0.70:
             status = "DENIED"
-            publish_signed_event({
+            event = {
                 "action": action,
                 "table": table,
                 "status": "BLOCKED",
                 "message": "Auto-denied (demo)",
                 "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S")
-            })
+                "timestamp": time.strftime("%H:%M:%S"),
+                "policy": policy_hash
+            }
+            event["signature"] = drvl.sign_event(event)
+            publish(event)
             result = None
         else:
             status = "PENDING"
@@ -91,6 +97,18 @@ def run_demo():
                 "table": table,
                 "status": status
             })
+            # For pending, we still publish a base event (no execution yet)
+            event = {
+                "action": action,
+                "table": table,
+                "status": "PENDING",
+                "message": "Escalation pending",
+                "request_id": req_id,
+                "timestamp": time.strftime("%H:%M:%S"),
+                "policy": policy_hash
+            }
+            event["signature"] = drvl.sign_event(event)
+            publish(event)
     else:
         # Non-escalation path: allowed or forbidden (e.g. DROP)
         if allowed:
@@ -100,18 +118,20 @@ def run_demo():
             status = "BLOCKED"
             result = None
 
-    # Final log & signed publish
-    log_event(action, table, status, message)
+        # Publish the final event
+        event = {
+            "action": action,
+            "table": table,
+            "status": status,
+            "message": message,
+            "request_id": req_id,
+            "timestamp": time.strftime("%H:%M:%S"),
+            "policy": policy_hash
+        }
+        event["signature"] = drvl.sign_event(event)
+        publish(event)
 
-    publish_signed_event({
-        "action": action,
-        "table": table,
-        "status": status,
-        "message": message,
-        "request_id": req_id,
-        "timestamp": time.strftime("%H:%M:%S")
-    })
-
+    # Return the same event data to frontend
     return jsonify({
         "action": action,
         "table": table,
@@ -129,14 +149,7 @@ def run_demo():
         ],
         "llm_error": llm_error,
         "policy": policy_hash,
-        "signature": drvl.sign_event({
-            "action": action,
-            "table": table,
-            "status": status,
-            "message": message,
-            "request_id": req_id,
-            "timestamp": time.strftime("%H:%M:%S")
-        })
+        "signature": event["signature"]
     })
 
 
