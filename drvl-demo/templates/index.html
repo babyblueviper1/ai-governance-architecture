@@ -194,6 +194,12 @@
             color: #198754;
             font-weight: 500;
         }
+        #llm-error {
+            margin-top: 12px;
+            color: #dc3545;
+            font-size: 0.9rem;
+            min-height: 20px;
+        }
     </style>
 </head>
 <body>
@@ -218,11 +224,12 @@
             Your key is sent once to the server and never stored or logged. Only used for this session.
         </p>
         <div id="llm-status"></div>
+        <div id="llm-error"></div>
     </div>
 </div>
 
 <div class="controls">
-    <button class="btn-run"  onclick="triggerAction()" aria-label="Trigger one AI action">Run AI Action</button>
+    <button class="btn-run" onclick="triggerAction()" aria-label="Trigger one AI action">Run AI Action</button>
     <button class="btn-auto" onclick="startAuto()" aria-label="Start continuous mode">Start Autonomous Mode</button>
     <button class="btn-stop" onclick="stopAuto()" aria-label="Stop continuous mode">Stop Autonomous Mode</button>
 
@@ -286,6 +293,7 @@ document.getElementById("use-llm-toggle").onchange = function() {
     document.getElementById("llm-key-panel").style.display = this.checked ? "block" : "none";
     if (!this.checked) {
         document.getElementById("llm-status").textContent = "";
+        document.getElementById("llm-error").textContent = "";
     }
 };
 
@@ -411,6 +419,21 @@ function handleResponse(data) {
             break;
         default:
             eventClass = "event-pending";
+    }
+
+    // LLM error handling
+    const errorDiv = document.getElementById("llm-error");
+    if (data.llm_error) {
+        errorDiv.textContent = data.llm_error;
+        // Flash in main alerts too
+        els.alerts.textContent = data.llm_error;
+        setTimeout(() => {
+            if (els.alerts.textContent === data.llm_error) {
+                els.alerts.textContent = "";
+            }
+        }, 8000);  // longer timeout for errors
+    } else {
+        errorDiv.textContent = "";
     }
 
     if (incExecuted) els.executed.textContent = Number(els.executed.textContent) + 1;
