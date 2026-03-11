@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DRVL Governance Demo — Probabilistic Agent</title>
     <style>
         body {
@@ -12,8 +13,16 @@
             padding: 30px 20px;
             line-height: 1.5;
         }
-        h1 { margin: 0 0 8px; font-size: 2.1rem; }
-        .subtitle { color: #6c757d; margin-bottom: 24px; }
+        h1 {
+            margin: 0 0 8px;
+            font-size: 2.1rem;
+            text-align: center;
+        }
+        .subtitle {
+            color: #6c757d;
+            margin-bottom: 24px;
+            text-align: center;
+        }
 
         .controls {
             margin: 24px 0;
@@ -31,18 +40,38 @@
             border-radius: 6px;
             cursor: pointer;
             color: white;
+            transition: background 0.2s ease;
+        }
+        button:hover {
+            opacity: 0.92;
         }
         .btn-run    { background: #0d6efd; }
         .btn-auto   { background: #343a40; }
         .btn-stop   { background: #dc3545; }
-        .btn-approve { background: #198754; font-size: 13px; padding: 6px 14px; }
+
+        .btn-approve {
+            background: #198754;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .btn-deny {
+            background: #dc3545;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
 
         .speed-control {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        input[type="range"] { width: 180px; }
+        input[type="range"] {
+            width: 180px;
+        }
 
         #stats {
             display: flex;
@@ -69,7 +98,7 @@
             margin: 10px 0;
             font-size: 1.05rem;
         }
-        .allowed  { color: #198754; }
+        .allowed    { color: #198754; }
         .restricted { color: #dc3545; }
 
         #alerts {
@@ -89,13 +118,6 @@
         }
         #decision b { color: #343a40; }
 
-        .event-line {
-            padding: 8px 12px;
-            margin: 4px 0;
-            border-radius: 4px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.95rem;
-        }
         #events {
             max-height: 320px;
             overflow-y: auto;
@@ -103,26 +125,47 @@
             border-radius: 8px;
             padding: 8px;
         }
+        .event-line {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
         .event-executed { background: #d4edda; color: #155724; }
         .event-blocked  { background: #f8d7da; color: #721c24; }
         .event-pending  { background: #fff3cd; color: #856404; }
         .event-approved { background: #cce5ff; color: #004085; font-weight: 600; }
 
         .queue-item {
-            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
             margin: 10px 0;
             border-radius: 6px;
             background: #f8f9fa;
             border: 1px solid #dee2e6;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
-        .queue-item.pending  { background: #fff3cd; border-color: #ffeeba; }
-        .queue-item.approved { background: #d4edda; border-color: #c3e6cb; font-weight: 500; }
-        .queue-item.denied   { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
+        .queue-item.pending {
+            background: #fff3cd;
+            border-color: #ffeeba;
+        }
+        .queue-item.approved {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            font-weight: 500;
+        }
+        .queue-item.denied {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
 
-        .stats-row { margin-bottom: 16px; font-size: 1.1rem; }
+        .stats-row {
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
@@ -131,13 +174,13 @@
 <div class="subtitle">Deterministic runtime governance of a probabilistic AI agent</div>
 
 <div class="controls">
-    <button class="btn-run"  onclick="triggerAction()">Run AI Action</button>
-    <button class="btn-auto" onclick="startAuto()">Start Autonomous Mode</button>
-    <button class="btn-stop" onclick="stopAuto()">Stop Autonomous Mode</button>
+    <button class="btn-run"  onclick="triggerAction()" aria-label="Trigger one AI action">Run AI Action</button>
+    <button class="btn-auto" onclick="startAuto()" aria-label="Start continuous mode">Start Autonomous Mode</button>
+    <button class="btn-stop" onclick="stopAuto()" aria-label="Stop continuous mode">Stop Autonomous Mode</button>
 
     <div class="speed-control">
-        <label>Interval:</label>
-        <input type="range" min="600" max="5000" step="300" value="1800" id="speedSlider">
+        <label for="speedSlider">Interval:</label>
+        <input type="range" id="speedSlider" min="600" max="5000" step="300" value="1800">
         <span id="speedValue">1.8 s</span>
     </div>
 </div>
@@ -170,7 +213,7 @@
 <div class="panel">
     <h2>Escalation Queue</h2>
     <div class="stats-row">
-        Total escalations: <b><span id="totalEscalations">0</span></b>  
+        Total escalations: <b><span id="totalEscalations">0</span></b> 
         Pending now: <b><span id="pendingCount">0</span></b>
     </div>
     <div id="escalationQueue"></div>
@@ -242,20 +285,20 @@ function handleResponse(data) {
 
     let eventClass = "";
     let alertText = "";
-    let incrementExecuted = false;
-    let incrementBlocked = false;
-    let incrementApproved = false;
+    let incExecuted = false;
+    let incBlocked  = false;
+    let incApproved = false;
 
     switch (data.status) {
         case "EXECUTED":
             els.dec.rule.textContent = data.message || "Allowed by policy";
             eventClass = "event-executed";
-            incrementExecuted = true;
+            incExecuted = true;
             break;
         case "BLOCKED":
             els.dec.rule.textContent = data.message || "Forbidden / restricted";
             eventClass = "event-blocked";
-            incrementBlocked = true;
+            incBlocked = true;
             alertText = `Blocked: ${actionStr}`;
             break;
         case "PENDING":
@@ -266,18 +309,22 @@ function handleResponse(data) {
         case "APPROVED":
             els.dec.rule.textContent = data.message || "Escalation approved";
             eventClass = "event-approved";
-            incrementApproved = true;
+            incApproved = true;
+            break;
+        case "DENIED":
+            els.dec.rule.textContent = data.message || "Escalation denied";
+            eventClass = "event-blocked";
+            incBlocked = true;
+            alertText = `Denied: ${actionStr}`;
             break;
         default:
             eventClass = "event-pending";
     }
 
-    // Update counters
-    if (incrementExecuted) els.executed.textContent = Number(els.executed.textContent) + 1;
-    if (incrementBlocked)  els.blocked.textContent  = Number(els.blocked.textContent) + 1;
-    if (incrementApproved) els.approved.textContent = Number(els.approved.textContent) + 1;
+    if (incExecuted) els.executed.textContent = Number(els.executed.textContent) + 1;
+    if (incBlocked)  els.blocked.textContent  = Number(els.blocked.textContent) + 1;
+    if (incApproved) els.approved.textContent = Number(els.approved.textContent) + 1;
 
-    // Add event line with timestamp
     const line = document.createElement("div");
     line.className = `event-line ${eventClass}`;
     line.innerHTML = `<span style="opacity:0.7">[${ts}]</span> ${data.status.padEnd(10)} ${actionStr}`;
@@ -289,7 +336,6 @@ function handleResponse(data) {
         setTimeout(() => els.alerts.textContent = "", 4800);
     }
 
-    // Update queue if provided
     if (data.escalation_queue) {
         renderQueue(data.escalation_queue);
     }
@@ -304,12 +350,10 @@ function renderQueue(queue) {
         const div = document.createElement("div");
         div.className = `queue-item ${item.status.toLowerCase()}`;
 
-        let statusDisplay = item.status;
-        if (item.status === "APPROVED") statusDisplay = "Approved";
-        if (item.status === "PENDING") statusDisplay = "Pending";
+        let statusDisplay = item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase();
 
         div.innerHTML = `
-            <div>
+            <div style="flex: 1;">
                 <b>ID ${item.request_id}</b> — 
                 ${item.action} ${item.table}
                 <span style="margin-left:16px; opacity:0.8;">${statusDisplay}</span>
@@ -318,11 +362,18 @@ function renderQueue(queue) {
 
         if (item.status === "PENDING") {
             pendingCount++;
-            const btn = document.createElement("button");
-            btn.className = "btn-approve";
-            btn.textContent = "Approve";
-            btn.onclick = () => approve(item.request_id);
-            div.appendChild(btn);
+
+            const approveBtn = document.createElement("button");
+            approveBtn.className = "btn-approve";
+            approveBtn.textContent = "Approve";
+            approveBtn.onclick = () => approve(item.request_id);
+            div.appendChild(approveBtn);
+
+            const denyBtn = document.createElement("button");
+            denyBtn.className = "btn-deny";
+            denyBtn.textContent = "Deny";
+            denyBtn.onclick = () => deny(item.request_id);
+            div.appendChild(denyBtn);
         }
 
         container.appendChild(div);
@@ -335,35 +386,35 @@ function renderQueue(queue) {
 function approve(requestId) {
     fetch(`/approve/${requestId}`, { method: "POST" })
         .then(r => r.json())
-        .then(data => {
-            if (data.escalation_queue) {
-                renderQueue(data.escalation_queue);
-            }
-        })
+        .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
         .catch(err => console.error("Approve failed:", err));
 }
 
-// Real-time updates via SSE
+function deny(requestId) {
+    fetch(`/deny/${requestId}`, { method: "POST" })
+        .then(r => r.json())
+        .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
+        .catch(err => console.error("Deny failed:", err));
+}
+
+// SSE for real-time updates
 const evtSource = new EventSource("/events");
-evtSource.onmessage = function(event) {
+evtSource.onmessage = event => {
     try {
-        const data = JSON.parse(event.data);
-        handleResponse(data);
+        handleResponse(JSON.parse(event.data));
     } catch (e) {
         console.error("SSE parse error:", e);
     }
 };
-evtSource.onerror = function() {
+evtSource.onerror = () => {
     console.warn("SSE connection lost – reconnecting...");
 };
 
-// Initial load
+// Initial queue load
 window.addEventListener("load", () => {
     fetch("/status")
         .then(r => r.json())
-        .then(data => {
-            if (data.escalation_queue) renderQueue(data.escalation_queue);
-        })
+        .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
         .catch(() => {});
 });
 </script>
