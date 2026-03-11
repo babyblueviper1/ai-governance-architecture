@@ -25,7 +25,7 @@ escalation_counter = 0
 
 
 def publish_signed_event(event_data):
-    """Helper to add policy hash and signature before publishing."""
+    """Add policy hash and HMAC signature before publishing an event."""
     event_data["policy"] = drvl.policy_hash
     event_data["signature"] = drvl.sign_event(event_data)
     publish(event_data)
