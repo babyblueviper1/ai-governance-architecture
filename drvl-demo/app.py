@@ -121,6 +121,38 @@ def approve_request(req_id):
             })
 
     return jsonify({"status": "not_found", "id": req_id}), 404
+@app.route("/deny/<int:req_id>", methods=["POST"])
+def deny_request(req_id):
+    for req in escalation_queue[:]:
+        if req["id"] == req_id and req["status"] == "PENDING":
+            req["status"] = "DENIED"
+            
+            # Publish event so dashboard shows it as blocked
+            publish({
+                "action": req["action"],
+                "table": req["table"],
+                "status": "BLOCKED",
+                "message": "Escalation denied by operator",
+                "request_id": req_id,
+                "timestamp": time.strftime("%H:%M:%S")
+            })
+            
+            escalation_queue.remove(req)
+            
+            return jsonify({
+                "status": "denied",
+                "id": req_id,
+                "escalation_queue": [
+                    {
+                        "request_id": r["id"],
+                        "action": r["action"],
+                        "table": r["table"],
+                        "status": r["status"]
+                    } for r in escalation_queue
+                ]
+            })
+    
+    return jsonify({"status": "not_found", "id": req_id}), 404
 
 @app.route("/status")
 def get_status():
