@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template, Response
 import json
 import time
 
-from agent import Agent
+from agent import ProbabilisticAgent
 from database import Database
 from drvl import DRVL
 
