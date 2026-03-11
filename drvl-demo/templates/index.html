@@ -502,7 +502,15 @@ function handleResponse(data) {
 
     const line = document.createElement("div");
     line.className = `event-line ${eventClass}`;
-    line.innerHTML = `<span style="opacity:0.7">[${ts}]</span> ${data.status.padEnd(10)} ${actionStr}`;
+    line.innerHTML = `
+    <span style="opacity:0.7">[${ts}]</span> 
+    ${data.status.padEnd(10)} 
+    ${actionStr} 
+    <span style="color:#6c757d; font-size:0.9rem;">
+        | policy=<code>${data.policy || '?'}</code> 
+        | sig=<code>${data.signature || '?'}</code>
+    </span>
+`;
     els.events.prepend(line);
     if (els.events.children.length > 200) els.events.removeChild(els.events.lastChild);
 
