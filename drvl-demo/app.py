@@ -16,6 +16,10 @@ subscribe(handle_event)
 
 environment = "production"
 
+agent = ProbabilisticAgent()
+db = Database()
+drvl = DRVL()
+
 
 @app.route("/")
 def home():
@@ -24,10 +28,6 @@ def home():
 
 @app.route("/run")
 def run_demo():
-
-    agent = Agent()
-    db = Database()
-    drvl = DRVL()
 
     action, table = agent.generate_action()
 
