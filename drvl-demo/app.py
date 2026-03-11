@@ -1,9 +1,12 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, Response
+import json
+import time
+
 from agent import Agent
 from database import Database
 from drvl import DRVL
 from audit import log_event
-from event_bus import publish, subscribe
+from event_bus import publish, subscribe, get_events
 from flask import Flask, jsonify, render_template
 
 from agent import Agent
@@ -80,6 +83,26 @@ def view_logs():
         logs = "No events yet."
 
     return f"<pre>{logs}</pre>"
+
+@app.route("/events")
+def stream_events():
+
+    def event_stream():
+        last_index = 0
+
+        while True:
+            events = get_events()
+
+            if len(events) > last_index:
+
+                event = events[last_index]
+                last_index += 1
+
+                yield f"data: {json.dumps(event)}\n\n"
+
+            time.sleep(1)
+
+    return Response(event_stream(), mimetype="text/event-stream")
 
 
 if __name__ == "__main__":
