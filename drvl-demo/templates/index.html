@@ -9,7 +9,6 @@
             margin-top: 40px;
             background: #f4f6f8;
         }
-
         h1 { margin-bottom: 5px; }
         p { color: #555; }
 
@@ -32,6 +31,7 @@
         .executed { color: #1a7f37; }
         .blocked { color: #c62828; }
         .approved { color: #1a7f37; font-weight: bold; }
+        .pending { color: #f2a900; font-weight: bold; }
 
         #policy, #decision, #events, #escalationQueue, #escalationStats {
             width: 700px;
@@ -47,9 +47,6 @@
 
         #events { height: 250px; }
         .event-line { padding: 4px 0; border-bottom: 1px solid #eee; }
-        .event-executed { color: #1a7f37; }
-        .event-blocked { color: #c62828; font-weight: bold; }
-        .event-approved { color: #1a7f37; font-weight: bold; }
 
         #alerts {
             margin: 15px auto;
@@ -120,6 +117,7 @@ let executedCount = 0;
 let blockedCount = 0;
 let approvedCount = 0;
 let escalation_queue = [];
+let eventCounter = 0;
 
 const eventBox = document.getElementById("events");
 const decisionAction = document.getElementById("decisionAction");
@@ -131,16 +129,31 @@ function runDemo() {
     fetch("/run")
         .then(r => r.json())
         .then(data => {
+            if(!data.timestamp) data.timestamp = new Date().toLocaleTimeString();
+
+            // Simulate every other pending request being denied
+            if(data.status.toUpperCase() === "PENDING") {
+                eventCounter++;
+                if(eventCounter % 2 === 0) {
+                    data.status = "BLOCKED";
+                    data.message = "Denied for demo";
+                    blockedCount++;
+                    document.getElementById("blockedCount").innerText = blockedCount;
+                }
+            }
+
             updateDashboard(data);
+
             if(data.status.toUpperCase() === "PENDING" || data.status.toUpperCase() === "APPROVED") {
                 escalation_queue.push(data);
             }
+
             updateEscalationQueue();
         });
 }
 
 function startAuto() {
-    if (autoInterval) return;
+    if(autoInterval) return;
     autoInterval = setInterval(runDemo, speed);
 }
 
@@ -151,7 +164,6 @@ function stopAuto() {
 
 const slider = document.getElementById("speedSlider");
 const speedDisplay = document.getElementById("speedValue");
-
 slider.oninput = function() {
     speed = parseInt(this.value);
     speedDisplay.innerText = (speed / 1000).toFixed(1) + "s";
@@ -168,22 +180,18 @@ function updateDashboard(data) {
     if(data.status.toUpperCase() === "BLOCKED") {
         decisionRule.innerText = "Restricted operation";
         decisionResult.innerText = "BLOCKED by DRVL policy";
-        blockedCount++;
-        document.getElementById("blockedCount").innerText = blockedCount;
-        alertBox.innerText = "⚠️ High-risk action blocked: " + actionText;
-        setTimeout(()=> alertBox.innerText="", 4000);
         addEventLine(data, "event-blocked");
+    } else if(data.status.toUpperCase() === "PENDING") {
+        decisionRule.innerText = "Pending escalation";
+        decisionResult.innerText = "Awaiting approval";
+        addEventLine(data, "event-pending");
     } else if(data.status.toUpperCase() === "APPROVED") {
         decisionRule.innerText = "Escalation approved";
         decisionResult.innerText = "EXECUTED after approval";
-        approvedCount++;
-        document.getElementById("approvedCount").innerText = approvedCount;
         addEventLine(data, "event-approved");
     } else {
         decisionRule.innerText = "Allowed operation";
         decisionResult.innerText = "EXECUTED under policy";
-        executedCount++;
-        document.getElementById("executedCount").innerText = executedCount;
         addEventLine(data, "event-executed");
     }
 }
@@ -191,7 +199,7 @@ function updateDashboard(data) {
 function addEventLine(data, className) {
     const line = document.createElement("div");
     line.className = "event-line " + className;
-    line.innerText = `${data.timestamp || ''} | ${data.status} | ${data.action} ${data.table}`;
+    line.innerText = `${data.timestamp} | ${data.status} | ${data.action} ${data.table}`;
     eventBox.prepend(line);
     if(eventBox.children.length > 100) eventBox.removeChild(eventBox.lastChild);
 }
@@ -199,8 +207,7 @@ function addEventLine(data, className) {
 function updateEscalationQueue() {
     const queueDiv = document.getElementById("escalationQueue");
     const totalSpan = document.getElementById("totalEscalations");
-
-    totalSpan.innerText = escalation_queue.length; // total escalation count
+    totalSpan.innerText = escalation_queue.length;
     queueDiv.innerHTML = "";
     escalation_queue.forEach(req => {
         const div = document.createElement("div");
