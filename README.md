@@ -21,14 +21,16 @@ This creates a verifiable, auditable path for capability growth while preventing
 
 ## Live Demo
 
-🚀 A minimal, self-contained demonstration of **DRVL runtime governance** is included in the `demo/` folder.
+🚀 **DRVL Governance Demo** ([demo/](demo/)) — watch a **probabilistic AI agent** interact with a database under runtime enforcement policies.  
 
-Watch a simulated autonomous agent perform database operations under active runtime policies. You can observe in real time:
+See in real time:
 
-- Executed vs. blocked actions  
+- Actions executed vs blocked  
 - Policy decision explanations  
-- Governance and security alerts  
-- Live event stream to the browser dashboard  
+- Governance alerts  
+- Live event monitoring  
+
+This demo illustrates the core thesis: **deterministic enforcement controlling a probabilistic AI agent**.
 
 ### Quick Start
 
