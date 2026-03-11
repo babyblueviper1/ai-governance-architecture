@@ -1,4 +1,4 @@
-rom flask import Flask, jsonify
+from flask import Flask, jsonify
 from agent import Agent
 from database import Database
 from drvl import DRVL
