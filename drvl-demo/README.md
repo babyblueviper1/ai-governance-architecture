@@ -4,24 +4,32 @@
 🎮 https://drvl-demo.onrender.com/  
 *(First load may take 10–30 seconds due to Render free-tier spin-up. Subsequent visits are instant.)*
 
-This folder contains a **minimal, self-contained demonstration** of the **Distributed Runtime Verification Layer (DRVL)** governing a **probabilistic AI agent**.
+This folder contains a **minimal, self-contained demonstration** of the **Distributed Runtime Verification Layer (DRVL)** governing an AI agent.
 
 The agent attempts database operations (READ, UPDATE, DELETE, DROP) while DRVL enforces deterministic runtime policies — executing allowed actions, blocking forbidden ones, escalating risky ones, or auto-deciding based on simple rules.
 
-### New: Real LLM Mode (bring your own key)
+### Real LLM Mode (bring your own key)
 
 - Toggle on → paste your **OpenAI** API key  
-- **Demo currently supports OpenAI** (GPT-4o / 4o-mini).  
+- **Demo currently supports OpenAI** (GPT-4o / 4o-mini).
 - Actions become truly non-deterministic (and occasionally risky — perfect to see DRVL govern real frontier-model behavior)  
-- **Warning:** Using real LLM will consume your API provider's tokens and may incur costs. The default simulation mode uses **no tokens**.  
+- **Warning:** Using real LLM will consume your OpenAI tokens and may incur costs. The default simulation mode uses **no tokens**.  
 - Key is sent once to the server, never stored or logged — only used for your session.
+
+### Policy Integrity & Attestation
+
+Every governance decision includes:
+- **Policy hash** — SHA-256 of current rules (reproducible enforcement)  
+- **Signature** — HMAC of event payload (cryptographic attestation)  
+
+This demonstrates deterministic, auditable governance — key for real security and compliance systems.
 
 ## Key Features
 
 - **Agent Mode Toggle**  
   Switch between:  
   - Simulated / random probabilistic agent (fast, free, predictable)  
-  - Real LLM (your API key) — unpredictable, realistic frontier-model behavior
+  - Real OpenAI LLM (your API key) — unpredictable, realistic frontier-model behavior
 
 - **Deterministic Runtime Enforcement**  
   Policies applied consistently: allowed → execute, forbidden → block, escalatable → decide.
@@ -40,7 +48,8 @@ The agent attempts database operations (READ, UPDATE, DELETE, DROP) while DRVL e
   - Latest decision panel with explanation  
   - Live event stream with timestamps & color coding  
   - Escalation queue showing pending requests + Approve/Deny buttons  
-  - LLM mode status & error feedback
+  - LLM mode status + error feedback  
+  - Policy hash + signature on every event
 
 ## Architecture
 
