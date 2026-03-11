@@ -26,14 +26,14 @@ https://drvl-demo.onrender.com/
 
 *(First load may take 10–30 seconds due to Render free-tier spin-up. Subsequent visits are instant.)*
 
-Watch a **probabilistic (or real frontier-model) AI agent** perform database actions in real time under **deterministic DRVL governance**.
+Watch a **probabilistic or real LLM-powered AI agent** perform database actions in real time under **deterministic DRVL governance**.
 
 ### New: Real LLM Mode (bring your own key)
 
 - Toggle on → paste your **OpenAI** API key  
-- **Demo currently supports OpenAI** (GPT-4o / 4o-mini).  
+- **Demo currently supports OpenAI only** (GPT-4o / 4o-mini). Other providers coming soon.  
 - Actions become truly non-deterministic (and occasionally risky — perfect to see DRVL govern real frontier-model behavior)  
-- **Warning:** Using real LLM will consume your OpenAI tokens and may incur costs. The default simulation mode uses **no tokens**.  
+- **Warning:** Using real LLM will consume your OpenAI tokens and may incur costs. Default simulation mode uses **no tokens**.  
 - Key is sent once to the server, never stored or logged — only used for your session.
 
 ### Escalation & Auto-Decision Features
@@ -44,6 +44,13 @@ Watch a **probabilistic (or real frontier-model) AI agent** perform database act
   - **~35% auto-denied** → blocked immediately (red)  
   - **~30% pending** → appear in live queue with **Approve** and **Deny** buttons for manual control  
 
+### Policy Integrity & Attestation
+Every governance decision includes:
+- **Policy hash** — SHA-256 of current rules (reproducible enforcement)  
+- **Signature** — HMAC of event payload (cryptographic attestation)  
+
+This demonstrates deterministic, auditable governance — key for real security and compliance systems.
+
 ### What You’ll See in the Dashboard
 - Live stream of executed (green), blocked (red), pending (yellow), approved (bold green) actions  
 - Real-time escalation queue with Approve/Deny controls  
@@ -51,13 +58,14 @@ Watch a **probabilistic (or real frontier-model) AI agent** perform database act
 - Detailed policy decision explanations  
 - Alerts for blocked or denied actions  
 - Autonomous mode with adjustable speed slider  
-- LLM mode status + error feedback
+- LLM mode status + error feedback  
+- Policy hash + signature on every event
 
 This demo clearly illustrates the core thesis:
 
 > **Deterministic enforcement controlling a probabilistic — or real frontier — AI agent**,  
 > combining automatic policy decisions, probabilistic auto-handling of edge cases,  
-> and human-in-the-loop oversight via escalation workflows.
+> cryptographic policy attestation, and human-in-the-loop oversight via escalation workflows.
 
 ### Quick Start (Local Run)
 
