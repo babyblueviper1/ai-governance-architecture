@@ -6,15 +6,25 @@
 
 This folder contains a **minimal, self-contained demonstration** of the **Distributed Runtime Verification Layer (DRVL)** governing a **probabilistic AI agent**.
 
-The agent occasionally attempts restricted database operations while DRVL enforces deterministic runtime policies — either executing, blocking, escalating, or auto-deciding based on simple rules.
+The agent attempts database operations (READ, UPDATE, DELETE, DROP) while DRVL enforces deterministic runtime policies — executing allowed actions, blocking forbidden ones, escalating risky ones, or auto-deciding based on simple rules.
+
+### New: Real LLM Mode
+
+You can now toggle the agent to use a **real LLM** (OpenAI, Anthropic, xAI Grok, Google Gemini) instead of the built-in simulated/random stub.
+
+- Paste your own API key → actions become truly non-deterministic (and occasionally risky — perfect to see DRVL govern real frontier-model behavior)  
+- **Warning:** Using real LLM will consume your API provider's tokens and may incur costs. The default simulation mode uses **no tokens**.  
+- Key is sent once to the server, never stored or logged — only used for your session.
 
 ## Key Features
 
-- **Probabilistic AI Agent**  
-  Generates READ, UPDATE, DELETE, DROP actions with realistic bias toward risky operations.
+- **Agent Mode Toggle**  
+  Switch between:  
+  - Simulated / random probabilistic agent (fast, free, predictable)  
+  - Real LLM (your API key) — unpredictable, realistic frontier-model behavior
 
 - **Deterministic Runtime Enforcement**  
-  Policies are applied consistently: allowed → execute, forbidden → block, escalatable → decide.
+  Policies applied consistently: allowed → execute, forbidden → block, escalatable → decide.
 
 - **Escalation Handling (for DELETE)**  
   When escalation is required:  
@@ -29,12 +39,13 @@ The agent occasionally attempts restricted database operations while DRVL enforc
   - Active policies view  
   - Latest decision panel with explanation  
   - Live event stream with timestamps & color coding  
-  - Escalation queue showing pending requests + Approve/Deny buttons
+  - Escalation queue showing pending requests + Approve/Deny buttons  
+  - LLM mode status & error feedback
 
 ## Architecture
 
 ```
-Probabilistic AI Agent
+AI Agent (Simulated or Real LLM)
            ↓
      DRVL Policy Engine  ← deterministic rules + auto-decision
            ↓
@@ -45,12 +56,12 @@ Probabilistic AI Agent
    Governance Dashboard (browser)
 ```
 
-## Running the Demo
+## Running the Demo Locally
 
 ### 1. Install dependencies
 
 ```bash
-pip install flask
+pip install flask openai  # openai required only for real LLM mode
 ```
 
 ### 2. Start the server
@@ -82,14 +93,14 @@ http://localhost:10000
 - Manual Approve → executes action (green)  
 - Manual Deny → blocks action (red)  
 
-This illustrates **automated + human governance** working together over unpredictable AI behavior.
+This illustrates **automated + human governance** working together over unpredictable (simulated or real LLM) AI behavior.
 
 ## Folder Contents
 
 ```
 demo/
  ├── app.py               # Flask server + dashboard endpoints
- ├── agent.py             # Probabilistic AI agent
+ ├── agent.py             # AI agent (simulated + real LLM support)
  ├── database.py          # Dummy DB simulator
  ├── drvl.py              # Policy verification engine
  ├── event_bus.py         # Simple pub/sub for events
@@ -103,11 +114,12 @@ demo/
 
 This prototype clearly shows:
 
-**“Deterministic enforcement controlling a probabilistic AI agent.”**
+**“Deterministic enforcement controlling a probabilistic — or real frontier — AI agent.”**
 
 It demonstrates:
 - Runtime policy enforcement on non-deterministic behavior  
 - Automatic + manual risk containment  
 - Real-time observability, explainability, and human oversight  
+- Optional integration with real LLMs (bring your own key)
 
-Not production-ready — a focused, runnable illustration of DRVL-style governance.
+Not production-ready — a focused, runnable illustration of DRVL-style governance for autonomous systems.
