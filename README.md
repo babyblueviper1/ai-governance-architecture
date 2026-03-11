@@ -19,18 +19,18 @@ The **Compute Escalation Governance Protocol (CEGP)** defines a control-plane ar
 
 This creates a verifiable, auditable path for capability growth while preventing unauthorized or unsafe expansion.
 
-## Live Demo
+## Live Demo — DRVL Governance with Escalation
 
-🚀 **DRVL Governance Demo** ([demo/](demo/)) — watch a **probabilistic AI agent** interact with a database under runtime enforcement policies.  
+🚀 **DRVL Governance Demo** ([demo/](demo/)) — watch a **probabilistic AI agent** interact with a database under deterministic runtime policies.  
 
-See in real time:
+### New Escalation Features
+- Restricted actions (`DELETE` / `DROP`) generate **escalation requests**.  
+- Every **3rd request is automatically approved** for demo purposes.  
+- Manual **Approve button** allows simulated human intervention.  
+- Executed, blocked, and approved actions appear **live** in the dashboard.  
 
-- Actions executed vs blocked  
-- Policy decision explanations  
-- Governance alerts  
-- Live event monitoring  
-
-This demo illustrates the core thesis: **deterministic enforcement controlling a probabilistic AI agent**.
+This demo illustrates the core thesis:  
+> **Deterministic enforcement controlling a probabilistic AI agent**, including escalation workflows and policy approvals.
 
 ### Quick Start
 
