@@ -10,6 +10,12 @@ def publish(event):
 
     event["timestamp"] = datetime.utcnow().isoformat()
 
+    # Tag high-risk actions
+    if event["status"] == "BLOCKED":
+        event["severity"] = "HIGH"
+    else:
+        event["severity"] = "LOW"
+
     events.append(event)
 
     for handler in subscribers:
