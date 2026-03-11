@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, render_template, Response, request
 import json
 import time
+import random  # ← Added this!
 
 from agent import ProbabilisticAgent
 from drvl import DRVL
@@ -11,7 +12,7 @@ from database import Database
 app = Flask(__name__)
 subscribe(handle_event)
 
-environment = "demo"  # changed for clarity
+environment = "demo"
 agent = ProbabilisticAgent()
 db = Database()
 drvl = DRVL()
@@ -37,31 +38,50 @@ def run_demo():
     if needs_escalation:
         escalation_counter += 1
         req_id = escalation_counter
-        # Auto-approve every 3rd escalation request for demo
-        status = "APPROVED" if escalation_counter % 3 == 0 else "PENDING"
 
-        escalation_queue.append({
-            "id": req_id,
-            "action": action,
-            "table": table,
-            "status": status
-        })
-
-        if status == "APPROVED":
+        # Demo: probabilistic auto-decision for escalations (DELETE)
+        # ~35% auto-approve, ~35% auto-deny, ~30% pending/manual
+        rand = random.random()
+        if rand < 0.35:
+            status = "APPROVED"
             result = db.execute(action, table)
             publish({
                 "action": action,
                 "table": table,
                 "status": "EXECUTED",
-                "message": "Auto-approved escalation",
-                "request_id": req_id
+                "message": "Auto-approved (demo)",
+                "request_id": req_id,
+                "timestamp": time.strftime("%H:%M:%S")
+            })
+        elif rand < 0.70:
+            status = "DENIED"
+            publish({
+                "action": action,
+                "table": table,
+                "status": "BLOCKED",
+                "message": "Auto-denied (demo)",
+                "request_id": req_id,
+                "timestamp": time.strftime("%H:%M:%S")
+            })
+            result = None
+        else:
+            status = "PENDING"
+            escalation_queue.append({
+                "id": req_id,
+                "action": action,
+                "table": table,
+                "status": status
             })
     else:
-        status = "EXECUTED" if allowed else "BLOCKED"
+        # Non-escalation path: allowed or forbidden (e.g. DROP)
         if allowed:
+            status = "EXECUTED"
             result = db.execute(action, table)
+        else:
+            status = "BLOCKED"
+            result = None
 
-    # Log and publish event
+    # Final log & publish (only once!)
     log_event(action, table, status, message)
     publish({
         "action": action,
@@ -121,13 +141,13 @@ def approve_request(req_id):
             })
 
     return jsonify({"status": "not_found", "id": req_id}), 404
+
 @app.route("/deny/<int:req_id>", methods=["POST"])
 def deny_request(req_id):
     for req in escalation_queue[:]:
         if req["id"] == req_id and req["status"] == "PENDING":
             req["status"] = "DENIED"
-            
-            # Publish event so dashboard shows it as blocked
+
             publish({
                 "action": req["action"],
                 "table": req["table"],
@@ -136,9 +156,9 @@ def deny_request(req_id):
                 "request_id": req_id,
                 "timestamp": time.strftime("%H:%M:%S")
             })
-            
+
             escalation_queue.remove(req)
-            
+
             return jsonify({
                 "status": "denied",
                 "id": req_id,
@@ -151,7 +171,7 @@ def deny_request(req_id):
                     } for r in escalation_queue
                 ]
             })
-    
+
     return jsonify({"status": "not_found", "id": req_id}), 404
 
 @app.route("/status")
@@ -160,34 +180,4 @@ def get_status():
         "escalation_queue": [
             {
                 "request_id": req["id"],
-                "action": req["action"],
-                "table": req["table"],
-                "status": req["status"]
-            } for req in escalation_queue
-        ]
-    })
-
-@app.route("/logs")
-def view_logs():
-    try:
-        with open("drvl_events.log", "r") as f:
-            logs = f.read()
-    except:
-        logs = "No events yet."
-    return f"<pre>{logs}</pre>"
-
-@app.route("/events")
-def stream_events():
-    def event_stream():
-        last_index = 0
-        while True:
-            events = get_events()
-            if len(events) > last_index:
-                event = events[last_index]
-                last_index += 1
-                yield f"data: {json.dumps(event)}\n\n"
-            time.sleep(0.5)  # faster polling for demo feel
-    return Response(event_stream(), mimetype="text/event-stream")
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000, debug=True)
+                "action": req
