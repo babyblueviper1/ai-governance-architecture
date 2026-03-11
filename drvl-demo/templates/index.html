@@ -205,8 +205,37 @@
             font-size: 0.85rem;
             color: #856404;
             background: #fff3cd;
-            padding: 8px 12px;
+            padding: 10px 14px;
             border-radius: 6px;
+            margin: 12px 0;
+            line-height: 1.4;
+        }
+
+        /* Apply Key button styling */
+        #apply-key-btn {
+            background: #0d6efd;
+            color: white;
+            padding: 10px 20px;
+            font-size: 15px;
+        }
+        #apply-key-btn:not(:disabled) {
+            background: #0d6efd;
+            color: white;
+        }
+        #apply-key-btn:disabled {
+            background: #6c757d;
+            color: white;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Flex layout for better spacing */
+        .llm-input-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
             margin: 12px 0;
         }
     </style>
@@ -217,21 +246,21 @@
 <div class="subtitle">Deterministic runtime governance of a probabilistic AI agent</div>
 
 <div id="llm-panel">
-    <label style="font-weight: 500; display: block; margin-bottom: 8px;">
-        <input type="checkbox" id="use-llm-toggle"> Use real LLM instead of probabilistic simulation
+    <label style="font-weight: 500; display: block; margin-bottom: 12px;">
+        <input type="checkbox" id="use-llm-toggle"> Use real LLM instead of simulated/random agent
     </label>
     <div id="llm-key-panel">
         <div class="warning-text">
-            <strong>Warning:</strong> Using real LLM will consume your API provider's tokens and may incur costs.
+            <strong>Warning:</strong> Using real LLM will consume your OpenAI tokens and may incur costs.<br>
+            Demo currently supports <strong>OpenAI only</strong> (GPT-4o / 4o-mini). Other providers coming soon.
         </div>
-        <select id="llm-provider">
-            <option value="openai">OpenAI (GPT-4o / 4o-mini)</option>
-            <option value="anthropic">Anthropic (Claude 3.5 Sonnet)</option>
-            <option value="xai">xAI Grok</option>
-            <option value="google">Google Gemini</option>
-        </select>
-        <input type="password" id="api-key-input" placeholder="Your API key" style="width: 260px; margin: 0 8px;">
-        <button id="apply-key-btn" onclick="submitApiKey()">Apply Key</button>
+        <div class="llm-input-group">
+            <select id="llm-provider">
+                <option value="openai">OpenAI (GPT-4o / 4o-mini)</option>
+            </select>
+            <input type="password" id="api-key-input" placeholder="Your OpenAI API key" style="flex: 1; min-width: 220px;">
+            <button id="apply-key-btn" onclick="submitApiKey()">Apply Key</button>
+        </div>
         <p style="font-size: 0.85rem; color: #666; margin-top: 12px;">
             Your key is sent once to the server and never stored or logged. Only used for this session.
         </p>
@@ -338,7 +367,7 @@ function submitApiKey() {
         btn.style.opacity = "1";
 
         if (data.status === "ok") {
-            document.getElementById("llm-status").textContent = "✓ LLM mode active — real model will be used for future actions";
+            document.getElementById("llm-status").textContent = "✓ LLM mode active — real OpenAI model will be used for future actions";
             document.getElementById("llm-status").style.color = "#198754";
             document.getElementById("llm-error").textContent = "";
             document.getElementById("api-key-input").value = ""; // clear key after success
