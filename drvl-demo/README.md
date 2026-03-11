@@ -1,5 +1,9 @@
 # DRVL Governance Demo — Probabilistic Agent with Escalation
 
+**Live Demo (no installation needed!)**  
+🎮 https://drvl-demo.onrender.com/  
+*(First load may take 10–30 seconds due to Render free-tier spin-up. Subsequent visits are instant.)*
+
 This folder contains a **minimal, self-contained demonstration** of the **Distributed Runtime Verification Layer (DRVL)** governing a **probabilistic AI agent**.
 
 The agent occasionally attempts restricted database operations while DRVL enforces deterministic runtime policies — either executing, blocking, escalating, or auto-deciding based on simple rules.
