@@ -74,6 +74,12 @@ def publish_signed_event(event_data):
 def home():
     return render_template("index.html")
 
+@app.route("/policy_hash")
+def policy_hash():
+    return jsonify({
+        "policy_hash": drvl.policy_hash
+    })
+
 
 @app.route("/run")
 def run_demo():
