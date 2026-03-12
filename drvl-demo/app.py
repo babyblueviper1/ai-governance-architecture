@@ -93,7 +93,7 @@ def run_demo():
     if llm_error:
         agent.last_llm_error = None
 
-    envelope = ExecutionEnvelope(action=action, table=table)
+    envelope = drvl.ExecutionEnvelope(action=action, table=table)
 
     allowed, needs_escalation, message, _, _ = drvl.verify(action, table, ENVIRONMENT)
 
