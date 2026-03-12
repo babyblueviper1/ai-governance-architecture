@@ -102,6 +102,59 @@ This architecture provides a **distributed verification layer for governance enf
 
 ---
 
+## Interactive Demo — DRVL Runtime Governance in Action
+
+A live, browser-based demonstration of **deterministic runtime governance** controlling a probabilistic (or real LLM-powered) AI agent.
+
+🎮 **Try it now (no installation required)**  
+https://drvl-demo.onrender.com/
+
+*(Initial load may take 10–30 seconds on Render’s free tier; subsequent visits are fast.)*
+
+### What the demo shows
+
+- A lightweight AI agent attempts database operations: `READ`, `UPDATE`, `DELETE`, `DROP`
+- The **Distributed Runtime Verification Layer (DRVL)** enforces deterministic policies at runtime:
+  - Allowed actions execute immediately
+  - Forbidden actions (`DROP`) are instantly blocked
+  - Risky actions (`DELETE`) trigger **escalation requests**
+- Escalation decisions (demo-only probabilistic logic):
+  - ~35% auto-approved → executed (green)
+  - ~35% auto-denied → blocked (red)
+  - ~30% pending → queued for manual Approve/Deny via the dashboard
+- Real-time dashboard features:
+  - Toggle between simulated/random agent and real OpenAI LLM (bring your own key)
+  - Live event stream with policy hash + cryptographic signature on every decision
+  - Escalation queue with Approve/Deny buttons
+  - Execution/block/approved counters
+  - **Intentional integrity mismatches** (~15% of events) to visualize detection of tampered policy hashes or invalid signatures (red ✗ warning)
+
+**Demo note on mismatches**  
+~15% of events are deliberately tampered with (wrong policy hash or corrupted signature) to illustrate what integrity failure looks like in the UI.  
+In a real deployment, policy hashes are designed to match for events under the current policy — the check detects changes, tampering, misconfigurations, or other anomalies.
+
+### Real LLM Mode (optional)
+
+- Toggle → enter your OpenAI API key (supports GPT-4o / 4o-mini)
+- Agent behavior becomes truly non-deterministic and occasionally risky
+- **Warning:** consumes your OpenAI tokens (may incur costs). Simulated mode uses **zero tokens**.
+- Key is sent once per session, never stored or logged.
+
+### Why this demo matters
+
+The DRVL demo is a **minimal, self-contained illustration** of core CEGP principles in action:
+
+- Deterministic enforcement over probabilistic/agentic behavior
+- Explicit escalation pathways with automated + human-in-the-loop control
+- Cryptographic attestation (policy hash + event signature) for auditability
+- Runtime constraint architecture that survives model non-determinism
+
+It shows how governance can be **embedded in infrastructure** rather than layered on top as policy — exactly the structural shift this project explores.
+
+→ Full demo source code & local setup instructions: [`demo/` folder README](./demo/README.md)
+
+---
+
 ### [Note I — The AI Agent Spectrum](./notes/note-01-ai-agent-spectrum.md)
 Introduces a capability-based classification of AI systems.
 
