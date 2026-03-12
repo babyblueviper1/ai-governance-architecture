@@ -68,27 +68,29 @@ class DRVL:
             serialized = json.dumps(self.to_dict(), sort_keys=True)
             return hashlib.sha256(serialized.encode()).hexdigest()[:16]
 
-    def verify(self, action: str, table: str, environment: str = "demo"):
-        """
-        Verify action against policy.
+  def verify(self, action: str, table: str, environment: str = "demo"):
+    """
+    Strict policy enforcement:
+    - READ / UPDATE → always allow & execute
+    - DROP        → always deny
+    - DELETE      → always escalate (then demo randomness applies)
+    - anything else → default allow (you can tighten later)
+    """
+    envelope = self.ExecutionEnvelope(action=action, table=table)
 
-        Returns:
-            allowed (bool)
-            needs_escalation (bool)
-            message (str)
-            policy_hash (str)
-            envelope (ExecutionEnvelope)
-        """
-        envelope = self.ExecutionEnvelope(action=action, table=table)
+    action_upper = action.upper()
 
-        if action in self.FORBIDDEN:
-            return False, False, self.FORBIDDEN[action], self.policy_hash, envelope
-
-        if action in self.ESCALATION_REQUIRED:
-            return False, True, self.ESCALATION_REQUIRED[action], self.policy_hash, envelope
-
-        # Default: allow anything not explicitly forbidden or escalated
+    if action_upper in ("READ", "UPDATE"):
         return True, False, "Allowed operation", self.policy_hash, envelope
+
+    if action_upper == "DROP":
+        return False, False, "Forbidden operation (DROP)", self.policy_hash, envelope
+
+    if action_upper == "DELETE":
+        return False, True, "Requires escalation (DELETE)", self.policy_hash, envelope
+
+    # Default fallback for unknown actions (INSERT, SELECT, etc.)
+    return True, False, "Allowed by default", self.policy_hash, envelope
 
     def sign_event(self, event_data: dict) -> str:
         """
