@@ -10,7 +10,7 @@ The agent attempts database operations (`READ`, `UPDATE`, `DELETE`, `DROP`) whil
 
 ## Real LLM Mode (bring your own key)
 
-- Toggle the switch on → paste your **OpenAI** API key. **Demo currently supports OpenAI only** (GPT-4o / 4o-mini)
+- Toggle the switch on → paste your **OpenAI** API key. **Demo currently supports OpenAI** (GPT-4o / 4o-mini)
 - Actions become truly non-deterministic (and occasionally risky — perfect to see DRVL govern real frontier-model behavior)  
 - **Warning:** Using real LLM will consume your OpenAI tokens and may incur costs. The default simulation mode uses **no tokens**.  
 - Your key is sent once to the server, never stored or logged — only used for your current session.
