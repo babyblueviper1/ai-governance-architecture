@@ -637,10 +637,52 @@ window.addEventListener("load", async () => {
   } catch {}
 });
 
-// Button bindings
-document.querySelector(".btn-run").onclick = runAction;
-document.querySelector(".btn-auto").onclick = startAuto;
-document.querySelector(".btn-stop").onclick = stopAuto;
+// ── Button bindings ───────────────────────────────────────────────
+const btnRun   = document.querySelector(".btn-run");
+const btnAuto  = document.querySelector(".btn-auto");
+const btnStop  = document.querySelector(".btn-stop");
+
+if (btnRun)   btnRun.onclick   = runAction;
+if (btnAuto)  btnAuto.onclick  = startAuto;
+if (btnStop)  btnStop.onclick  = stopAuto;
+
+// Enhanced start/stop functions
+function startAuto() {
+  if (autoInterval) {
+    console.log("Auto mode already running – ignoring duplicate click");
+    return;
+  }
+
+  btnAuto.disabled = true;
+  btnStop.disabled = false;
+
+  autoInterval = setInterval(() => {
+    runAction();
+  }, speed);
+
+  console.log("Autonomous mode STARTED – interval ID:", autoInterval);
+}
+
+function stopAuto() {
+  if (!autoInterval) {
+    console.log("No active auto mode to stop");
+    return;
+  }
+
+  clearInterval(autoInterval);
+  autoInterval = null;
+
+  btnAuto.disabled = false;
+  btnStop.disabled = true;
+
+  console.log("Autonomous mode STOPPED");
+  elements.alerts.textContent = "Autonomous mode stopped";
+  setTimeout(() => {
+    if (elements.alerts.textContent === "Autonomous mode stopped") {
+      elements.alerts.textContent = "";
+    }
+  }, 4000);
+}
 </script>
 </body>
 </html>
