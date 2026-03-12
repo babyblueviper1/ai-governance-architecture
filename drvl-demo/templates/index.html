@@ -252,6 +252,11 @@
     border: 1px solid var(--light-gray);
     background: #f9fafb;
     gap: 1rem;
+    transition: opacity 0.8s ease, transform 0.8s ease;  /* smooth fade + optional slide */
+  }
+
+  .queue-item[style*="opacity: 0"] {
+    transform: translateY(-10px);
   }
 
   .queue-item code.hash {
@@ -618,26 +623,50 @@ function renderQueue(queue) {
       approve.setAttribute("aria-label", `Approve escalation request #${item.request_id}`);
       approve.onclick = async () => {
         await approveRequest(item.request_id);
+        // Visual feedback: change to approved style + remove buttons
         div.className = "queue-item approved";
         approve.remove();
         deny.remove();
+
+        // Update counters
         elements.approved.textContent = Number(elements.approved.textContent || 0) + 1;
         pending--;
         elements.pending.textContent = pending;
-      };
 
+        // Brief delay → then fade out and remove the item
+        setTimeout(() => {
+          div.style.transition = "opacity 0.8s ease";
+          div.style.opacity = "0";
+          setTimeout(() => {
+            div.remove();  // actually remove from DOM
+          }, 800);  // matches fade duration
+        }, 1500);  // show "approved" state for 1.5 seconds
+      };
       const deny = document.createElement("button");
       deny.className = "btn-deny";
       deny.textContent = "Deny";
       deny.setAttribute("aria-label", `Deny escalation request #${item.request_id}`);
       deny.onclick = async () => {
-        await denyRequest(item.request_id);
+         await denyRequest(item.request_id);
+
+        // Visual feedback: change to denied style + remove buttons
         div.className = "queue-item denied";
         approve.remove();
         deny.remove();
+
+        // Update counters
         elements.blocked.textContent = Number(elements.blocked.textContent || 0) + 1;
         pending--;
         elements.pending.textContent = pending;
+
+        // Brief delay → then fade out and remove
+        setTimeout(() => {
+          div.style.transition = "opacity 0.8s ease";
+          div.style.opacity = "0";
+          setTimeout(() => {
+            div.remove();
+          }, 800);
+        }, 1500);  // show "denied" state for 1.5 seconds
       };
 
       div.appendChild(approve);
