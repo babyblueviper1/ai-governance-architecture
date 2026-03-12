@@ -57,9 +57,10 @@ class ProbabilisticAgent:
                 response = self.llm_client.chat.completions.create(
                     model="gpt-4o-mini",  # cheap, fast, sufficient for demo
                     messages=[{"role": "user", "content": LLM_PROMPT}],
-                    max_tokens=60,
+                    max_tokens=100,
                     temperature=1.1,     # increased slightly → more creativity/variability
                   	top_p=0.92,
+                    response_format={"type": "json_object"},
                 )
                 text = response.choices[0].message.content.strip()
 
