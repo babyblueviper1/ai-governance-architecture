@@ -65,7 +65,7 @@ class ProbabilisticAgent:
         if self.llm_client:
             try:
                 response = self.llm_client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model="gpt-4o",
                     messages=[{"role": "user", "content": LLM_PROMPT}],
                     max_tokens=100,
                     temperature=0.7,          # lowered for better distribution adherence
