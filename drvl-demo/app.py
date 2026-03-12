@@ -1,40 +1,45 @@
-from flask import Flask, jsonify, render_template, Response, request
+from flask import Flask, jsonify, render_template, request, Response
 import json
 import time
 import random
 import hashlib
 import hmac
+import secrets
+from threading import Lock
 
-from agent import ProbabilisticAgent
-from drvl import DRVL
+from agent import ProbabilisticAgent      # your LLM/random agent
+from drvl import DRVL                     # your policy engine
 from audit import handle_event, log_event
-from event_bus import publish, subscribe, get_events
-from database import Database
+from event_bus import publish, subscribe, get_events  # your pub/sub
+from database import Database             # your DB mock/real
 
 app = Flask(__name__)
 subscribe(handle_event)
 
-environment = "demo"
+# Config
+ENVIRONMENT = "demo"
+DEMO_TAMPER_PROBABILITY = 0.15
+
+# Components
 agent = ProbabilisticAgent()
 db = Database()
 drvl = DRVL()
 
-# Escalation tracking
-escalation_queue = []
+# Thread-safe escalation queue (still in-memory → use Redis/DB in prod)
+escalation_lock = Lock()
+escalation_queue = []           # list of dicts
 escalation_counter = 0
 
-
-# Lightweight execution envelope — formal boundary between validation and execution
 class ExecutionEnvelope:
-    """Authorization boundary object — separates proposal from execution."""
+    """Immutable action proposal with replay protection."""
     def __init__(self, action: str, table: str, params: dict | None = None):
         self.action = action
         self.table = table
         self.params = params or {}
         self.timestamp = time.time()
-        self.nonce = time.time_ns()  # replay protection
+        self.nonce = secrets.token_hex(16)
 
-    def to_dict(self) -> dict:
+    def to_dict(self):
         return {
             "action": self.action,
             "table": self.table,
@@ -44,174 +49,249 @@ class ExecutionEnvelope:
         }
 
     def compute_hash(self) -> str:
-        """Deterministic short hash for demo visibility."""
-        serialized = json.dumps(self.to_dict(), sort_keys=True)
-        return hashlib.sha256(serialized.encode()).hexdigest()[:16]
+        serialized = json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(serialized.encode()).hexdigest()
 
 
-def publish_signed_event(event_data):
-    """Add policy hash and HMAC signature before publishing — sometimes tamper for demo"""
-    
-    # Normal path
-    event_data["policy"] = drvl.policy_hash
-    event_data["signature"] = drvl.sign_event(event_data)
-    
-    # ~15% tampered events for demo
-    if random.random() < 0.15:
-        tamper_type = random.choice(["policy", "signature", "both"])
-        
-        if tamper_type in ("policy", "both"):
-            event_data["policy"] = "fake" + drvl.policy_hash[4:]
-            
-        if tamper_type in ("signature", "both"):
-            real_sig = event_data["signature"]
-            event_data["signature"] = real_sig[:8] + "DEAD" + real_sig[12:]
-    
-    publish(event_data)
+def create_signed_event(event_data: dict) -> dict:
+    event = event_data.copy()
+    event["policy"] = drvl.policy_hash
+    event["signature"] = drvl.sign_event(event)
+
+    # Demo tampering (remove in production!)
+    if random.random() < DEMO_TAMPER_PROBABILITY:
+        tamper = random.choice(["policy", "signature", "both"])
+        if tamper in ("policy", "both"):
+            event["policy"] = "fake" + event["policy"][4:]
+        if tamper in ("signature", "both"):
+            sig = event["signature"]
+            event["signature"] = sig[:8] + "DEAD" + sig[12:]
+
+    return event
 
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
+
 @app.route("/policy_hash")
 def policy_hash():
-    return jsonify({
-        "policy_hash": drvl.policy_hash
-    })
+    return jsonify({"policy_hash": drvl.policy_hash})
+
 
 @app.route("/verification_key")
 def verification_key():
+    # WARNING: Exposes HMAC key — protect or remove in real systems!
     try:
-        key = None
-
-        # support multiple DRVL key names
-        if hasattr(drvl, "secret_key"):
-            key = drvl.secret_key
-        elif hasattr(drvl, "hmac_key"):
-            key = drvl.hmac_key
-        elif hasattr(drvl, "signing_key"):
-            key = drvl.signing_key
-
+        key = next(
+            (v for k, v in vars(drvl).items()
+             if k in ("secret_key", "hmac_key", "signing_key") and v is not None),
+            None
+        )
         if key is None:
-            return jsonify({"error": "No verification key available"}), 500
-
-        # convert to hex for browser
+            return jsonify({"error": "No signing key available"}), 500
         if isinstance(key, bytes):
             key = key.hex()
-
         return jsonify({"key": key})
-
     except Exception as e:
-        print("Verification key error:", e)
-        return jsonify({"error": "verification key failure"}), 500
+        print(f"Verification key error: {e}")
+        return jsonify({"error": "Key retrieval failed"}), 500
 
 
 @app.route("/run")
 def run_demo():
     global escalation_counter
 
-    llm_error = None
+    # Agent proposes
     action, table = agent.generate_action()
-
-    if hasattr(agent, "last_llm_error") and agent.last_llm_error:
-        llm_error = agent.last_llm_error
+    llm_error = getattr(agent, "last_llm_error", None)
+    if llm_error:
         agent.last_llm_error = None
 
-    # Create envelope BEFORE verification — this is the proposal boundary
     envelope = ExecutionEnvelope(action=action, table=table)
 
-    # Verify — note: drvl.verify now returns envelope too (update drvl.py accordingly)
-    allowed, needs_escalation, message, policy_hash, envelope = drvl.verify(action, table, environment)
+    allowed, needs_escalation, message, _, _ = drvl.verify(action, table, ENVIRONMENT)
 
-    status = ""
+    status = None
     result = None
-    req_id = None
+    request_id = None
 
-    # Base event
     event = {
         "action": action,
         "table": table,
-        "timestamp": time.strftime("%H:%M:%S"),
-        "nonce": time.time_ns(),
-        "envelope_hash": envelope.compute_hash(),  # ← core new field
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "nonce": envelope.nonce,
+        "envelope_hash": envelope.compute_hash(),
     }
 
     if needs_escalation:
-        escalation_counter += 1
-        req_id = escalation_counter
-        event["request_id"] = req_id
+        with escalation_lock:
+            escalation_counter += 1
+            request_id = escalation_counter
 
-        rand = random.random()
-        if rand < 0.35:
-            status = "APPROVED"
-            result = db.execute(action, table)
-            event.update({
-                "status": "EXECUTED",
-                "message": "Auto-approved (demo)"
-            })
-        elif rand < 0.70:
-            status = "DENIED"
-            event.update({
-                "status": "BLOCKED",
-                "message": "Auto-denied (demo)"
-            })
-            result = None
-        else:
-            status = "PENDING"
-            escalation_queue.append({
-                "id": req_id,
-                "action": action,
-                "table": table,
-                "status": status,
-                "envelope_hash": envelope.compute_hash()  # traceable in queue
-            })
-            event.update({
-                "status": "PENDING",
-                "message": "Escalation pending"
-            })
+            r = random.random()
+            if r < 0.35:  # auto-approve
+                status = "APPROVED"
+                result = db.execute(action, table)
+                event.update({"status": "EXECUTED", "message": "Auto-approved (demo)"})
+            elif r < 0.70:  # auto-deny
+                status = "DENIED"
+                event.update({"status": "BLOCKED", "message": "Auto-denied (demo)"})
+            else:  # pending
+                status = "PENDING"
+                escalation_queue.append({
+                    "id": request_id,
+                    "action": action,
+                    "table": table,
+                    "status": "PENDING",
+                    "envelope_hash": envelope.compute_hash(),
+                    "requested_at": time.time(),
+                })
+                event.update({"status": "PENDING", "message": "Escalation pending", "request_id": request_id})
     else:
         if allowed:
             status = "EXECUTED"
             result = db.execute(action, table)
         else:
             status = "BLOCKED"
-            result = None
+        event.update({"status": status, "message": message})
 
-        event.update({
-            "status": status,
-            "message": message
-        })
-
-    # Final log & publish
     log_event(action, table, status, message)
-    publish_signed_event(event)
+    signed = create_signed_event(event)
+    publish(signed)
 
-    # Response — include envelope hash for UI display
     return jsonify({
         "action": action,
         "table": table,
         "status": status,
         "message": message,
         "result": result,
-        "request_id": req_id,
+        "request_id": request_id,
         "escalation_queue": [
             {
-                "request_id": req["id"],
-                "action": req["action"],
-                "table": req["table"],
-                "status": req["status"],
-                "envelope_hash": req.get("envelope_hash")  # optional
-            } for req in escalation_queue
+                "request_id": q["id"],
+                "action": q["action"],
+                "table": q["table"],
+                "status": q["status"],
+                "envelope_hash": q["envelope_hash"],
+            } for q in escalation_queue
         ],
         "llm_error": llm_error,
         "policy": drvl.policy_hash,
-        "signature": event.get("signature"),
-        "envelope_hash": event["envelope_hash"]  # new
+        "signature": signed.get("signature"),
+        "envelope_hash": event["envelope_hash"],
     })
 
 
-# ... rest of your routes unchanged (approve, deny, status, policy_hash, logs, set_llm_key, events) ...
+@app.route("/approve/<int:req_id>", methods=["POST"])
+def approve(req_id):
+    with escalation_lock:
+        for i, req in enumerate(escalation_queue):
+            if req["id"] == req_id and req["status"] == "PENDING":
+                # Execute the action
+                result = db.execute(req["action"], req["table"])
+                req["status"] = "APPROVED"
+                req["decided_at"] = time.time()
+                # Optional: remove after decision
+                # del escalation_queue[i]
+                event = {
+                    "type": "escalation_decision",
+                    "request_id": req_id,
+                    "status": "APPROVED",
+                    "action": req["action"],
+                    "table": req["table"],
+                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "envelope_hash": req["envelope_hash"],
+                }
+                signed = create_signed_event(event)
+                publish(signed)
+                return jsonify({
+                    "status": "approved",
+                    "escalation_queue": [
+                        {"request_id": q["id"], "action": q["action"], "table": q["table"], "status": q["status"]}
+                        for q in escalation_queue
+                    ]
+                })
+    return jsonify({"error": "Request not found or not pending"}), 404
+
+
+@app.route("/deny/<int:req_id>", methods=["POST"])
+def deny(req_id):
+    with escalation_lock:
+        for i, req in enumerate(escalation_queue):
+            if req["id"] == req_id and req["status"] == "PENDING":
+                req["status"] = "DENIED"
+                req["decided_at"] = time.time()
+                # Optional: del escalation_queue[i]
+                event = {
+                    "type": "escalation_decision",
+                    "request_id": req_id,
+                    "status": "DENIED",
+                    "action": req["action"],
+                    "table": req["table"],
+                    "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "envelope_hash": req["envelope_hash"],
+                }
+                signed = create_signed_event(event)
+                publish(signed)
+                return jsonify({
+                    "status": "denied",
+                    "escalation_queue": [
+                        {"request_id": q["id"], "action": q["action"], "table": q["table"], "status": q["status"]}
+                        for q in escalation_queue
+                    ]
+                })
+    return jsonify({"error": "Request not found or not pending"}), 404
+
+
+@app.route("/status")
+def status():
+    with escalation_lock:
+        return jsonify({
+            "escalation_queue": [
+                {
+                    "request_id": q["id"],
+                    "action": q["action"],
+                    "table": q["table"],
+                    "status": q["status"],
+                    "envelope_hash": q.get("envelope_hash"),
+                } for q in escalation_queue
+            ]
+        })
+
+
+@app.route("/set_llm_key", methods=["POST"])
+def set_llm_key():
+    try:
+        data = request.json
+        provider = data.get("provider")
+        api_key = data.get("api_key")
+
+        if provider != "openai" or not api_key:
+            return jsonify({"error": "Invalid provider or missing key"}), 400
+
+        # In real code: store in session, env, or pass to agent
+        # Here we just simulate success
+        # agent.set_llm_credentials(provider, api_key)  # ← you'd implement this
+        print(f"[DEMO] Received OpenAI key: {api_key[:10]}...")
+
+        return jsonify({"status": "ok", "message": "LLM credentials accepted (session only)"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/events")
+def events():
+    def generate():
+        while True:
+            events = get_events()  # your event bus should yield new events
+            for event in events:
+                yield f"data: {json.dumps(event)}\n\n"
+            time.sleep(0.3)  # tune as needed
+
+    return Response(generate(), mimetype="text/event-stream")
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
