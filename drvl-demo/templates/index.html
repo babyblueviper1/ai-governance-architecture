@@ -19,62 +19,19 @@
     }
 
     * { box-sizing: border-box; margin:0; padding:0; }
-
-    body {
-      font-family: system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      padding: 1.5rem 1rem;
-    }
-
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 1.5rem 1rem; }
     header { text-align: center; margin-bottom: 2.5rem; }
     h1 { font-size: clamp(2rem, 5.5vw, 2.6rem); margin-bottom: 0.4em; }
     .subtitle { color: var(--gray); font-size: 1.15rem; }
 
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem 2rem;
-      margin: 2rem 0;
-      align-items: center;
-    }
-
-    button {
-      padding: 0.65rem 1.4rem;
-      font-size: 1rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-      transition: all 0.16s ease;
-    }
-
+    .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 2rem; margin: 2rem 0; align-items: center; }
+    button { padding: 0.65rem 1.4rem; font-size: 1rem; font-weight: 600; border: none; border-radius: 6px; color: white; cursor: pointer; transition: all 0.16s ease; }
     button:hover:not(:disabled) { filter: brightness(1.08); }
     button:active:not(:disabled) { transform: translateY(1px); }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    button.loading {
-      color: transparent;
-      position: relative;
-    }
-    button.loading::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-    }
-    button.loading::after {
-      width: 1.2rem;
-      height: 1.2rem;
-      border: 3px solid white;
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
+    button.loading { color: transparent; position: relative; }
+    button.loading::after { content: ""; position: absolute; inset: 0; display: grid; place-items: center; width: 1.2rem; height: 1.2rem; border: 3px solid white; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .btn-run     { background: var(--primary); }
@@ -83,150 +40,44 @@
     .btn-approve { background: var(--success); padding: 0.4rem 1rem; font-size: 0.9rem; }
     .btn-deny    { background: var(--danger);   padding: 0.4rem 1rem; font-size: 0.9rem; }
 
-    .speed-control {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      font-size: 0.95rem;
-    }
-    input[type="range"] {
-      width: 140px;
-      accent-color: var(--primary);
-    }
+    .speed-control { display: flex; align-items: center; gap: 0.8rem; font-size: 0.95rem; }
+    input[type="range"] { width: 140px; accent-color: var(--primary); }
 
-    #stats {
-      display: flex;
-      justify-content: center;
-      gap: 2.5rem;
-      font-size: 1.2rem;
-      font-weight: 600;
-      margin: 0 0 2rem;
-      flex-wrap: wrap;
-    }
+    #stats { display: flex; justify-content: center; gap: 2.5rem; font-size: 1.2rem; font-weight: 600; margin: 0 0 2rem; flex-wrap: wrap; }
     .stat-executed { color: var(--success); }
     .stat-blocked  { color: var(--danger); }
     .stat-approved { color: var(--success); }
 
-    .panel {
-      max-width: 860px;
-      margin: 0 auto 1.8rem;
-      background: var(--panel);
-      border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      padding: 1.6rem;
-    }
-
+    .panel { max-width: 860px; margin: 0 auto 1.8rem; background: var(--panel); border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 1.6rem; }
     .policy-item { font-size: 1.1rem; margin: 0.6rem 0; }
     .allowed    { color: var(--success); }
     .restricted { color: var(--danger); }
 
-    #alerts {
-      min-height: 2.4rem;
-      padding: 1rem;
-      margin: 0 auto 1.8rem;
-      max-width: 860px;
-      border-radius: 8px;
-      font-weight: 500;
-      background: #fee2e2;
-      color: #991b1b;
-      text-align: center;
-    }
+    #alerts { min-height: 2.4rem; padding: 1rem; margin: 0 auto 1.8rem; max-width: 860px; border-radius: 8px; font-weight: 500; background: #fee2e2; color: #991b1b; text-align: center; }
 
-    .info-box {
-      background: #eff6ff;
-      border-left: 4px solid var(--primary);
-      padding: 1.2rem 1.6rem;
-      border-radius: 8px;
-      margin: 1.5rem auto;
-      max-width: 860px;
-    }
+    .info-box { background: #eff6ff; border-left: 4px solid var(--primary); padding: 1.2rem 1.6rem; border-radius: 8px; margin: 1.5rem auto; max-width: 860px; }
+    .warning-text { font-size: 0.92rem; color: #854d0e; background: #fefce8; padding: 1rem 1.4rem; border-radius: 6px; margin: 1rem 0; }
 
-    .warning-text {
-      font-size: 0.92rem;
-      color: #854d0e;
-      background: #fefce8;
-      padding: 1rem 1.4rem;
-      border-radius: 6px;
-      margin: 1rem 0;
-    }
-
-    .queue-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.9rem 1.3rem;
-      margin: 0.6rem 0;
-      border-radius: 6px;
-      border: 1px solid var(--light-gray);
-      background: #f9fafb;
-      gap: 1rem;
-    }
+    .queue-item { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1.3rem; margin: 0.6rem 0; border-radius: 6px; border: 1px solid var(--light-gray); background: #f9fafb; gap: 1rem; }
     .queue-item.pending   { background: #fefce8; border-color: #fef08a; }
     .queue-item.approved  { background: #f0fdf4; border-color: #86efac; font-weight: 500; }
     .queue-item.denied    { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
 
-    #events {
-      max-height: 380px;
-      overflow-y: auto;
-      background: #f3f4f6;
-      border-radius: 8px;
-      padding: 0.8rem;
-      font-family: 'Consolas', monospace;
-      font-size: 0.96rem;
-    }
-
-    .event-line {
-      padding: 0.6rem 1rem;
-      margin: 0.3rem 0;
-      border-radius: 5px;
-    }
+    #events { max-height: 380px; overflow-y: auto; background: #f3f4f6; border-radius: 8px; padding: 0.8rem; font-family: 'Consolas', monospace; font-size: 0.96rem; }
+    .event-line { padding: 0.6rem 1rem; margin: 0.3rem 0; border-radius: 5px; }
     .event-executed  { background: #ecfdf5; }
     .event-blocked   { background: #fef2f2; }
     .event-pending   { background: #fefce8; }
     .event-approved  { background: #dbeafe; font-weight: 600; }
+    .event-tampered { background: #fef2f2 !important; border-left: 4px solid var(--danger); font-weight: 500; }
 
     .integrity-good { color: var(--success); font-weight: 700; }
     .integrity-bad  { color: var(--danger);   font-weight: 700; }
-
     code { background: #e5e7eb; padding: 0.15rem 0.4rem; border-radius: 4px; }
 
-    #llm-panel {
-      max-width: 680px;
-      margin: 0 auto 2rem;
-      padding: 1.4rem;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 1px 10px rgba(0,0,0,0.06);
-      text-align: center;
-    }
-
-    .llm-input-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      justify-content: center;
-      margin: 1.2rem 0;
-    }
-
-    #llm-key-panel input[type="password"],
-    #llm-key-panel select {
-      padding: 0.6rem 1rem;
-      font-size: 1rem;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      min-width: 240px;
-    }
-
-    .event-tampered {
-      background: #fef2f2 !important;
-      border-left: 4px solid var(--danger);
-      font-weight: 500;
-    }
-
-    .event-line strong {
-      min-width: 110px;
-      display: inline-block;
-    }
+    #llm-panel { max-width: 680px; margin: 0 auto 2rem; padding: 1.4rem; background: white; border-radius: 10px; box-shadow: 0 1px 10px rgba(0,0,0,0.06); text-align: center; }
+    .llm-input-group { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin: 1.2rem 0; }
+    #llm-key-panel input[type="password"], #llm-key-panel select { padding: 0.6rem 1rem; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 6px; min-width: 240px; }
   </style>
 </head>
 <body>
@@ -238,28 +89,16 @@
 
 <div id="llm-panel">
   <label style="font-weight:600; display:block; margin-bottom:1.2rem; cursor:pointer;">
-    <input type="checkbox" id="use-llm-toggle" /> 
-    Use real LLM (OpenAI) instead of random agent
+    <input type="checkbox" id="use-llm-toggle" /> Use real LLM (OpenAI)
   </label>
 
   <div id="llm-key-panel" hidden>
-    <div class="warning-text">
-      <strong>Note:</strong> Real LLM usage consumes API tokens and may incur costs.<br>
-      Only OpenAI is currently supported.
-    </div>
-
+    <div class="warning-text"><strong>Note:</strong> Real LLM usage consumes API tokens and may incur costs.</div>
     <div class="llm-input-group">
-      <select id="llm-provider">
-        <option value="openai">OpenAI</option>
-      </select>
+      <select id="llm-provider"><option value="openai">OpenAI</option></select>
       <input type="password" id="api-key-input" placeholder="sk-... OpenAI API key" autocomplete="off" />
       <button id="apply-key-btn">Apply Key</button>
     </div>
-
-    <p style="font-size:0.88rem; color:var(--gray); margin:0.9rem 0 0.4rem;">
-      Key is sent once — never stored. Valid for this browser session only.
-    </p>
-
     <div id="llm-status" style="min-height:1.4em; margin-top:0.8rem;"></div>
     <div id="llm-error" style="color:var(--danger); min-height:1.4em;"></div>
   </div>
@@ -269,7 +108,6 @@
   <button class="btn-run" type="button">Run AI Action</button>
   <button class="btn-auto" type="button">Start Autonomous Mode</button>
   <button class="btn-stop" type="button" disabled>Stop Autonomous Mode</button>
-
   <div class="speed-control">
     <label for="speedSlider">Interval:</label>
     <input type="range" id="speedSlider" min="600" max="5000" step="200" value="1800" />
@@ -285,10 +123,10 @@
 
 <div class="panel">
   <h2>Active Policies</h2>
-  <div class="policy-item allowed">✓ READ   — permitted</div>
+  <div class="policy-item allowed">✓ READ — permitted</div>
   <div class="policy-item allowed">✓ UPDATE — permitted</div>
   <div class="policy-item restricted">✗ DELETE — escalation required</div>
-  <div class="policy-item restricted">✗ DROP   — always forbidden</div>
+  <div class="policy-item restricted">✗ DROP — always forbidden</div>
 </div>
 
 <div class="info-box">
@@ -301,40 +139,28 @@
 </div>
 
 <div class="panel" style="background:#f0f7ff;">
-  <p style="margin:0; font-weight:600;">
-    Current Policy Hash: <code id="current-policy-hash">Loading…</code>
-  </p>
-  <p style="margin:0.5rem 0 0; font-size:0.92rem; color:var(--gray);">
-    Any mismatch in events indicates policy change or tampering.
-  </p>
+  <p style="margin:0; font-weight:600;">Current Policy Hash: <code id="current-policy-hash">Loading…</code></p>
+  <p style="margin:0.5rem 0 0; font-size:0.92rem; color:var(--gray);">Any mismatch in events indicates policy change or tampering.</p>
 </div>
 
-<h2 style="text-align:center; color:var(--danger); margin:2.5rem 0 1rem; font-size:1.4rem;">
-  Security & Integrity Alerts
-</h2>
+<h2 style="text-align:center; color:var(--danger); margin:2.5rem 0 1rem; font-size:1.4rem;">Security & Integrity Alerts</h2>
 <div id="alerts"></div>
 
 <div class="panel">
   <h2>Latest Decision</h2>
-
   <div class="warning-text" style="max-width:720px; margin:1rem auto;">
-    <strong>Demo note:</strong> ~15% of published events are <strong>intentionally tampered</strong> (policy hash or signature) to show detection.
+    <strong>Demo note:</strong> ~15% of published events are intentionally tampered (policy hash or signature) to show detection.
   </div>
-
   <div id="decision">
     <div><b>Action:</b> <span id="decAction">—</span></div>
     <div><b>Status:</b> <span id="decRule">—</span></div>
     <div><b>Result:</b> <span id="decResult">—</span></div>
-
     <div style="margin-top:1.2rem; font-size:0.96rem; word-break:break-all;">
       <b>Envelope:</b> <code id="decEnvelopeHash">—</code><br>
       <b>Policy:</b>   <code id="decPolicy">—</code><br>
       <b>Signature:</b> <code id="decSig">—</code>
     </div>
-
-    <div style="margin-top:1rem;">
-      <b>Integrity:</b> <span id="decIntegrity">Waiting…</span>
-    </div>
+    <div style="margin-top:1rem;"><b>Integrity:</b> <span id="decIntegrity">Waiting…</span></div>
   </div>
 </div>
 
@@ -343,11 +169,9 @@
   <p style="text-align:center; color:var(--gray); margin-bottom:1rem; font-size:0.96rem;">
     Demo: DELETE actions → ~35% auto-approve, ~35% auto-deny, rest pending
   </p>
-
   <div style="text-align:center; margin-bottom:1rem; font-size:1.1rem;">
-    Total escalations: <b id="totalEscalations">0</b>  •  Pending: <b id="pendingCount">0</b>
+    Total escalations: <b id="totalEscalations">0</b> • Pending: <b id="pendingCount">0</b>
   </div>
-
   <div id="escalationQueue"></div>
 </div>
 
@@ -357,10 +181,6 @@
 </div>
 
 <script>
-// ──────────────────────────────────────────────
-//  Frontend logic — enhanced with better color coding & integrity display
-// ──────────────────────────────────────────────
-
 let verificationKey = null;
 let autoInterval = null;
 let speed = 1800;
@@ -386,303 +206,94 @@ const elements = {
 
 const llmToggle = document.getElementById("use-llm-toggle");
 const llmKeyPanel = document.getElementById("llm-key-panel");
-
-llmToggle.onchange = () => {
-  llmKeyPanel.hidden = !llmToggle.checked;
-};
+llmToggle.onchange = () => { llmKeyPanel.hidden = !llmToggle.checked; };
 
 document.getElementById("apply-key-btn").onclick = async () => {
   const key = document.getElementById("api-key-input").value.trim();
   if (!key) return alert("Please enter an API key");
-
   const btn = document.getElementById("apply-key-btn");
-  btn.disabled = true;
-  btn.classList.add("loading");
-
+  btn.disabled = true; btn.classList.add("loading");
   try {
-    const res = await fetch("/set_llm_key", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        provider: document.getElementById("llm-provider").value,
-        api_key: key
-      })
-    });
+    const res = await fetch("/set_llm_key", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({provider:document.getElementById("llm-provider").value, api_key:key}) });
     const data = await res.json();
-
-    if (data.status === "ok") {
-      document.getElementById("llm-status").textContent = "✓ LLM mode activated";
-      document.getElementById("llm-status").style.color = "var(--success)";
-      document.getElementById("api-key-input").value = "";
-    } else {
-      document.getElementById("llm-error").textContent = data.error || "Activation failed";
-    }
-  } catch {
-    document.getElementById("llm-error").textContent = "Network error";
-  } finally {
-    btn.disabled = false;
-    btn.classList.remove("loading");
-  }
+    if (data.status==="ok") {
+      document.getElementById("llm-status").textContent="✓ LLM mode activated";
+      document.getElementById("llm-status").style.color="var(--success)";
+      document.getElementById("api-key-input").value="";
+    } else document.getElementById("llm-error").textContent = data.error||"Activation failed";
+  } catch { document.getElementById("llm-error").textContent = "Network error"; }
+  finally { btn.disabled=false; btn.classList.remove("loading"); }
 };
 
-// Speed slider
 document.getElementById("speedSlider").oninput = e => {
   speed = +e.target.value;
-  document.getElementById("speedValue").textContent = (speed / 1000).toFixed(1) + " s";
+  document.getElementById("speedValue").textContent = (speed/1000).toFixed(1) + " s";
   if (autoInterval) { stopAuto(); startAuto(); }
 };
 
 async function runAction() {
   const btn = document.querySelector(".btn-run");
   if (btn.classList.contains("loading")) return;
-
-  btn.classList.add("loading");
-  btn.disabled = true;
-
+  btn.classList.add("loading"); btn.disabled=true;
   try {
-    const res = await fetch("/run");
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    handleEvent(data);
-  } catch (err) {
-    console.error(err);
-    elements.alerts.textContent = "Action failed — see console";
-  } finally {
-    btn.classList.remove("loading");
-    btn.disabled = false;
-  }
+    const res = await fetch("/run"); if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json(); handleEvent(data);
+  } catch(err) { console.error(err); elements.alerts.textContent="Action failed — see console"; }
+  finally { btn.classList.remove("loading"); btn.disabled=false; }
 }
 
 function startAuto() {
   if (autoInterval) return;
-  document.querySelector(".btn-auto").disabled = true;
-  document.querySelector(".btn-stop").disabled = false;
+  btnAuto.disabled = true; btnStop.disabled = false;
   autoInterval = setInterval(runAction, speed);
-}
-
-function stopAuto() {
-  if (!autoInterval) return;
-  clearInterval(autoInterval);
-  autoInterval = null;
-  document.querySelector(".btn-auto").disabled = false;
-  document.querySelector(".btn-stop").disabled = true;
-  elements.alerts.textContent = "Autonomous mode stopped";
-  setTimeout(() => elements.alerts.textContent = "", 4000);
-}
-
-// ── Enhanced event rendering with color + integrity ──
-function handleEvent(data) {
-  if (!data?.action) return;
-
-  const ts = data.timestamp?.split(" ")[1] || new Date().toLocaleTimeString([], {timeStyle:"short"});
-
-  // Update Latest Decision panel
-  elements.decision.action.textContent   = `${data.action} ${data.table||""}`.trim();
-  elements.decision.result.textContent   = data.status || data.message || "—";
-  elements.decision.envHash.textContent  = data.envelope_hash?.slice(0,16) + "…" || "—";
-  elements.decision.policy.textContent   = data.policy || "—";
-  elements.decision.sig.textContent      = data.signature?.slice(0,16) + "…" || "—";
-
-  // Integrity in Latest Decision
-  let integrityText = "✓ Valid";
-  let integrityClass = "integrity-good";
-  if (!data.verified || data.tampered) {
-    integrityText = data.verify_message || "✗ Tampered / Invalid";
-    integrityClass = "integrity-bad";
-  }
-  elements.decision.integrity.textContent = integrityText;
-  elements.decision.integrity.className = integrityClass;
-
-  // Count updates
-  let countTarget = null;
-  if (data.status === "EXECUTED")     countTarget = elements.executed;
-  if (data.status === "APPROVED")     countTarget = elements.approved;
-  if (data.status === "BLOCKED" || data.status === "DENIED") {
-    countTarget = elements.blocked;
-  }
-  if (countTarget) {
-    countTarget.textContent = Number(countTarget.textContent) + 1;
-  }
-
-  // ── Live Events line ────────────────────────────────────────
-  const line = document.createElement("div");
-  
-  // Base class from status
-  let statusClass = "";
-  switch (data.status) {
-    case "EXECUTED":   statusClass = "event-executed";   break;
-    case "BLOCKED":    statusClass = "event-blocked";    break;
-    case "PENDING":    statusClass = "event-pending";    break;
-    case "APPROVED":   statusClass = "event-approved";   break;
-    case "DENIED":     statusClass = "event-blocked";    break;
-    default:           statusClass = "";
-  }
-
-  // Integrity overrides / adds emphasis
-  let integrityIcon = "";
-  let integrityStyle = "";
-  if (!data.verified || data.tampered) {
-    integrityIcon = "✗ ";
-    integrityStyle = "color: var(--danger); font-weight: 700;";
-    statusClass += " event-tampered";   // we'll style this extra below
-  } else {
-    integrityIcon = "✓ ";
-  }
-
-  line.className = `event-line ${statusClass}`;
-  line.innerHTML = `
-    <span style="opacity:0.7">[${ts}]</span>  
-    <strong>${integrityIcon}${data.status}</strong>  
-    ${data.action} <span style="color:var(--gray)">${data.table||""}</span>
-    <span style="margin-left:1.2rem; font-size:0.92rem; opacity:0.9; ${integrityStyle}">
-      ${data.tampered ? `(${data.tamper_type || 'tampered'})` : ''}
-    </span>
-  `;
-
-  elements.events.prepend(line);
-  if (elements.events.children.length > 300) {
-    elements.events.removeChild(elements.events.lastChild);
-  }
-
-  // Alert for important events
-  if (data.status === "PENDING" || !data.verified || data.tampered) {
-    let msg = data.status === "PENDING" ? "Escalation required" : "Integrity alert";
-    if (data.tampered) msg = "Tampered event detected!";
-    elements.alerts.textContent = msg;
-    elements.alerts.style.background = data.tampered ? "#fee2e2" : "#fefce8";
-    setTimeout(() => { elements.alerts.textContent = ""; elements.alerts.style.background = ""; }, 7000);
-  }
-
-  if (data.escalation_queue) renderQueue(data.escalation_queue);
-}
-
-// ── Queue rendering (unchanged but included for completeness) ──
-function renderQueue(queue) {
-  const container = document.getElementById("escalationQueue");
-  container.innerHTML = "";
-  let pending = 0;
-
-  queue.forEach(item => {
-    const div = document.createElement("div");
-    div.className = `queue-item ${item.status.toLowerCase()}`;
-
-    div.innerHTML = `
-      <div style="flex:1;">
-        <b>#${item.request_id}</b> — ${item.action} ${item.table}
-        <span style="margin-left:1.2rem; opacity:0.85;">${item.status}</span>
-      </div>
-    `;
-
-    if (item.status === "PENDING") {
-      pending++;
-      const approve = document.createElement("button");
-      approve.className = "btn-approve";
-      approve.textContent = "Approve";
-      approve.onclick = () => approveRequest(item.request_id);
-      div.appendChild(approve);
-
-      const deny = document.createElement("button");
-      deny.className = "btn-deny";
-      deny.textContent = "Deny";
-      deny.onclick = () => denyRequest(item.request_id);
-      div.appendChild(deny);
-    }
-
-    container.appendChild(div);
-  });
-
-  elements.totalEsc.textContent = queue.length;
-  elements.pending.textContent = pending;
-}
-
-async function approveRequest(id) {
-  await fetch(`/approve/${id}`, { method: "POST" });
-}
-
-async function denyRequest(id) {
-  await fetch(`/deny/${id}`, { method: "POST" });
-}
-
-// ── SSE listener ──
-new EventSource("/events").onmessage = e => {
-  try {
-    const data = JSON.parse(e.data);
-    handleEvent(data);
-  } catch (err) {
-    console.error("SSE parse error:", err);
-  }
-};
-
-// ── Initial load ──
-window.addEventListener("load", async () => {
-  // Policy hash
-  try {
-    const r = await fetch("/policy_hash");
-    const d = await r.json();
-    document.getElementById("current-policy-hash").textContent = d.policy_hash || "—";
-  } catch {}
-
-  // Verification key (optional client-side check)
-  try {
-    const r = await fetch("/verification_key");
-    const d = await r.json();
-    if (d.key) verificationKey = d.key;
-  } catch {}
-
-  // Initial queue
-  try {
-    const r = await fetch("/status");
-    const d = await r.json();
-    if (d.escalation_queue) renderQueue(d.escalation_queue);
-  } catch {}
-});
-
-// ── Button bindings ───────────────────────────────────────────────
-const btnRun   = document.querySelector(".btn-run");
-const btnAuto  = document.querySelector(".btn-auto");
-const btnStop  = document.querySelector(".btn-stop");
-
-if (btnRun)   btnRun.onclick   = runAction;
-if (btnAuto)  btnAuto.onclick  = startAuto;
-if (btnStop)  btnStop.onclick  = stopAuto;
-
-// Enhanced start/stop functions
-function startAuto() {
-  if (autoInterval) {
-    console.log("Auto mode already running – ignoring duplicate click");
-    return;
-  }
-
-  btnAuto.disabled = true;
-  btnStop.disabled = false;
-
-  autoInterval = setInterval(() => {
-    runAction();
-  }, speed);
-
   console.log("Autonomous mode STARTED – interval ID:", autoInterval);
 }
 
 function stopAuto() {
-  if (!autoInterval) {
-    console.log("No active auto mode to stop");
-    return;
-  }
-
-  clearInterval(autoInterval);
-  autoInterval = null;
-
-  btnAuto.disabled = false;
-  btnStop.disabled = true;
-
-  console.log("Autonomous mode STOPPED");
-  elements.alerts.textContent = "Autonomous mode stopped";
-  setTimeout(() => {
-    if (elements.alerts.textContent === "Autonomous mode stopped") {
-      elements.alerts.textContent = "";
-    }
-  }, 4000);
+  if(!autoInterval) return;
+  clearInterval(autoInterval); autoInterval=null;
+  btnAuto.disabled=false; btnStop.disabled=true;
+  elements.alerts.textContent="Autonomous mode stopped";
+  setTimeout(()=>{ if(elements.alerts.textContent==="Autonomous mode stopped") elements.alerts.textContent=""; },4000);
 }
+
+function handleEvent(data) {
+  if(!data?.action) return;
+  const ts = data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
+  elements.decision.action.textContent=`${data.action} ${data.table||""}`.trim();
+  elements.decision.result.textContent=data.status||data.message||"—";
+  elements.decision.envHash.textContent=data.envelope_hash?.slice(0,16)+"…"||"—";
+  elements.decision.policy.textContent=data.policy||"—";
+  elements.decision.sig.textContent=data.signature?.slice(0,16)+"…"||"—";
+
+  const integrityOk = (data.policy===verificationKey);
+  elements.decision.integrity.textContent=integrityOk?"✓ Verified":"⚠ Tampered";
+  elements.decision.integrity.className = integrityOk?"integrity-good":"integrity-bad";
+
+  const line = document.createElement("div"); line.className="event-line "+(integrityOk?"event-executed":"event-tampered");
+  line.textContent = `[${ts}] ${data.action} → ${data.status || "?"} | envelope=${data.envelope_hash?.slice(0,12)}…`;
+  elements.events.prepend(line);
+
+  if(data.status==="executed") elements.executed.textContent=+elements.executed.textContent+1;
+  else if(data.status==="blocked") elements.blocked.textContent=+elements.blocked.textContent+1;
+  else if(data.status==="approved") elements.approved.textContent=+elements.approved.textContent+1;
+}
+
+const btnRun = document.querySelector(".btn-run");
+const btnAuto = document.querySelector(".btn-auto");
+const btnStop = document.querySelector(".btn-stop");
+btnRun.onclick=runAction;
+btnAuto.onclick=startAuto;
+btnStop.onclick=stopAuto;
+
+// SSE connection
+const es = new EventSource("/events");
+es.onmessage = e => { try{ handleEvent(JSON.parse(e.data)); }catch{} };
+es.onerror = e => { console.warn("SSE disconnected, retrying…"); elements.alerts.textContent="⚠ Live feed lost, reconnecting…"; setTimeout(()=>{ elements.alerts.textContent=""; },4000); };
+
+// fetch current policy
+fetch("/policy_hash").then(r=>r.json()).then(d=>verificationKey=d.hash).catch(()=>{ verificationKey=null; });
 </script>
+
 </body>
 </html>
