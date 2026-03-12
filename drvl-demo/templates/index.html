@@ -1,722 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DRVL Governance Demo — Probabilistic Agent</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #f8f9fa;
-            color: #212529;
-            margin: 0;
-            padding: 30px 20px;
-            line-height: 1.5;
-        }
-        h1 {
-            margin: 0 0 8px;
-            font-size: 2.1rem;
-            text-align: center;
-        }
-        .subtitle {
-            color: #6c757d;
-            margin-bottom: 24px;
-            text-align: center;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRVL Governance Demo — Probabilistic Agent</title>
 
-        .controls {
-            margin: 24px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            align-items: center;
-        }
-        button {
-            padding: 10px 22px;
-            font-size: 15px;
-            font-weight: 500;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            color: white;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        button:hover:not(:disabled) {
-            opacity: 0.92;
-        }
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            background: #6c757d !important;
-        }
-        button:active:not(:disabled) {
-            transform: scale(0.98);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
-        button.loading {
-            background: #0d6efd !important;
-            color: white;
-        }
-        button.loading::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 16px;
-            height: 16px;
-            border: 3px solid white;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            transform: translate(-50%, -50%);
-        }
-        @keyframes spin {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-        .btn-run    { background: #0d6efd; }
-        .btn-auto   { background: #343a40; }
-        .btn-stop   { background: #dc3545; }
+<style>
 
-        .btn-approve {
-            background: #198754;
-            padding: 6px 14px;
-            font-size: 13px;
-        }
-        .btn-deny {
-            background: #dc3545;
-            padding: 6px 14px;
-            font-size: 13px;
-        }
+body{
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+background:#f8f9fa;
+color:#212529;
+margin:0;
+padding:30px 20px;
+line-height:1.5;
+}
 
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        input[type="range"] {
-            width: 180px;
-        }
+h1{
+margin:0 0 8px;
+font-size:2.1rem;
+text-align:center;
+}
 
-        #stats {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            font-size: 1.1rem;
-            margin: 24px 0;
-            font-weight: 600;
-        }
-        .stat-executed { color: #198754; }
-        .stat-blocked  { color: #dc3545; }
-        .stat-approved { color: #198754; }
+.subtitle{
+color:#6c757d;
+margin-bottom:24px;
+text-align:center;
+}
 
-        .panel {
-            max-width: 780px;
-            margin: 28px auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            padding: 24px;
-        }
+.controls{
+margin:24px 0;
+display:flex;
+flex-wrap:wrap;
+gap:12px;
+justify-content:center;
+align-items:center;
+}
 
-        #policy div {
-            margin: 10px 0;
-            font-size: 1.05rem;
-        }
-        .allowed    { color: #198754; }
-        .restricted { color: #dc3545; }
+button{
+padding:10px 22px;
+font-size:15px;
+font-weight:500;
+border:none;
+border-radius:6px;
+cursor:pointer;
+color:white;
+transition:all .2s ease;
+position:relative;
+overflow:hidden;
+}
 
-        #alerts {
-            min-height: 28px;
-            padding: 12px;
-            margin: 16px auto;
-            max-width: 780px;
-            border-radius: 6px;
-            font-weight: 600;
-            background: #f8d7da;
-            color: #721c24;
-            text-align: center;
-        }
+button:hover:not(:disabled){opacity:.92}
+button:disabled{opacity:.6;cursor:not-allowed;background:#6c757d!important}
 
-        #decision {
-            font-size: 1.05rem;
-        }
-        #decision b { color: #343a40; }
+button.loading::after{
+content:"";
+position:absolute;
+top:50%;
+left:50%;
+width:16px;
+height:16px;
+border:3px solid white;
+border-top-color:transparent;
+border-radius:50%;
+animation:spin 1s linear infinite;
+transform:translate(-50%,-50%);
+}
 
-        #events {
-            max-height: 320px;
-            overflow-y: auto;
-            background: #f1f3f5;
-            border-radius: 8px;
-            padding: 8px;
-        }
-        .event-line {
-            padding: 8px 12px;
-            margin: 4px 0;
-            border-radius: 4px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.95rem;
-        }
-        .event-executed { background: #d4edda; color: #155724; }
-        .event-blocked  { background: #f8d7da; color: #721c24; }
-        .event-pending  { background: #fff3cd; color: #856404; }
-        .event-approved { background: #cce5ff; color: #004085; font-weight: 600; }
+@keyframes spin{
+to{transform:translate(-50%,-50%) rotate(360deg)}
+}
 
-        .queue-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            margin: 10px 0;
-            border-radius: 6px;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-        }
-        .queue-item.pending {
-            background: #fff3cd;
-            border-color: #ffeeba;
-        }
-        .queue-item.approved {
-            background: #d4edda;
-            border-color: #c3e6cb;
-            font-weight: 500;
-        }
-        .queue-item.denied {
-            background: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-        }
+.btn-run{background:#0d6efd}
+.btn-auto{background:#343a40}
+.btn-stop{background:#dc3545}
+.btn-approve{background:#198754;padding:6px 14px;font-size:13px}
+.btn-deny{background:#dc3545;padding:6px 14px;font-size:13px}
 
-        .stats-row {
-            margin-bottom: 16px;
-            font-size: 1.1rem;
-        }
+.speed-control{display:flex;align-items:center;gap:12px}
+input[type="range"]{width:180px}
 
-        /* LLM panel */
-        #llm-panel {
-            margin: 24px auto;
-            max-width: 600px;
-            padding: 16px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        #llm-key-panel {
-            margin-top: 12px;
-            display: none;
-        }
-        #llm-key-panel select,
-        #llm-key-panel input[type="password"] {
-            padding: 8px 12px;
-            font-size: 14px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-        }
-        #llm-status {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            color: #198754;
-            font-weight: 500;
-        }
-        #llm-error {
-            margin-top: 12px;
-            color: #dc3545;
-            font-size: 0.9rem;
-            min-height: 20px;
-        }
-        .warning-text {
-            font-size: 0.85rem;
-            color: #856404;
-            background: #fff3cd;
-            padding: 10px 14px;
-            border-radius: 6px;
-            margin: 12px 0;
-            line-height: 1.4;
-        }
+#stats{
+display:flex;
+justify-content:center;
+gap:32px;
+font-size:1.1rem;
+margin:24px 0;
+font-weight:600
+}
 
-        /* Apply Key button styling */
-        #apply-key-btn {
-            background: #0d6efd;
-            color: white;
-            padding: 10px 20px;
-            font-size: 15px;
-        }
-        #apply-key-btn:not(:disabled) {
-            background: #0d6efd;
-            color: white;
-        }
-        #apply-key-btn:disabled {
-            background: #6c757d;
-            color: white;
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+.stat-executed{color:#198754}
+.stat-blocked{color:#dc3545}
+.stat-approved{color:#198754}
 
-        /* Flex layout for better spacing */
-        .llm-input-group {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            margin: 12px 0;
-        }
+.panel{
+max-width:780px;
+margin:28px auto;
+background:white;
+border-radius:10px;
+box-shadow:0 2px 12px rgba(0,0,0,.08);
+padding:24px
+}
 
-        /* Current mode indicator */
-        #mode-indicator {
-            text-align: center;
-            margin: 12px 0;
-            font-size: 0.95rem;
-            color: #495057;
-        }
-        #current-mode {
-            font-weight: bold;
-        }
-    </style>
+.allowed{color:#198754}
+.restricted{color:#dc3545}
+
+#alerts{
+min-height:28px;
+padding:12px;
+margin:16px auto;
+max-width:780px;
+border-radius:6px;
+font-weight:600;
+background:#f8d7da;
+color:#721c24;
+text-align:center
+}
+
+#decision b{color:#343a40}
+
+#events{
+max-height:320px;
+overflow-y:auto;
+background:#f1f3f5;
+border-radius:8px;
+padding:8px
+}
+
+.event-line{
+padding:8px 12px;
+margin:4px 0;
+border-radius:4px;
+font-family:Consolas,monospace;
+font-size:.95rem
+}
+
+.event-executed{background:#d4edda;color:#155724}
+.event-blocked{background:#f8d7da;color:#721c24}
+.event-pending{background:#fff3cd;color:#856404}
+.event-approved{background:#cce5ff;color:#004085;font-weight:600}
+
+.queue-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:12px 16px;
+margin:10px 0;
+border-radius:6px;
+background:#f8f9fa;
+border:1px solid #dee2e6
+}
+
+.queue-item.pending{background:#fff3cd;border-color:#ffeeba}
+.queue-item.approved{background:#d4edda;border-color:#c3e6cb;font-weight:500}
+.queue-item.denied{background:#f8d7da;border-color:#f5c6cb;color:#721c24}
+
+.integrity-ok{
+color:#198754;
+font-weight:600
+}
+
+.integrity-warn{
+color:#dc3545;
+font-weight:600
+}
+
+.meta{
+margin-top:10px;
+font-size:.9rem;
+color:#495057;
+font-family:monospace;
+}
+
+</style>
 </head>
+
 <body>
 
 <h1>DRVL Governance Demo</h1>
 <div class="subtitle">Deterministic runtime governance of a probabilistic AI agent</div>
 
-<div id="mode-indicator">
-    Current mode: <span id="current-mode" style="color:#6c757d;">Simulated / Random Agent</span>
-</div>
-
-<div id="llm-panel">
-    <label style="font-weight: 500; display: block; margin-bottom: 12px;">
-        <input type="checkbox" id="use-llm-toggle"> Use real LLM instead of simulated/random agent
-    </label>
-    <div id="llm-key-panel">
-        <div class="warning-text">
-            <strong>Warning:</strong> Using real LLM will consume your OpenAI tokens and may incur costs.<br>
-            Demo currently supports <strong>OpenAI only</strong> (GPT-4o / 4o-mini). Other providers coming soon.
-        </div>
-        <div class="llm-input-group">
-            <select id="llm-provider">
-                <option value="openai">OpenAI (GPT-4o / 4o-mini)</option>
-            </select>
-            <input type="password" id="api-key-input" placeholder="Your OpenAI API key" style="flex: 1; min-width: 220px;">
-            <button id="apply-key-btn" onclick="submitApiKey()">Apply Key</button>
-        </div>
-        <p style="font-size: 0.85rem; color: #666; margin-top: 12px;">
-            Your key is sent once to the server and never stored or logged. Only used for this session.
-        </p>
-        <div id="llm-status"></div>
-        <div id="llm-error"></div>
-    </div>
-</div>
-
-<div class="controls">
-    <button class="btn-run" onclick="triggerAction()" aria-label="Trigger one AI action">Run AI Action</button>
-    <button class="btn-auto" onclick="startAuto()" aria-label="Start continuous mode">Start Autonomous Mode</button>
-    <button class="btn-stop" onclick="stopAuto()" aria-label="Stop continuous mode">Stop Autonomous Mode</button>
-
-    <div class="speed-control">
-        <label for="speedSlider">Interval:</label>
-        <input type="range" id="speedSlider" min="600" max="5000" step="300" value="1800">
-        <span id="speedValue">1.8 s</span>
-    </div>
-</div>
-
-<div id="stats">
-    <span class="stat-executed">Executed: <span id="executedCount">0</span></span>
-    <span class="stat-blocked">Blocked: <span id="blockedCount">0</span></span>
-    <span class="stat-approved">Approved: <span id="approvedCount">0</span></span>
-</div>
-
-<div class="panel">
-    <h2>Active Governance Policies</h2>
-    <div class="allowed">✓ READ   — Allowed</div>
-    <div class="allowed">✓ UPDATE — Allowed</div>
-    <div class="restricted">✗ DELETE — Requires escalation</div>
-    <div class="restricted">✗ DROP   — Forbidden</div>
-</div>
-
-<div class="panel" style="background: #f0f8ff; border-left: 4px solid #0d6efd; padding: 16px; margin: 16px auto; max-width: 780px;">
-    <p style="font-size: 1rem; font-weight: 500; margin: 0;">
-        Current Policy Hash: <code id="current-policy-hash" style="font-family: monospace; background: #e9ecef; padding: 2px 6px; border-radius: 4px;">—</code>
-    </p>
-    <p style="font-size: 0.85rem; color: #6c757d; margin-top: 8px;">
-        All events below must match this hash — if not, policy was modified.
-    </p>
+<div class="panel" style="background:#f0f8ff;border-left:4px solid #0d6efd">
+<p style="margin:0;font-weight:500">
+Current Policy Hash:
+<code id="current-policy-hash">—</code>
+</p>
+<p style="font-size:.85rem;color:#6c757d;margin-top:6px">
+All events and decisions must match this policy hash.
+</p>
 </div>
 
 <div id="alerts"></div>
 
 <div class="panel">
-    <h2>Latest Policy Decision</h2>
-    <div id="decision">
-        <div><b>Action:</b> <span id="decAction">—</span></div>
-        <div><b>Rule / Status:</b> <span id="decRule">—</span></div>
-        <div><b>Result:</b> <span id="decResult">—</span></div>
-    </div>
+<h2>Latest Policy Decision</h2>
+
+<div id="decision">
+
+<div><b>Action:</b> <span id="decAction">—</span></div>
+<div><b>Rule / Status:</b> <span id="decRule">—</span></div>
+<div><b>Result:</b> <span id="decResult">—</span></div>
+
+<div class="meta">
+Policy: <code id="decPolicy">—</code>
+</div>
+
+<div class="meta">
+Signature: <code id="decSig">—</code>
+</div>
+
+<div class="meta">
+Integrity: <span id="integrityStatus">—</span>
+</div>
+
+</div>
 </div>
 
 <div class="panel">
-    <h2>Escalation Queue</h2>
-    
-    <p style="color: #6c757d; font-size: 0.95rem; margin: 8px 0 16px; text-align: center; max-width: 680px; margin-left: auto; margin-right: auto;">
-        <em>For demo purposes:</em> When escalation is required (DELETE operations), the backend 
-        <strong>auto-approves ~35%</strong>, 
-        <strong>auto-denies ~35%</strong>, 
-        and leaves <strong>~30% pending</strong> for manual Approve or Deny.
-    </p>
-
-    <div class="stats-row">
-        Total escalations: <b><span id="totalEscalations">0</span></b> 
-        Pending now: <b><span id="pendingCount">0</span></b>
-    </div>
-    
-    <div id="escalationQueue"></div>
-</div>
-
-<div class="panel" style="background: #f8f9fa; border-left: 4px solid #0d6efd; padding: 16px; margin: 20px auto; max-width: 780px;">
-    <h3 style="margin-top: 0; font-size: 1.1rem; color: #0d6efd;">Policy & Decision Integrity</h3>
-    <p style="font-size: 0.95rem; color: #495057; margin: 8px 0;">
-        Every event includes:
-    </p>
-    <ul style="font-size: 0.9rem; color: #495057; margin: 8px 0 0 20px; line-height: 1.5;">
-        <li><strong>policy</strong> = hash of current governance rules (changes if policy is modified)</li>
-        <li><strong>sig</strong> = cryptographic signature of the event (proves decision wasn’t tampered with)</li>
-    </ul>
-    <p style="font-size: 0.85rem; color: #6c757d; margin-top: 12px;">
-        This ensures reproducible, auditable enforcement — core to real AI governance systems.
-    </p>
-</div>
-
-<div class="panel">
-    <h2>Live Governance Events</h2>
-    <div id="events"></div>
+<h2>Live Governance Events</h2>
+<div id="events"></div>
 </div>
 
 <script>
-document.getElementById("use-llm-toggle").onchange = function() {
-    document.getElementById("llm-key-panel").style.display = this.checked ? "block" : "none";
-    const modeText = document.getElementById("current-mode");
-    if (this.checked) {
-        modeText.textContent = "Real LLM (active)";
-        modeText.style.color = "#198754";
-    } else {
-        modeText.textContent = "Simulated / Random Agent";
-        modeText.style.color = "#6c757d";
-        document.getElementById("llm-status").textContent = "";
-        document.getElementById("llm-error").textContent = "";
-        document.getElementById("apply-key-btn").disabled = false;
-        document.getElementById("apply-key-btn").textContent = "Apply Key";
-        document.getElementById("apply-key-btn").style.opacity = "1";
-    }
-};
 
-function submitApiKey() {
-    const key = document.getElementById("api-key-input").value.trim();
-    const provider = document.getElementById("llm-provider").value;
-    const btn = document.getElementById("apply-key-btn");
-
-    if (!key) {
-        alert("Please enter a valid API key");
-        return;
-    }
-
-    btn.disabled = true;
-    btn.classList.add("loading");
-    btn.textContent = "";
-
-    fetch("/set_llm_key", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider, api_key: key })
-    })
-    .then(r => r.json())
-    .then(data => {
-        btn.disabled = false;
-        btn.classList.remove("loading");
-        btn.textContent = "Apply Key";
-        btn.style.opacity = "1";
-
-        if (data.status === "ok") {
-            document.getElementById("llm-status").textContent = "✓ LLM mode active — real OpenAI model will be used for future actions";
-            document.getElementById("llm-status").style.color = "#198754";
-            document.getElementById("llm-error").textContent = "";
-            document.getElementById("api-key-input").value = ""; // clear key after success
-        } else {
-            document.getElementById("llm-error").textContent = data.error || "Failed to activate LLM mode";
-            alert("Error: " + (data.error || "Failed to activate LLM mode"));
-        }
-    })
-    .catch(err => {
-        btn.disabled = false;
-        btn.classList.remove("loading");
-        btn.textContent = "Apply Key";
-        btn.style.opacity = "1";
-        document.getElementById("llm-error").textContent = "Connection error — could not reach server";
-        alert("Connection error — could not set API key");
-        console.error(err);
-    });
+const els={
+executed:document.getElementById("executedCount"),
+blocked:document.getElementById("blockedCount"),
+approved:document.getElementById("approvedCount"),
+alerts:document.getElementById("alerts"),
+events:document.getElementById("events"),
+dec:{
+action:document.getElementById("decAction"),
+rule:document.getElementById("decRule"),
+result:document.getElementById("decResult")
+}
 }
 
-let autoInterval = null;
-let speed = 1800;
-
-const els = {
-    executed: document.getElementById("executedCount"),
-    blocked: document.getElementById("blockedCount"),
-    approved: document.getElementById("approvedCount"),
-    totalEsc: document.getElementById("totalEscalations"),
-    pending: document.getElementById("pendingCount"),
-    alerts: document.getElementById("alerts"),
-    events: document.getElementById("events"),
-    dec: {
-        action: document.getElementById("decAction"),
-        rule: document.getElementById("decRule"),
-        result: document.getElementById("decResult")
-    }
-};
-
-const slider = document.getElementById("speedSlider");
-const speedVal = document.getElementById("speedValue");
-
-slider.oninput = () => {
-    speed = parseInt(slider.value);
-    speedVal.textContent = (speed / 1000).toFixed(1) + " s";
-    if (autoInterval) {
-        stopAuto();
-        startAuto();
-    }
-};
-
-function triggerAction() {
-    const btn = document.querySelector(".btn-run");
-    if (btn.classList.contains("loading")) return;
-
-    btn.classList.add("loading");
-    btn.disabled = true;
-    btn.textContent = "";
-
-    fetch("/run")
-        .then(r => r.json())
-        .then(data => {
-            handleResponse(data);
-            btn.classList.remove("loading");
-            btn.disabled = false;
-            btn.textContent = "Run AI Action";
-        })
-        .catch(err => {
-            console.error("Run failed:", err);
-            btn.classList.remove("loading");
-            btn.disabled = false;
-            btn.textContent = "Run AI Action";
-            alert("Action failed — check console");
-        });
+function shortHash(h){
+if(!h) return "—"
+if(h.length<12) return h
+return h.slice(0,8)+"…"+h.slice(-4)
 }
 
-function startAuto() {
-    if (autoInterval) return;
+function handleResponse(data){
 
-    const btn = document.querySelector(".btn-auto");
-    btn.classList.add("loading");
-    btn.disabled = true;
-    btn.textContent = "Starting...";
+if(!data||!data.action) return
 
-    autoInterval = setInterval(triggerAction, speed);
+const ts=data.timestamp||new Date().toLocaleTimeString([], {hour12:false})
+const actionStr=`${data.action} ${data.table||""}`.trim()
 
-    setTimeout(() => {
-        btn.classList.remove("loading");
-        btn.disabled = false;
-        btn.textContent = "Running Autonomous... (click Stop)";
-    }, 600);
+els.dec.action.textContent=actionStr
+els.dec.result.textContent=data.status
+els.dec.rule.textContent=data.message||""
+
+document.getElementById("decPolicy").textContent=shortHash(data.policy)
+document.getElementById("decSig").textContent=shortHash(data.signature)
+
+const currentPolicy=document.getElementById("current-policy-hash").textContent
+
+let integrityEl=document.getElementById("integrityStatus")
+
+if(data.policy && currentPolicy && data.policy.startsWith(currentPolicy.slice(0,8))){
+integrityEl.textContent="✓ Policy match"
+integrityEl.className="integrity-ok"
+}
+else{
+integrityEl.textContent="⚠ Policy mismatch"
+integrityEl.className="integrity-warn"
 }
 
-function stopAuto() {
-    if (!autoInterval) return;
+const line=document.createElement("div")
 
-    clearInterval(autoInterval);
-    autoInterval = null;
+line.className="event-line event-"+data.status.toLowerCase()
 
-    const btn = document.querySelector(".btn-auto");
-    btn.classList.remove("loading");
-    btn.disabled = false;
-    btn.textContent = "Start Autonomous Mode";
-    btn.style.opacity = "1";
+line.innerHTML=`
+[${ts}] ${data.status} ${actionStr}
+| policy=${shortHash(data.policy)}
+| sig=${shortHash(data.signature)}
+`
 
-    els.alerts.textContent = "Autonomous mode stopped";
-    setTimeout(() => els.alerts.textContent = "", 3000);
+els.events.prepend(line)
+
+if(els.events.children.length>200)
+els.events.removeChild(els.events.lastChild)
+
 }
 
-function handleResponse(data) {
-    if (!data || !data.action) return;
+const evtSource=new EventSource("/events")
 
-    const ts = data.timestamp || new Date().toLocaleTimeString([], {hour12: false});
-    const actionStr = `${data.action} ${data.table || ''}`.trim();
-
-    els.dec.action.textContent = actionStr;
-    els.dec.result.textContent = data.status;
-
-    let eventClass = "";
-    let alertText = "";
-    let incExecuted = false;
-    let incBlocked = false;
-    let incApproved = false;
-
-    switch (data.status) {
-        case "EXECUTED":
-            els.dec.rule.textContent = data.message || "Allowed by policy";
-            eventClass = "event-executed";
-            incExecuted = true;
-            break;
-        case "BLOCKED":
-            els.dec.rule.textContent = data.message || "Forbidden / restricted";
-            eventClass = "event-blocked";
-            incBlocked = true;
-            alertText = `Blocked: ${actionStr}`;
-            break;
-        case "PENDING":
-            els.dec.rule.textContent = "Escalation required";
-            eventClass = "event-pending";
-            alertText = `Pending escalation: ${actionStr}`;
-            break;
-        case "APPROVED":
-            els.dec.rule.textContent = data.message || "Escalation approved";
-            eventClass = "event-approved";
-            incApproved = true;
-            break;
-        case "DENIED":
-            els.dec.rule.textContent = data.message || "Escalation denied";
-            eventClass = "event-blocked";
-            incBlocked = true;
-            alertText = `Denied: ${actionStr}`;
-            break;
-        default:
-            eventClass = "event-pending";
-    }
-
-    // LLM error handling
-    const errorDiv = document.getElementById("llm-error");
-    if (data.llm_error) {
-        errorDiv.textContent = data.llm_error;
-        els.alerts.textContent = data.llm_error;
-        setTimeout(() => {
-            if (els.alerts.textContent === data.llm_error) {
-                els.alerts.textContent = "";
-            }
-        }, 8000);
-    } else {
-        errorDiv.textContent = "";
-    }
-
-    if (incExecuted) els.executed.textContent = Number(els.executed.textContent) + 1;
-    if (incBlocked) els.blocked.textContent = Number(els.blocked.textContent) + 1;
-    if (incApproved) els.approved.textContent = Number(els.approved.textContent) + 1;
-
-    const line = document.createElement("div");
-    line.className = `event-line ${eventClass}`;
-    line.innerHTML = `
-        <span style="opacity:0.7">[${ts}]</span> 
-        ${data.status.padEnd(10)} 
-        ${actionStr} 
-        <span style="color:#6c757d; font-size:0.9rem;">
-            | policy=<code>${data.policy || '—'}</code> 
-            | sig=<code>${data.signature || '—'}</code>
-        </span>
-    `;
-    els.events.prepend(line);
-    if (els.events.children.length > 200) els.events.removeChild(els.events.lastChild);
-
-    if (alertText) {
-        els.alerts.textContent = alertText;
-        setTimeout(() => els.alerts.textContent = "", 4800);
-    }
-
-    if (data.escalation_queue) {
-        renderQueue(data.escalation_queue);
-    }
+evtSource.onmessage=event=>{
+try{
+handleResponse(JSON.parse(event.data))
+}
+catch(e){
+console.error(e)
+}
 }
 
-function renderQueue(queue) {
-    const container = document.getElementById("escalationQueue");
-    container.innerHTML = "";
-    let pendingCount = 0;
+window.addEventListener("load",()=>{
 
-    queue.forEach(item => {
-        const div = document.createElement("div");
-        div.className = `queue-item ${item.status.toLowerCase()}`;
+fetch("/policy_hash")
+.then(r=>r.json())
+.then(data=>{
+document.getElementById("current-policy-hash").textContent=data.policy_hash||"—"
+})
 
-        let statusDisplay = item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase();
+})
 
-        div.innerHTML = `
-            <div style="flex: 1;">
-                <b>ID ${item.request_id}</b> — 
-                ${item.action} ${item.table}
-                <span style="margin-left:16px; opacity:0.8;">${statusDisplay}</span>
-            </div>
-        `;
-
-        if (item.status === "PENDING") {
-            pendingCount++;
-
-            const approveBtn = document.createElement("button");
-            approveBtn.className = "btn-approve";
-            approveBtn.textContent = "Approve";
-            approveBtn.onclick = () => approve(item.request_id);
-            div.appendChild(approveBtn);
-
-            const denyBtn = document.createElement("button");
-            denyBtn.className = "btn-deny";
-            denyBtn.textContent = "Deny";
-            denyBtn.onclick = () => deny(item.request_id);
-            div.appendChild(denyBtn);
-        }
-
-        container.appendChild(div);
-    });
-
-    els.totalEsc.textContent = queue.length;
-    els.pending.textContent = pendingCount;
-}
-
-function approve(requestId) {
-    fetch(`/approve/${requestId}`, { method: "POST" })
-        .then(r => r.json())
-        .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
-        .catch(err => console.error("Approve failed:", err));
-}
-
-function deny(requestId) {
-    fetch(`/deny/${requestId}`, { method: "POST" })
-        .then(r => r.json())
-        .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
-        .catch(err => console.error("Deny failed:", err));
-}
-
-const evtSource = new EventSource("/events");
-evtSource.onmessage = event => {
-    try {
-        handleResponse(JSON.parse(event.data));
-    } catch (e) {
-        console.error("SSE parse error:", e);
-    }
-};
-evtSource.onerror = () => console.warn("SSE connection lost – reconnecting...");
-
-// Load current policy hash on page load
-window.addEventListener("load", () => {
-    fetch("/policy_hash")
-        .then(r => r.json())
-        .then(data => {
-            document.getElementById("current-policy-hash").textContent = data.policy_hash || "—";
-        })
-        .catch(() => {
-            document.getElementById("current-policy-hash").textContent = "Error loading";
-        });
-
-    fetch("/status")
-        .then(r => r.json())
-        .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
-        .catch(() => {});
-});
 </script>
+
 </body>
 </html>
