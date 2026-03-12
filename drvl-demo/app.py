@@ -263,3 +263,8 @@ def deny(req_id):
                 publish(create_signed_event(event))
                 break
     return status()
+
+if __name__ == "__main__":
+    # For local development/testing
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port, debug=False)
