@@ -28,10 +28,10 @@ class DRVL:
     def __init__(self):
         # Policy definition
         self.policy = {
-            "READ": "allow",
+            "READ":   "allow",
             "UPDATE": "allow",
             "DELETE": "escalate",
-            "DROP": "deny"
+            "DROP":   "deny"
         }
 
         # Deterministic policy hash (shortened for demo readability)
@@ -68,29 +68,29 @@ class DRVL:
             serialized = json.dumps(self.to_dict(), sort_keys=True)
             return hashlib.sha256(serialized.encode()).hexdigest()[:16]
 
-  def verify(self, action: str, table: str, environment: str = "demo"):
-    """
-    Strict policy enforcement:
-    - READ / UPDATE → always allow & execute
-    - DROP        → always deny
-    - DELETE      → always escalate (then demo randomness applies)
-    - anything else → default allow (you can tighten later)
-    """
-    envelope = self.ExecutionEnvelope(action=action, table=table)
+    def verify(self, action: str, table: str, environment: str = "demo"):
+        """
+        Strict policy enforcement:
+        - READ / UPDATE → always allow & execute
+        - DROP        → always deny
+        - DELETE      → always escalate (then demo randomness applies)
+        - anything else → default allow (you can tighten later)
+        """
+        envelope = self.ExecutionEnvelope(action=action, table=table)
 
-    action_upper = action.upper()
+        action_upper = action.upper()
 
-    if action_upper in ("READ", "UPDATE"):
-        return True, False, "Allowed operation", self.policy_hash, envelope
+        if action_upper in ("READ", "UPDATE"):
+            return True, False, "Allowed operation", self.policy_hash, envelope
 
-    if action_upper == "DROP":
-        return False, False, "Forbidden operation (DROP)", self.policy_hash, envelope
+        if action_upper == "DROP":
+            return False, False, "Forbidden operation (DROP)", self.policy_hash, envelope
 
-    if action_upper == "DELETE":
-        return False, True, "Requires escalation (DELETE)", self.policy_hash, envelope
+        if action_upper == "DELETE":
+            return False, True, "Requires escalation (DELETE)", self.policy_hash, envelope
 
-    # Default fallback for unknown actions (INSERT, SELECT, etc.)
-    return True, False, "Allowed by default", self.policy_hash, envelope
+        # Default fallback for unknown actions (INSERT, SELECT, etc.)
+        return True, False, "Allowed by default", self.policy_hash, envelope
 
     def sign_event(self, event_data: dict) -> str:
         """
