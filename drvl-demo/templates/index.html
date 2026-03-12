@@ -378,19 +378,6 @@
   <div class="policy-item restricted">✗ DROP — always forbidden</div>
 </div>
 
-<div class="info-box">
-  <h3 style="margin:0 0 0.8rem; color:var(--primary);">Tamper-evident Governance</h3>
-  <ul style="padding-left:1.4rem; margin:0;">
-    <li><strong>Envelope hash</strong> — fingerprint of proposed action</li>
-    <li><strong>Policy hash</strong> — fingerprint of active rules</li>
-    <li><strong>HMAC signature</strong> — cryptographic authenticity proof</li>
-  </ul>
-</div>
-
-<div class="panel" style="background:#f0f7ff;">
-  <p style="margin:0; font-weight:600;">Current Policy Hash: <code id="current-policy-hash">Loading…</code></p>
-  <p style="margin:0.5rem 0 0; font-size:0.92rem; color:var(--gray);">Mismatch = policy change or tampering detected</p>
-</div>
 
 <div class="panel">
   <h2>Latest Decision</h2>
@@ -408,6 +395,20 @@
     </div>
     <div style="margin-top:1rem;"><b>Integrity:</b> <span id="decIntegrity">Waiting…</span></div>
   </div>
+</div>
+
+<div class="info-box">
+  <h3 style="margin:0 0 0.8rem; color:var(--primary);">Tamper-evident Governance</h3>
+  <ul style="padding-left:1.4rem; margin:0;">
+    <li><strong>Envelope hash</strong> — fingerprint of proposed action</li>
+    <li><strong>Policy hash</strong> — fingerprint of active rules</li>
+    <li><strong>HMAC signature</strong> — cryptographic authenticity proof</li>
+  </ul>
+</div>
+
+<div class="panel" style="background:#f0f7ff;">
+  <p style="margin:0; font-weight:600;">Current Policy Hash: <code id="current-policy-hash">Loading…</code></p>
+  <p style="margin:0.5rem 0 0; font-size:0.92rem; color:var(--gray);">Mismatch = policy change or tampering detected</p>
 </div>
 
 <div class="panel">
