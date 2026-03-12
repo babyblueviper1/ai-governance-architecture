@@ -11,16 +11,21 @@ def subscribe(handler):
 def publish(event):
     """Publish an event to all subscribers."""
 
-    event.setdefault("timestamp", datetime.utcnow().isoformat())
+    # Ensure timestamp exists BEFORE publishing (should already exist for signing)
+    if "timestamp" not in event:
+        event["timestamp"] = datetime.utcnow().isoformat()
 
+    # Severity metadata (optional)
     event["severity"] = "HIGH" if event.get("status") == "BLOCKED" else "LOW"
 
-    # Enforce signing (do NOT allow unsigned events)
+    # Enforce signing
     if "policy" not in event or "signature" not in event:
         raise ValueError("Unsigned event rejected by event bus")
 
+    # Append a **deep copy** to avoid later mutations affecting logged events
     events.append(event.copy())
 
+    # Notify subscribers
     for handler in subscribers:
         try:
             handler(event)
