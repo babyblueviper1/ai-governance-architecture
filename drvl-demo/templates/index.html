@@ -224,6 +224,24 @@
     text-align: center;
   }
 
+  #alerts:empty::before {
+    content: "Alerts";
+    display: block;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #1e293b;          /* dark gray for heading */
+    margin-bottom: 0.5rem;
+  }
+
+  #alerts:not(:empty)::before {
+    content: "Alerts";
+    display: block;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+  }
+
   .info-box {
     background: #eff6ff;
     border-left: 4px solid var(--primary);
@@ -405,9 +423,8 @@
   <div class="policy-item restricted">✗ DROP — always forbidden</div>
 </div>
 
-<div id="alerts" style="min-height:2.4rem; padding:1rem; margin:0 auto 1.8rem; max-width:860px; border-radius:8px; font-weight:500; text-align:center; background:#f8fafc; border:1px solid #e2e8f0;">
-  <strong style="display:block; margin-bottom:0.5rem; font-size:1.1rem; color:#1e293b;">Alerts</strong>
-</div>
+<div id="alerts" style="min-height:2.4rem; padding:1rem; margin:0 auto 1.8rem; max-width:860px; border-radius:8px; font-weight:500; text-align:center; background:#f8fafc; border:1px solid #e2e8f0;"></div>
+
 <div class="panel">
   <h2>Latest Decision</h2>
   <div class="warning-text" style="max-width:720px; margin:1rem auto;">
@@ -595,6 +612,10 @@ function renderQueue(queue) {
   let pending = 0;
 
   queue.forEach(item => {
+    // Skip rendering resolved items (APPROVED / DENIED)
+    // This prevents them from re-appearing after SSE update
+    if (item.status !== "PENDING") return;
+
     const div = document.createElement("div");
     div.className = `queue-item ${item.status.toLowerCase()}`;
 
@@ -642,12 +663,13 @@ function renderQueue(queue) {
           }, 800);  // matches fade duration
         }, 1500);  // show "approved" state for 1.5 seconds
       };
+
       const deny = document.createElement("button");
       deny.className = "btn-deny";
       deny.textContent = "Deny";
       deny.setAttribute("aria-label", `Deny escalation request #${item.request_id}`);
       deny.onclick = async () => {
-         await denyRequest(item.request_id);
+        await denyRequest(item.request_id);
 
         // Visual feedback: change to denied style + remove buttons
         div.className = "queue-item denied";
