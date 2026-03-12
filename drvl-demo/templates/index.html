@@ -710,10 +710,19 @@ function handleEvent(data) {
   if (!data?.action) return;
 
   // Declare early
-  const statusLower = (data.status || "").toLowerCase();
+  let statusLower = (data.status || "").toLowerCase();
 
   // Shortcut
   const d = elements.decision;
+
+  // Detect tampering early
+  const isTampered = data.verified === false || 
+                     (data.verified === undefined && data.policy !== verificationKey);
+
+  // If tampered, override statusLower for consistent UI logic
+  if (isTampered) {
+    statusLower = "tampered";  // use this for styling/counters
+  }
 
   // Update main decision fields
   if (d.action) {
@@ -724,7 +733,9 @@ function handleEvent(data) {
   if (d.result) {
     let resultText = "—";
 
-    if (data.result && typeof data.result === "object" && !Array.isArray(data.result)) {
+    if (isTampered) {
+      resultText = "Rejected — " + (data.verify_message || "Signature / policy mismatch");
+    } else if (data.result && typeof data.result === "object" && !Array.isArray(data.result)) {
       // Object result from backend (preferred case)
       if (data.result.executed) {
         resultText = `Executed (${data.result.rows_affected || "?"} rows affected)`;
@@ -735,14 +746,12 @@ function handleEvent(data) {
       } else if (data.result.pending) {
         resultText = `Pending review #${data.result.request_id || "?"}`;
       } else {
-        // Fallback for any other object shape
-        resultText = JSON.stringify(data.result, null, 2).slice(0, 100) + (JSON.stringify(data.result).length > 100 ? "…" : "");
+        resultText = JSON.stringify(data.result, null, 2).slice(0, 100) + 
+                     (JSON.stringify(data.result).length > 100 ? "…" : "");
       }
     } else if (data.message) {
-      // Fallback to message if result is not an object (old behavior / non-executed cases)
       resultText = data.message;
     } else if (data.result) {
-      // If result is a simple string (legacy)
       resultText = data.result;
     }
 
@@ -768,7 +777,7 @@ function handleEvent(data) {
   let statusClass = "";
   if (statusLower === "executed" || statusLower === "approved") {
     statusClass = "stat-executed";    // green
-  } else if (statusLower === "blocked" || statusLower === "denied") {
+  } else if (statusLower === "blocked" || statusLower === "denied" || statusLower === "tampered") {
     statusClass = "stat-blocked";     // red
   } else if (statusLower === "pending") {
     statusClass = "stat-pending";     // amber/orange
@@ -783,7 +792,7 @@ function handleEvent(data) {
   let integrityClass = "";
   let eventClass = "event-executed";
 
-  if (data.verified === false || (data.verified === undefined && data.policy !== verificationKey)) {
+  if (isTampered) {
     integrityText = data.verify_message || "⚠ Tampered / Invalid signature";
     integrityClass = "integrity-bad";
     eventClass = "event-tampered";
@@ -829,13 +838,19 @@ function handleEvent(data) {
     elements.events.prepend(line);
   }
 
-  // Counters (auto-approved now goes to "approved" since backend sends "APPROVED")
-  if (statusLower === "executed") {
-    if (elements.executed) elements.executed.textContent = Number(elements.executed.textContent || 0) + 1;
-  } else if (statusLower === "blocked" || statusLower === "denied") {
-    if (elements.blocked) elements.blocked.textContent = Number(elements.blocked.textContent || 0) + 1;
+  // Counters — IMPORTANT: never count tampered as executed
+  if (statusLower === "executed" && !isTampered) {
+    if (elements.executed) {
+      elements.executed.textContent = Number(elements.executed.textContent || 0) + 1;
+    }
+  } else if (statusLower === "blocked" || statusLower === "denied" || isTampered) {
+    if (elements.blocked) {
+      elements.blocked.textContent = Number(elements.blocked.textContent || 0) + 1;
+    }
   } else if (statusLower === "approved") {
-    if (elements.approved) elements.approved.textContent = Number(elements.approved.textContent || 0) + 1;
+    if (elements.approved) {
+      elements.approved.textContent = Number(elements.approved.textContent || 0) + 1;
+    }
   }
 
   // Escalation queue
