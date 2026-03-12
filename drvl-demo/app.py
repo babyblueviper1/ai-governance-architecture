@@ -25,9 +25,24 @@ escalation_counter = 0
 
 
 def publish_signed_event(event_data):
-    """Add policy hash and HMAC signature before publishing an event."""
+    """Add policy hash and HMAC signature before publishing — sometimes tamper for demo"""
+    
+    # Normal path (most of the time)
     event_data["policy"] = drvl.policy_hash
     event_data["signature"] = drvl.sign_event(event_data)
+    
+    # ~12–18% of events will be "tampered" for demo purposes
+    if random.random() < 0.15:  # adjust probability as desired (0.10–0.20 works well)
+        tamper_type = random.choice(["policy", "signature", "both"])
+        
+        if tamper_type == "policy" or tamper_type == "both":
+            event_data["policy"] = "fake" + drvl.policy_hash[4:]  # looks similar but wrong
+            
+        if tamper_type == "signature" or tamper_type == "both":
+            # Corrupt the signature slightly
+            real_sig = event_data["signature"]
+            event_data["signature"] = real_sig[:8] + "DEAD" + real_sig[12:]
+    
     publish(event_data)
 
 
