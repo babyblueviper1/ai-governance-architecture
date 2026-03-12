@@ -777,15 +777,30 @@ evtSource.onerror = () => console.warn("SSE connection lost – reconnecting..."
 
 // Load current policy hash on page load
 window.addEventListener("load", () => {
+    // Policy hash fetch with better logging
     fetch("/policy_hash")
-        .then(r => r.json())
-        .then(data => {
-            document.getElementById("current-policy-hash").textContent = data.policy_hash || "—";
+        .then(r => {
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            return r.json();
         })
-        .catch(() => {
-            document.getElementById("current-policy-hash").textContent = "Error loading";
+        .then(data => {
+            const hashEl = document.getElementById("current-policy-hash");
+            if (data && data.policy_hash) {
+                hashEl.textContent = data.policy_hash;
+                console.log("Policy hash loaded:", data.policy_hash);
+            } else {
+                hashEl.textContent = "No hash in response";
+                console.warn("Missing policy_hash in response:", data);
+            }
+        })
+        .catch(err => {
+            const hashEl = document.getElementById("current-policy-hash");
+            hashEl.textContent = "Failed to load";
+            hashEl.style.color = "#dc3545";
+            console.error("Policy hash fetch failed:", err);
         });
 
+    // Optional: also fetch /status for queue on load (already there)
     fetch("/status")
         .then(r => r.json())
         .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
