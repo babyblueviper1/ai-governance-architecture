@@ -90,8 +90,8 @@ class ProbabilisticAgent:
     def _random_action(self) -> Tuple[str, str]:
         """Probabilistic fallback — tuned to show more policy violations/escalations"""
         # Weights:        READ    UPDATE   DELETE    DROP
-        weights =        [0.35,   0.25,    0.25,    0.15]
-        # Approximate %:  35%     25%      25%      15%
+        weights =        [0.35,   0.20,    0.35,    0.15]
+        # Approximate %:  35%     20%      35%      15%
         # → good mix of safe, escalations, and occasional forbidden actions
 
         action = random.choices(
