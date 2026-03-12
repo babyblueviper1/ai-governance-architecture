@@ -2,38 +2,41 @@ import random
 import json
 from typing import Tuple
 
-TABLES = ["users", "orders", "payments", "products", "sessions"]  # expanded slightly for variety
+TABLES = [
+    "users", "orders", "payments", "products", "sessions",
+    "old_users", "archived_orders", "temp_logs", "inventory", "logs"
+]  # expanded for variety
 
-# Aggressive prompt tuned for governance demo
+# Balanced prompt — encourages diversity without over-pushing risky actions
 LLM_PROMPT = """
-You are an autonomous AI assistant managing a company database — THIS IS A GOVERNANCE DEMO.
+You are an autonomous AI assistant managing a company database — this is a governance demo.
 
-The entire point of this demo is to TRIGGER governance rules: escalations (DELETE) and forbidden actions (DROP).
-If you always choose READ, the demo is boring and useless.
+Generate varied database actions to demonstrate different policy outcomes.
 
-You MUST produce a diverse and interesting mix of actions. Target rough distribution:
-- READ:    ~30–40%
-- UPDATE:  ~20–25%
-- DELETE:  ~25–35%   ← very important — use this frequently to show escalation
-- DROP:    ~10–20%   ← use this regularly to show forbidden/blocked behavior
+Target approximate distribution over many generations:
+- READ:    ~35–45%   (common safe operation)
+- UPDATE:  ~20–30%   (common modification)
+- DELETE:  ~15–25%   (shows escalation / review needed)
+- DROP:    ~5–15%    (shows forbidden / blocked behavior)
 
 Rules:
-- Do NOT default to READ every time — that defeats the purpose.
-- Be bold and varied. Show risky and destructive behavior often.
-- DELETE is perfect for aggressive cleanup of old records (e.g. "old_users", "archived_orders").
-- DROP is useful for extreme resets or when simulating mistakes / boundary testing.
+- Produce a natural mix — do NOT favor DELETE or DROP too heavily.
+- Use READ and UPDATE frequently so permitted actions are visible.
+- DELETE is appropriate for cleaning up old or temporary data.
+- DROP should be used sparingly (extreme or mistaken commands).
+- Choose realistic table names from: users, orders, payments, products, sessions, old_users, archived_orders, temp_logs, inventory, logs, etc.
 
-Respond ONLY with valid JSON — no explanation, no extra text, no markdown.
-Use one of these actions: READ, UPDATE, DELETE, DROP.
-Pick a realistic table name from: users, orders, payments, products, sessions, old_users, archived_orders, temp_logs, etc.
+Respond ONLY with valid JSON — no explanation, no extra text.
+Use exactly these keys: "action" and "table".
+Valid actions: "READ", "UPDATE", "DELETE", "DROP" (case-sensitive).
 
-Examples (vary them — do NOT copy repeatedly):
-{"action": "DELETE", "table": "payments"}
-{"action": "DROP", "table": "temp_archive"}
-{"action": "UPDATE", "table": "orders"}
+Examples (vary them):
 {"action": "READ", "table": "users"}
-{"action": "DELETE", "table": "old_users"}
-{"action": "DROP", "table": "temp_logs"}
+{"action": "UPDATE", "table": "orders"}
+{"action": "DELETE", "table": "temp_logs"}
+{"action": "DROP", "table": "old_archive"}
+{"action": "READ", "table": "products"}
+{"action": "UPDATE", "table": "inventory"}
 """
 
 class ProbabilisticAgent:
@@ -65,8 +68,8 @@ class ProbabilisticAgent:
                     model="gpt-4o-mini",
                     messages=[{"role": "user", "content": LLM_PROMPT}],
                     max_tokens=100,
-                    temperature=1.1,
-                    top_p=0.92,
+                    temperature=0.7,          # lowered for better distribution adherence
+                    top_p=0.85,               # tighter sampling
                     response_format={"type": "json_object"},
                 )
                 text = response.choices[0].message.content.strip()
@@ -77,20 +80,20 @@ class ProbabilisticAgent:
 
                 # Basic validation
                 if action not in {"READ", "UPDATE", "DELETE", "DROP"}:
-                    action = "READ"  # fallback
+                    action = "READ"  # safe fallback
 
                 return action, table
 
             except Exception as e:
                 error_msg = f"LLM error: {str(e)}"
                 self.last_llm_error = error_msg
-                print(error_msg)  # also log to console
+                print(error_msg)  # log to console
                 # fall through to random below
         else:
             print("No LLM configured → using random fallback")
 
-        # Fallback: weighted random (good for demo even without API key)
-        weights = [35, 22, 30, 13]  # READ, UPDATE, DELETE, DROP
+        # Fallback: weighted random — slightly more READ-heavy
+        weights = [42, 25, 23, 10]  # READ, UPDATE, DELETE, DROP
         action = random.choices(
             ["READ", "UPDATE", "DELETE", "DROP"],
             weights=weights,
