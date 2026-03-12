@@ -342,14 +342,15 @@
         Every event includes:
     </p>
     <ul style="font-size: 0.9rem; color: #495057; margin: 8px 0 0 20px; line-height: 1.5;">
+        <li><strong>envelope hash</strong> = integrity fingerprint of the proposed action (before enforcement)</li>
         <li><strong>policy</strong> = hash of current governance rules (changes if policy is modified)</li>
         <li><strong>sig</strong> = cryptographic signature of the event (proves decision wasn’t tampered with)</li>
     </ul>
     <p style="font-size: 0.85rem; color: #6c757d; margin-top: 12px;">
-        This ensures reproducible, auditable enforcement — core to real AI governance systems.
+        The envelope creates a clear boundary between AI reasoning and actual execution — ensuring only verified actions proceed.  
+        Together these fields provide reproducible, auditable enforcement — core to real AI governance systems.
     </p>
 </div>
-
 <div class="panel" style="background: #f0f8ff; border-left: 4px solid #0d6efd; padding: 16px; margin: 16px auto; max-width: 780px;">
     <p style="font-size: 1rem; font-weight: 500; margin: 0;">
         Current Policy Hash: <code id="current-policy-hash" style="font-family: monospace; background: #e9ecef; padding: 2px 6px; border-radius: 4px;">—</code>
@@ -380,20 +381,24 @@
         <div><b>Rule / Status:</b> <span id="decRule">—</span></div>
         <div><b>Result:</b> <span id="decResult">—</span></div>
 
-        <div style="margin-top:12px;font-size:0.9rem;color:#495057;">
-            <b>Policy Hash:</b>
-            <code id="decPolicy" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
-        </div>
+   
+    <div style="margin-top:12px;font-size:0.9rem;color:#495057;">
+        <b>Envelope Hash:</b>   <!-- comes first logically -->
+        <code id="decEnvelopeHash" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
+    </div>
 
-        <div style="margin-top:4px;font-size:0.9rem;color:#495057;">
-            <b>Signature:</b>
-            <code id="decSig" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
-        </div>
+    <div style="margin-top:4px;font-size:0.9rem;color:#495057;">
+        <b>Policy Hash:</b>
+        <code id="decPolicy" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
+    </div>
 
-        <div style="margin-top:4px;font-size:0.9rem;">
-            <b>Integrity:</b>
-            <span id="decIntegrity">—</span>
-        </div>
+    <div style="margin-top:4px;font-size:0.9rem;color:#495057;">
+        <b>Signature:</b>
+        <code id="decSig" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
+    </div>
+
+    <div style="margin-top:8px;font-size:0.9rem;">
+        <b>Integrity:</b> <span id="decIntegrity">—</span>
     </div>
 </div>
 
@@ -626,17 +631,18 @@ function handleResponse(data) {
             eventClass = "event-pending";
     }
 
-    document.getElementById("decPolicy").textContent = data.policy || "—";
-    document.getElementById("decSig").textContent = data.signature || "—";
+    // Update envelope, policy, signature fields (safe even if missing)
+    document.getElementById("decEnvelopeHash").textContent = data.envelope_hash || "—";
+    document.getElementById("decPolicy").textContent       = data.policy       || "—";
+    document.getElementById("decSig").textContent         = data.signature     || "—";
 
+    // Integrity check — only runs if the fields are present
     const integrityEl = document.getElementById("decIntegrity");
-
-    // We know what the real policy hash should be (loaded on page init)
     const expectedPolicyHash = document.getElementById("current-policy-hash").textContent.trim();
 
-    if (data.policy && data.signature) {
-        const policyMatches = data.policy === expectedPolicyHash;
-        const sigLooksValid = data.signature.length === 16 && /^[0-9a-fA-F]{16}$/.test(data.signature);
+    if (data.envelope_hash && data.policy && data.signature) {
+        const policyMatches  = data.policy === expectedPolicyHash;
+        const sigLooksValid  = data.signature.length === 16 && /^[0-9a-fA-F]{16}$/.test(data.signature);
 
         if (policyMatches && sigLooksValid) {
             integrityEl.textContent = "✓ Valid signature & policy match";
@@ -652,11 +658,11 @@ function handleResponse(data) {
             integrityEl.style.fontWeight = "bold";
         }
     } else {
-        integrityEl.textContent = "— No signature data";
+        integrityEl.textContent = "— Incomplete attestation";
         integrityEl.style.color = "#6c757d";
     }
 
-    // LLM error handling
+    // LLM error handling — always run
     const errorDiv = document.getElementById("llm-error");
     if (data.llm_error) {
         errorDiv.textContent = data.llm_error;
@@ -670,10 +676,12 @@ function handleResponse(data) {
         errorDiv.textContent = "";
     }
 
+    // Stats update — always run
     if (incExecuted) els.executed.textContent = Number(els.executed.textContent) + 1;
-    if (incBlocked) els.blocked.textContent = Number(els.blocked.textContent) + 1;
+    if (incBlocked)  els.blocked.textContent  = Number(els.blocked.textContent)  + 1;
     if (incApproved) els.approved.textContent = Number(els.approved.textContent) + 1;
 
+    // Add to live event stream — always run
     const line = document.createElement("div");
     line.className = `event-line ${eventClass}`;
     line.innerHTML = `
@@ -683,21 +691,24 @@ function handleResponse(data) {
         <span style="color:#6c757d; font-size:0.9rem;">
             | policy=<code>${data.policy || '—'}</code> 
             | sig=<code>${data.signature || '—'}</code>
+            | env=<code>${data.envelope_hash || '—'}</code>
         </span>
     `;
     els.events.prepend(line);
     if (els.events.children.length > 200) els.events.removeChild(els.events.lastChild);
 
+    // Show alert text if any — always run
     if (alertText) {
         els.alerts.textContent = alertText;
         setTimeout(() => els.alerts.textContent = "", 4800);
     }
 
+    // Update escalation queue — always run
     if (data.escalation_queue) {
         renderQueue(data.escalation_queue);
     }
 }
-
+    
 function renderQueue(queue) {
     const container = document.getElementById("escalationQueue");
     container.innerHTML = "";
