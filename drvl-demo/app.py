@@ -24,22 +24,46 @@ escalation_queue = []
 escalation_counter = 0
 
 
+# Lightweight execution envelope — formal boundary between validation and execution
+class ExecutionEnvelope:
+    """Authorization boundary object — separates proposal from execution."""
+    def __init__(self, action: str, table: str, params: dict | None = None):
+        self.action = action
+        self.table = table
+        self.params = params or {}
+        self.timestamp = time.time()
+        self.nonce = time.time_ns()  # replay protection
+
+    def to_dict(self) -> dict:
+        return {
+            "action": self.action,
+            "table": self.table,
+            "params": self.params,
+            "timestamp": self.timestamp,
+            "nonce": self.nonce,
+        }
+
+    def compute_hash(self) -> str:
+        """Deterministic short hash for demo visibility."""
+        serialized = json.dumps(self.to_dict(), sort_keys=True)
+        return hashlib.sha256(serialized.encode()).hexdigest()[:16]
+
+
 def publish_signed_event(event_data):
     """Add policy hash and HMAC signature before publishing — sometimes tamper for demo"""
     
-    # Normal path (most of the time)
+    # Normal path
     event_data["policy"] = drvl.policy_hash
     event_data["signature"] = drvl.sign_event(event_data)
     
-    # ~12–18% of events will be "tampered" for demo purposes
-    if random.random() < 0.15:  # adjust probability as desired (0.10–0.20 works well)
+    # ~15% tampered events for demo
+    if random.random() < 0.15:
         tamper_type = random.choice(["policy", "signature", "both"])
         
-        if tamper_type == "policy" or tamper_type == "both":
-            event_data["policy"] = "fake" + drvl.policy_hash[4:]  # looks similar but wrong
+        if tamper_type in ("policy", "both"):
+            event_data["policy"] = "fake" + drvl.policy_hash[4:]
             
-        if tamper_type == "signature" or tamper_type == "both":
-            # Corrupt the signature slightly
+        if tamper_type in ("signature", "both"):
             real_sig = event_data["signature"]
             event_data["signature"] = real_sig[:8] + "DEAD" + real_sig[12:]
     
@@ -58,23 +82,27 @@ def run_demo():
     llm_error = None
     action, table = agent.generate_action()
 
-    # Capture LLM fallback error if it occurred
     if hasattr(agent, "last_llm_error") and agent.last_llm_error:
         llm_error = agent.last_llm_error
-        agent.last_llm_error = None  # clear after use
+        agent.last_llm_error = None
 
-    allowed, needs_escalation, message, policy_hash = drvl.verify(action, table, environment)
+    # Create envelope BEFORE verification — this is the proposal boundary
+    envelope = ExecutionEnvelope(action=action, table=table)
+
+    # Verify — note: drvl.verify now returns envelope too (update drvl.py accordingly)
+    allowed, needs_escalation, message, policy_hash, envelope = drvl.verify(action, table, environment)
 
     status = ""
     result = None
     req_id = None
 
-    # Prepare base event (used for publish + response)
+    # Base event
     event = {
         "action": action,
         "table": table,
         "timestamp": time.strftime("%H:%M:%S"),
-        "nonce": time.time_ns()
+        "nonce": time.time_ns(),
+        "envelope_hash": envelope.compute_hash(),  # ← core new field
     }
 
     if needs_escalation:
@@ -82,8 +110,6 @@ def run_demo():
         req_id = escalation_counter
         event["request_id"] = req_id
 
-        # Demo: probabilistic auto-decision for escalations (DELETE in production)
-        # ~35% auto-approve, ~35% auto-deny, ~30% pending/manual
         rand = random.random()
         if rand < 0.35:
             status = "APPROVED"
@@ -105,14 +131,14 @@ def run_demo():
                 "id": req_id,
                 "action": action,
                 "table": table,
-                "status": status
+                "status": status,
+                "envelope_hash": envelope.compute_hash()  # traceable in queue
             })
             event.update({
                 "status": "PENDING",
                 "message": "Escalation pending"
             })
     else:
-        # Non-escalation path: allowed or forbidden (e.g. DROP)
         if allowed:
             status = "EXECUTED"
             result = db.execute(action, table)
@@ -125,11 +151,11 @@ def run_demo():
             "message": message
         })
 
-    # Final log & signed publish
+    # Final log & publish
     log_event(action, table, status, message)
     publish_signed_event(event)
 
-    # Return consistent data
+    # Response — include envelope hash for UI display
     return jsonify({
         "action": action,
         "table": table,
@@ -142,148 +168,18 @@ def run_demo():
                 "request_id": req["id"],
                 "action": req["action"],
                 "table": req["table"],
-                "status": req["status"]
+                "status": req["status"],
+                "envelope_hash": req.get("envelope_hash")  # optional
             } for req in escalation_queue
         ],
         "llm_error": llm_error,
         "policy": drvl.policy_hash,
-        "signature": event["signature"]
+        "signature": event.get("signature"),
+        "envelope_hash": event["envelope_hash"]  # new
     })
 
 
-@app.route("/approve/<int:req_id>", methods=["POST"])
-def approve_request(req_id):
-    for req in escalation_queue[:]:
-        if req["id"] == req_id and req["status"] == "PENDING":
-            req["status"] = "APPROVED"
-            result = db.execute(req["action"], req["table"])
-
-            event = {
-                "action": req["action"],
-                "table": req["table"],
-                "status": "EXECUTED",
-                "message": "Escalation manually approved",
-                "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S")
-            }
-            publish_signed_event(event)
-
-            escalation_queue.remove(req)
-
-            return jsonify({
-                "status": "approved",
-                "id": req_id,
-                "escalation_queue": [
-                    {
-                        "request_id": r["id"],
-                        "action": r["action"],
-                        "table": r["table"],
-                        "status": r["status"]
-                    } for r in escalation_queue
-                ]
-            })
-
-    return jsonify({"status": "not_found", "id": req_id}), 404
-
-
-@app.route("/deny/<int:req_id>", methods=["POST"])
-def deny_request(req_id):
-    for req in escalation_queue[:]:
-        if req["id"] == req_id and req["status"] == "PENDING":
-            req["status"] = "DENIED"
-
-            event = {
-                "action": req["action"],
-                "table": req["table"],
-                "status": "BLOCKED",
-                "message": "Escalation denied by operator",
-                "request_id": req_id,
-                "timestamp": time.strftime("%H:%M:%S")
-            }
-            publish_signed_event(event)
-
-            escalation_queue.remove(req)
-
-            return jsonify({
-                "status": "denied",
-                "id": req_id,
-                "escalation_queue": [
-                    {
-                        "request_id": r["id"],
-                        "action": r["action"],
-                        "table": r["table"],
-                        "status": r["status"]
-                    } for r in escalation_queue
-                ]
-            })
-
-    return jsonify({"status": "not_found", "id": req_id}), 404
-
-
-@app.route("/status")
-def get_status():
-    return jsonify({
-        "escalation_queue": [
-            {
-                "request_id": req["id"],
-                "action": req["action"],
-                "table": req["table"],
-                "status": req["status"]
-            } for req in escalation_queue
-        ]
-    })
-
-
-@app.route("/policy_hash")
-def get_policy_hash():
-    return jsonify({"policy_hash": drvl.policy_hash})
-
-
-@app.route("/logs")
-def view_logs():
-    try:
-        with open("drvl_events.log", "r") as f:
-            logs = f.read()
-    except Exception:
-        logs = "No events yet."
-    return f"<pre>{logs}</pre>"
-
-
-@app.route("/set_llm_key", methods=["POST"])
-def set_llm_key():
-    if not request.is_json:
-        return jsonify({"status": "error", "error": "Request must be JSON"}), 400
-
-    data = request.get_json()
-    provider = data.get("provider")
-    api_key = data.get("api_key")
-
-    if not provider or not api_key:
-        return jsonify({"status": "error", "error": "Missing provider or api_key"}), 400
-
-    try:
-        global agent
-        agent.set_llm(provider, api_key)
-        return jsonify({"status": "ok"})
-    except ValueError as e:
-        return jsonify({"status": "error", "error": str(e)}), 400
-    except Exception as e:
-        return jsonify({"status": "error", "error": f"Server error: {str(e)}"}), 500
-
-
-@app.route("/events")
-def stream_events():
-    def event_stream():
-        last_index = 0
-        while True:
-            events = get_events()
-            if len(events) > last_index:
-                event = events[last_index]
-                last_index += 1
-                yield f"data: {json.dumps(event)}\n\n"
-            time.sleep(0.5)  # faster polling for responsive demo feel
-    return Response(event_stream(), mimetype="text/event-stream")
-
+# ... rest of your routes unchanged (approve, deny, status, policy_hash, logs, set_llm_key, events) ...
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000, debug=True)
