@@ -135,7 +135,7 @@ In a real deployment, policy hashes are designed to match for events under the c
 
 ### Real LLM Mode (optional)
 
-- Toggle → enter your OpenAI API key (supports GPT-4o / 4o-mini)
+- Toggle → enter your OpenAI API key (supports GPT-4o)
 - Agent behavior becomes truly non-deterministic and occasionally risky
 - **Warning:** consumes your OpenAI tokens (may incur costs). Simulated mode uses **zero tokens**.
 - Key is sent once per session, never stored or logged.
