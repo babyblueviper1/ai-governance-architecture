@@ -18,14 +18,32 @@ The agent attempts database operations (`READ`, `UPDATE`, `DELETE`, `DROP`) whil
 ## Policy Integrity & Attestation
 
 Every governance decision includes:  
+- **Envelope hash** — integrity fingerprint of the proposed action (before enforcement)  
 - **Policy hash** — SHA-256 fingerprint of the current rules (ensures reproducible enforcement)  
 - **Signature** — HMAC-SHA256 of the event payload (provides cryptographic attestation)
 
-This demonstrates deterministic, auditable governance — a core requirement for real security and compliance systems.
+The **Execution Envelope** wraps the action proposal early, creating a clear boundary between probabilistic reasoning and deterministic execution.  
+Only verified envelopes proceed — producing auditable, hashable records of what was actually attempted and allowed.
 
 **Demo note (intentional mismatches):**  
 For illustration purposes, **~15% of events are deliberately tampered** with (wrong policy hash or corrupted signature) to show what integrity detection looks like in the UI (red "✗ Tampered / Invalid" warning).  
 In a real system, policy hashes are designed to match for events under the current policy — the check exists precisely to detect any changes, tampering, misconfigurations, or other issues.
+### Execution Envelope (Action Boundary)
+
+Every proposed action is wrapped in a lightweight **Execution Envelope** before verification:
+
+- Captures the exact action + parameters at proposal time  
+- Includes timestamp + nonce for freshness/replay protection  
+- Computes a deterministic hash of the proposal  
+
+The envelope creates a clear **separation between reasoning (probabilistic LLM/agent) and execution (deterministic enforcement)**.  
+Only verified, authorized envelopes proceed to tool/database execution — producing a traceable, hashable boundary object.
+
+In the UI you’ll see:
+- **Envelope Hash** in the "Latest Governance Decision" panel  
+- Envelope hash in live event lines (for integrity verification)
+
+This pattern mirrors how real secure systems (capability-based OSes, zero-trust gateways, confidential compute runtimes) separate untrusted proposal from trusted execution.
 
 ## Key Features
 
