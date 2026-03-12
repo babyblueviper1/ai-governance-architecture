@@ -621,21 +621,62 @@ async function denyRequest(id)   { try { await fetch(`/deny/${id}`,   { method: 
 function handleEvent(data) {
   if (!data?.action) return;
 
-  // Declare early so it's available everywhere below
+  // Declare early
   const statusLower = (data.status || "").toLowerCase();
 
-  // Shortcut for cleaner code
+  // Shortcut
   const d = elements.decision;
 
-  // Update decision panel fields (with safety guards)
-  if (d.action)    d.action.textContent    = `${data.action} ${data.table || ""}`.trim();
-  if (d.result)    d.result.textContent    = data.status || data.message || "—";
-  if (d.decRule)   d.decRule.textContent   = data.status || "—";
-  if (d.envHash)   d.envHash.textContent   = data.envelope_hash?.slice(0, 16) + "…" || "—";
-  if (d.policy)    d.policy.textContent    = data.policy || "—";
-  if (d.sig)       d.sig.textContent       = data.signature?.slice(0, 16) + "…" || "—";
+  // Update main decision fields
+  if (d.action) {
+    d.action.textContent = `${data.action} ${data.table || ""}`.trim();
+  }
 
-  // Status styling for the Status field
+  // ── IMPROVED RESULT DISPLAY ──
+  if (d.result) {
+    let resultText = "—";
+
+    if (data.result && typeof data.result === "object" && !Array.isArray(data.result)) {
+      // Object result from backend (preferred case)
+      if (data.result.executed) {
+        resultText = `Executed (${data.result.rows_affected || "?"} rows affected)`;
+      } else if (data.result.error) {
+        resultText = `Error: ${data.result.error}`;
+      } else if (data.result.blocked) {
+        resultText = "Blocked — no changes made";
+      } else if (data.result.pending) {
+        resultText = `Pending review #${data.result.request_id || "?"}`;
+      } else {
+        // Fallback for any other object shape
+        resultText = JSON.stringify(data.result, null, 2).slice(0, 100) + (JSON.stringify(data.result).length > 100 ? "…" : "");
+      }
+    } else if (data.message) {
+      // Fallback to message if result is not an object (old behavior / non-executed cases)
+      resultText = data.message;
+    } else if (data.result) {
+      // If result is a simple string (legacy)
+      resultText = data.result;
+    }
+
+    d.result.textContent = resultText;
+  }
+
+  // Status (policy outcome) stays clean
+  if (d.decRule) {
+    d.decRule.textContent = data.status || "—";
+  }
+
+  if (d.envHash) {
+    d.envHash.textContent = data.envelope_hash?.slice(0, 16) + "…" || "—";
+  }
+  if (d.policy) {
+    d.policy.textContent = data.policy || "—";
+  }
+  if (d.sig) {
+    d.sig.textContent = data.signature?.slice(0, 16) + "…" || "—";
+  }
+
+  // Status styling for the Status field (decRule)
   let statusClass = "";
   if (statusLower === "executed" || statusLower === "approved") {
     statusClass = "stat-executed";    // green
@@ -644,12 +685,12 @@ function handleEvent(data) {
   } else if (statusLower === "pending") {
     statusClass = "stat-pending";     // amber/orange
   }
-  
+
   if (d.decRule) {
     d.decRule.className = statusClass;
   }
 
-  // Integrity / tamper detection logic
+  // Integrity / tamper detection
   let integrityText = "Waiting…";
   let integrityClass = "";
   let eventClass = "event-executed";
@@ -680,7 +721,7 @@ function handleEvent(data) {
     d.integrity.className = integrityClass;
   }
 
-  // Add new event line to live feed
+  // Live event feed
   const ts = data.timestamp
     ? new Date(data.timestamp).toLocaleTimeString([], {
         hour: '2-digit',
@@ -694,25 +735,22 @@ function handleEvent(data) {
   line.textContent = `[${ts}] ${data.action} → ${data.status || "?"} | env=${data.envelope_hash?.slice(0,12)}…`;
 
   if (elements.events) {
-    // Keep only last MAX_EVENTS
     while (elements.events.children.length >= MAX_EVENTS) {
       elements.events.removeChild(elements.events.lastChild);
     }
     elements.events.prepend(line);
   }
 
-  // Update counters
+  // Counters (auto-approved now goes to "approved" since backend sends "APPROVED")
   if (statusLower === "executed") {
-    if (elements.executed) elements.executed.textContent = Number(elements.executed.textContent) + 1;
-  }
-  else if (statusLower === "blocked" || statusLower === "denied") {
-    if (elements.blocked) elements.blocked.textContent = Number(elements.blocked.textContent) + 1;
-  }
-  else if (statusLower === "approved") {
-    if (elements.approved) elements.approved.textContent = Number(elements.approved.textContent) + 1;
+    if (elements.executed) elements.executed.textContent = Number(elements.executed.textContent || 0) + 1;
+  } else if (statusLower === "blocked" || statusLower === "denied") {
+    if (elements.blocked) elements.blocked.textContent = Number(elements.blocked.textContent || 0) + 1;
+  } else if (statusLower === "approved") {
+    if (elements.approved) elements.approved.textContent = Number(elements.approved.textContent || 0) + 1;
   }
 
-  // Render escalation queue if present
+  // Escalation queue
   if (data.escalation_queue && typeof renderQueue === "function") {
     renderQueue(data.escalation_queue);
   }
