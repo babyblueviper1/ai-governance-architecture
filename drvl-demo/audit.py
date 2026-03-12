@@ -1,50 +1,63 @@
+# audit.py
 from datetime import datetime
 import json
 
 LOG_FILE = "drvl_events.log"
 
-def handle_event(event):
-    # This is called when something is already published to the bus
-    # (via subscribe(handle_event) in your main app)
+def handle_event(event: dict):
+    """
+    Subscriber for published events.
+    Logs both human-readable and JSON versions.
+    """
+    ts = event.get("timestamp", datetime.utcnow().isoformat())
+
+    # Human-readable log
     log_line = (
-        f"{event.get('timestamp', datetime.utcnow().isoformat())} | "
+        f"{ts} | "
         f"ACTION={event.get('action', '—')} | "
         f"TABLE={event.get('table', '—')} | "
         f"STATUS={event.get('status', '—')} | "
-        f"MESSAGE={event.get('message', '—')}\n"
+        f"MESSAGE={event.get('message', '—')} | "
+        f"POLICY={event.get('policy', '—')} | "
+        f"SIGNATURE={event.get('signature', '—')}\n"
     )
     with open(LOG_FILE, "a") as f:
         f.write(log_line)
 
-    # Optional: also keep the full JSON version if you want both formats
+    # Full JSON log (good for parsing or auditing)
     with open(LOG_FILE, "a") as f_json:
         f_json.write(json.dumps(event) + "\n")
 
 
-def log_event(action, table, status, message):
+def log_event(action: str, table: str, status: str, message: str, timestamp: str = None, policy: str = None):
     """
-    Local logging only — writes to file.
-    Does NOT publish to bus anymore (publication must happen via publish_signed_event).
+    Local logging for internal use. Does NOT publish to bus.
+    `timestamp` and `policy` are passed to match signed event exactly.
     """
+    if timestamp is None:
+        timestamp = datetime.utcnow().isoformat()
+
     event = {
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": timestamp,
         "action": action,
         "table": table,
         "status": status,
-        "message": message
+        "message": message,
+        "policy": policy,
     }
 
-    # Write JSON line (good for structured parsing later)
+    # Write structured JSON
     with open(LOG_FILE, "a") as f:
         f.write(json.dumps(event) + "\n")
 
-    # Optional: also write human-readable line
+    # Human-readable line
     log_line = (
-        f"{event['timestamp']} | "
-        f"ACTION={event['action']} | "
-        f"TABLE={event['table']} | "
-        f"STATUS={event['status']} | "
-        f"MESSAGE={event['message']}\n"
+        f"{timestamp} | "
+        f"ACTION={action} | "
+        f"TABLE={table} | "
+        f"STATUS={status} | "
+        f"MESSAGE={message} | "
+        f"POLICY={policy}\n"
     )
     with open(LOG_FILE, "a") as f:
         f.write(log_line)
