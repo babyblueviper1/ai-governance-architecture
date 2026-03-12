@@ -121,6 +121,39 @@ def verification_key():
         print("Verification key error:", e)
         return jsonify({"error": "verification key failure"}), 500
 
+@app.route("/set_llm_key", methods=["POST"])
+def set_llm_key():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No JSON data received"}), 400
+        
+        provider = data.get("provider")
+        api_key = data.get("api_key")
+        
+        if not provider or not api_key:
+            return jsonify({"error": "Provider and API key are required"}), 400
+        
+        if provider.lower() != "openai":
+            return jsonify({"error": "Only OpenAI provider is supported"}), 400
+        
+        # Actually configure the agent
+        agent.set_llm(provider, api_key)
+        
+        # Optional: quick validation (cheap call that fails fast on bad key)
+        try:
+            # This tests authentication without burning tokens
+            agent.llm_client.models.list(limit=1)
+        except Exception as e:
+            agent.llm_client = None  # clear on failure
+            return jsonify({"error": f"Invalid or unauthorized API key: {str(e)}"}), 401
+        
+        return jsonify({"status": "ok"})
+    
+    except Exception as e:
+        print(f"Error setting LLM key: {e}")
+        return jsonify({"error": "Failed to activate LLM — check key"}), 500
+
 @app.route("/run")
 def run_demo():
     global escalation_counter, last_run_time
