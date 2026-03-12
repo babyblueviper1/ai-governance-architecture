@@ -7,7 +7,6 @@ import random
 from threading import Lock
 from datetime import datetime
 
-
 # Custom modules (assuming these exist in your project)
 from agent import ProbabilisticAgent
 from drvl import DRVL
@@ -25,7 +24,7 @@ subscribe(handle_event)
 ENVIRONMENT = "demo"
 DEMO_TAMPER_PROBABILITY = 0.15
 AUTO_APPROVE_PCT = 0.25
-AUTO_DENY_PCT  = 0.25
+AUTO_DENY_PCT = 0.25
 
 last_run_time = 0
 
@@ -162,7 +161,7 @@ def run_demo():
         return jsonify({"error": "Rate limit: wait 0.8s between /run calls"}), 429
     last_run_time = now
 
-   time.sleep(random.uniform(0.3, 0.8))  # simulate agent "thinking"
+    time.sleep(random.uniform(0.3, 0.8))  # simulate agent "thinking"
 
     action, table = agent.generate_action()
     llm_error = getattr(agent, "last_llm_error", None)
