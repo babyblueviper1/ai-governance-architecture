@@ -313,6 +313,10 @@
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
+.stat-pending {
+  color: var(--warning);  /* #d97706 – orange */
+  font-weight: 600;
+}
 </style>
 </head>
 <body>
@@ -608,15 +612,36 @@ function handleEvent(data) {
     elements.events.removeChild(elements.events.lastChild);
   }
 
-  const ts = data.timestamp 
-    ? new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) 
+  const ts = data.timestamp
+    ? new Date(data.timestamp).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
     : new Date().toLocaleTimeString();
 
-  elements.decision.action.textContent  = `${data.action} ${data.table || ""}`.trim();
-  elements.decision.result.textContent  = data.status || data.message || "—";
-  elements.decision.envHash.textContent = data.envelope_hash?.slice(0,16) + "…" || "—";
+  elements.decision.action.textContent = `${data.action} ${data.table || ""}`.trim();
+  elements.decision.result.textContent = data.status || data.message || "—";
+
+  // ADD THIS LINE RIGHT HERE ──
+  elements.decision.decRule.textContent = data.status || "—";   // this fixes the Status field
+
+  elements.decision.envHash.textContent = data.envelope_hash?.slice(0, 16) + "…" || "—";
   elements.decision.policy.textContent  = data.policy || "—";
-  elements.decision.sig.textContent     = data.signature?.slice(0,16) + "…" || "—";
+  elements.decision.sig.textContent     = data.signature?.slice(0, 16) + "…" || "—";
+
+  const statusLower = (data.status || "").toLowerCase();
+  let statusClass = "";
+
+  if (statusLower === "executed" || statusLower === "approved") {
+    statusClass = "stat-executed";   // green
+  } else if (statusLower === "blocked" || statusLower === "denied") {
+    statusClass = "stat-blocked";    // red
+  } else if (statusLower === "pending") {
+    statusClass = "stat-pending";    // amber/orange (define in CSS)
+  }
+
+  elements.decision.decRule.className = statusClass;
 
   // Full integrity check
   let integrityText = "Waiting…";
