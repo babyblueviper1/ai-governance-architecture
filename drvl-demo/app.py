@@ -248,4 +248,18 @@ def deny(req_id):
     with escalation_lock:
         for req in escalation_queue:
             if req["id"] == req_id and req["status"] == "PENDING":
-                req["status"] = "DEN
+                req["status"] = "DENIED"                    # ← fix here
+                req["decided_at"] = time.time()
+                event_timestamp = datetime.utcnow().isoformat()
+                event = {
+                    "type": "escalation_decision",
+                    "request_id": req_id,
+                    "status": "DENIED",
+                    "action": req["action"],
+                    "table": req["table"],
+                    "timestamp": event_timestamp,
+                    "envelope_hash": req["envelope_hash"],
+                }
+                publish(create_signed_event(event))
+                break
+    return status()
