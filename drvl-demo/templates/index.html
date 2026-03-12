@@ -641,7 +641,6 @@ function handleEvent(data) {
   elements.decision.policy.textContent  = data.policy || "—";
   elements.decision.sig.textContent     = data.signature?.slice(0, 16) + "…" || "—";
 
-  const statusLower = (data.status || "").toLowerCase();
   let statusClass = "";
 
   if (statusLower === "executed" || statusLower === "approved") {
