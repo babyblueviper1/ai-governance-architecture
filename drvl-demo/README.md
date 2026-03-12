@@ -6,23 +6,27 @@
 
 This folder contains a **minimal, self-contained demonstration** of the **Distributed Runtime Verification Layer (DRVL)** governing an AI agent.
 
-The agent attempts database operations (READ, UPDATE, DELETE, DROP) while DRVL enforces deterministic runtime policies — executing allowed actions, blocking forbidden ones, escalating risky ones, or auto-deciding based on simple rules.
+The agent attempts database operations (`READ`, `UPDATE`, `DELETE`, `DROP`) while DRVL enforces deterministic runtime policies — executing allowed actions, blocking forbidden ones, escalating risky ones, or auto-deciding based on simple rules.
 
-### Real LLM Mode (bring your own key)
+## Real LLM Mode (bring your own key)
 
-- Toggle on → paste your **OpenAI** API key  
-- **Demo currently supports OpenAI** (GPT-4o / 4o-mini).
+- Toggle the switch on → paste your **OpenAI** API key  
+- **Demo currently supports OpenAI only** (GPT-4o / 4o-mini)  
 - Actions become truly non-deterministic (and occasionally risky — perfect to see DRVL govern real frontier-model behavior)  
 - **Warning:** Using real LLM will consume your OpenAI tokens and may incur costs. The default simulation mode uses **no tokens**.  
-- Key is sent once to the server, never stored or logged — only used for your session.
+- Your key is sent once to the server, never stored or logged — only used for your current session.
 
-### Policy Integrity & Attestation
+## Policy Integrity & Attestation
 
-Every governance decision includes:
-- **Policy hash** — SHA-256 of current rules (reproducible enforcement)  
-- **Signature** — HMAC of event payload (cryptographic attestation)  
+Every governance decision includes:  
+- **Policy hash** — SHA-256 fingerprint of the current rules (ensures reproducible enforcement)  
+- **Signature** — HMAC-SHA256 of the event payload (provides cryptographic attestation)
 
-This demonstrates deterministic, auditable governance — key for real security and compliance systems.
+This demonstrates deterministic, auditable governance — a core requirement for real security and compliance systems.
+
+**Demo note (intentional mismatches):**  
+For illustration purposes, **~15% of events are deliberately tampered** with (wrong policy hash or corrupted signature) to show what integrity detection looks like in the UI (red "✗ Tampered / Invalid" warning).  
+In a real system, policy hashes are designed to match for events under the current policy — the check exists precisely to detect any changes, tampering, misconfigurations, or other issues.
 
 ## Key Features
 
@@ -32,7 +36,10 @@ This demonstrates deterministic, auditable governance — key for real security 
   - Real OpenAI LLM (your API key) — unpredictable, realistic frontier-model behavior
 
 - **Deterministic Runtime Enforcement**  
-  Policies applied consistently: allowed → execute, forbidden → block, escalatable → decide.
+  Policies applied consistently:  
+  - Allowed → execute  
+  - Forbidden → block  
+  - Escalatable → decide (auto or manual)
 
 - **Escalation Handling (for DELETE)**  
   When escalation is required:  
@@ -41,15 +48,15 @@ This demonstrates deterministic, auditable governance — key for real security 
   - **~30% pending** → wait for manual Approve / Deny via dashboard buttons
 
 - **Real-Time Governance Dashboard**  
-  - Manual / autonomous action triggers  
-  - Speed control slider  
+  - Manual or autonomous action triggers  
+  - Adjustable speed slider for autonomous mode  
   - Execution / block / approved counters  
   - Active policies view  
-  - Latest decision panel with explanation  
-  - Live event stream with timestamps & color coding  
-  - Escalation queue showing pending requests + Approve/Deny buttons  
+  - Latest decision panel with detailed explanation  
+  - Live event stream with timestamps and color coding  
+  - Escalation queue with pending requests + Approve/Deny buttons  
   - LLM mode status + error feedback  
-  - Policy hash + signature on every event
+  - Policy hash + signature displayed on every event
 
 ## Architecture
 
