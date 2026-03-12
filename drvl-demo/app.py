@@ -162,7 +162,7 @@ def run_demo():
         return jsonify({"error": "Rate limit: wait 0.8s between /run calls"}), 429
     last_run_time = now
 
-    time.sleep(random.uniform(1.2, 2.5))  # simulate agent "thinking"
+   time.sleep(random.uniform(0.3, 0.8))  # simulate agent "thinking"
 
     action, table = agent.generate_action()
     llm_error = getattr(agent, "last_llm_error", None)
