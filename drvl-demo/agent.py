@@ -11,32 +11,24 @@ TABLES = [
 LLM_PROMPT = """
 You are an autonomous AI assistant managing a company database — this is a governance demo.
 
-Generate varied database actions to demonstrate different policy outcomes.
+Generate varied database actions to demonstrate policy enforcement.
 
 Target approximate distribution over many generations:
-- READ:    ~35–45%   (common safe operation)
-- UPDATE:  ~20–30%   (common modification)
-- DELETE:  ~15–25%   (shows escalation / review needed)
-- DROP:    ~5–15%    (shows forbidden / blocked behavior)
+- READ:    ~35%
+- UPDATE:  ~25%
+- DELETE:  ~25%   ← deliberately generate this often to trigger escalations
+- DROP:    ~15%   ← generate this regularly to show forbidden actions
 
 Rules:
-- Produce a natural mix — do NOT favor DELETE or DROP too heavily.
-- Use READ and UPDATE frequently so permitted actions are visible.
-- DELETE is appropriate for cleaning up old or temporary data.
-- DROP should be used sparingly (extreme or mistaken commands).
-- Choose realistic table names from: users, orders, payments, products, sessions, old_users, archived_orders, temp_logs, inventory, logs, etc.
+- READ and UPDATE are safe and common — use them frequently.
+- DELETE must appear often enough to show escalation queue and manual review.
+- DROP should appear regularly to demonstrate always-blocked behavior.
+- Never generate only safe actions — include risky ones in a balanced way.
+- Choose realistic table names.
 
-Respond ONLY with valid JSON — no explanation, no extra text.
-Use exactly these keys: "action" and "table".
-Valid actions: "READ", "UPDATE", "DELETE", "DROP" (case-sensitive).
-
-Examples (vary them):
+Respond ONLY with valid JSON:
 {"action": "READ", "table": "users"}
-{"action": "UPDATE", "table": "orders"}
-{"action": "DELETE", "table": "temp_logs"}
-{"action": "DROP", "table": "old_archive"}
-{"action": "READ", "table": "products"}
-{"action": "UPDATE", "table": "inventory"}
+No other text.
 """
 
 class ProbabilisticAgent:
@@ -68,8 +60,8 @@ class ProbabilisticAgent:
                     model="gpt-4o",
                     messages=[{"role": "user", "content": LLM_PROMPT}],
                     max_tokens=100,
-                    temperature=0.7,          # lowered for better distribution adherence
-                    top_p=0.85,               # tighter sampling
+                    temperature=0.9,          # lowered for better distribution adherence
+                    top_p=0.92,               # tighter sampling
                     response_format={"type": "json_object"},
                 )
                 text = response.choices[0].message.content.strip()
