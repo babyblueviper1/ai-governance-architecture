@@ -621,54 +621,47 @@ async function denyRequest(id)   { try { await fetch(`/deny/${id}`,   { method: 
 function handleEvent(data) {
   if (!data?.action) return;
 
-  // Truncate old events
-  while (elements.events.children.length >= MAX_EVENTS) {
-    elements.events.removeChild(elements.events.lastChild);
-  }
+  // Declare early so it's available everywhere below
+  const statusLower = (data.status || "").toLowerCase();
 
-  const ts = data.timestamp
-    ? new Date(data.timestamp).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      })
-    : new Date().toLocaleTimeString();
+  // Shortcut for cleaner code
+  const d = elements.decision;
 
-  elements.decision.action.textContent = `${data.action} ${data.table || ""}`.trim();
-  elements.decision.result.textContent = data.status || data.message || "—";
+  // Update decision panel fields (with safety guards)
+  if (d.action)    d.action.textContent    = `${data.action} ${data.table || ""}`.trim();
+  if (d.result)    d.result.textContent    = data.status || data.message || "—";
+  if (d.decRule)   d.decRule.textContent   = data.status || "—";
+  if (d.envHash)   d.envHash.textContent   = data.envelope_hash?.slice(0, 16) + "…" || "—";
+  if (d.policy)    d.policy.textContent    = data.policy || "—";
+  if (d.sig)       d.sig.textContent       = data.signature?.slice(0, 16) + "…" || "—";
 
-  // ADD THIS LINE RIGHT HERE ──
-  elements.decision.decRule.textContent = data.status || "—";   // this fixes the Status field
-
-  elements.decision.envHash.textContent = data.envelope_hash?.slice(0, 16) + "…" || "—";
-  elements.decision.policy.textContent  = data.policy || "—";
-  elements.decision.sig.textContent     = data.signature?.slice(0, 16) + "…" || "—";
-
+  // Status styling for the Status field
   let statusClass = "";
-
   if (statusLower === "executed" || statusLower === "approved") {
-    statusClass = "stat-executed";   // green
+    statusClass = "stat-executed";    // green
   } else if (statusLower === "blocked" || statusLower === "denied") {
-    statusClass = "stat-blocked";    // red
+    statusClass = "stat-blocked";     // red
   } else if (statusLower === "pending") {
-    statusClass = "stat-pending";    // amber/orange (define in CSS)
+    statusClass = "stat-pending";     // amber/orange
+  }
+  
+  if (d.decRule) {
+    d.decRule.className = statusClass;
   }
 
-  elements.decision.decRule.className = statusClass;
-
-  // Full integrity check
+  // Integrity / tamper detection logic
   let integrityText = "Waiting…";
   let integrityClass = "";
   let eventClass = "event-executed";
-
-  const statusLower = (data.status || "").toLowerCase();
 
   if (data.verified === false || (data.verified === undefined && data.policy !== verificationKey)) {
     integrityText = data.verify_message || "⚠ Tampered / Invalid signature";
     integrityClass = "integrity-bad";
     eventClass = "event-tampered";
   } else {
-    integrityText = data.verified ? "✓ Verified (signature valid)" : "✓ Policy matches";
+    integrityText = data.verified 
+      ? "✓ Verified (signature valid)" 
+      : "✓ Policy matches";
     integrityClass = "integrity-good";
 
     if (statusLower === "blocked" || statusLower === "denied") {
@@ -682,19 +675,47 @@ function handleEvent(data) {
     }
   }
 
-  elements.decision.integrity.textContent = integrityText;
-  elements.decision.integrity.className = integrityClass;
+  if (d.integrity) {
+    d.integrity.textContent = integrityText;
+    d.integrity.className = integrityClass;
+  }
+
+  // Add new event line to live feed
+  const ts = data.timestamp
+    ? new Date(data.timestamp).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
+    : new Date().toLocaleTimeString();
 
   const line = document.createElement("div");
   line.className = `event-line ${eventClass}`;
   line.textContent = `[${ts}] ${data.action} → ${data.status || "?"} | env=${data.envelope_hash?.slice(0,12)}…`;
-  elements.events.prepend(line);
 
-  if (statusLower === "executed") elements.executed.textContent = +elements.executed.textContent + 1;
-  else if (statusLower === "blocked" || statusLower === "denied") elements.blocked.textContent = +elements.blocked.textContent + 1;
-  else if (statusLower === "approved") elements.approved.textContent = +elements.approved.textContent + 1;
+  if (elements.events) {
+    // Keep only last MAX_EVENTS
+    while (elements.events.children.length >= MAX_EVENTS) {
+      elements.events.removeChild(elements.events.lastChild);
+    }
+    elements.events.prepend(line);
+  }
 
-  if (data.escalation_queue) renderQueue(data.escalation_queue);
+  // Update counters
+  if (statusLower === "executed") {
+    if (elements.executed) elements.executed.textContent = Number(elements.executed.textContent) + 1;
+  }
+  else if (statusLower === "blocked" || statusLower === "denied") {
+    if (elements.blocked) elements.blocked.textContent = Number(elements.blocked.textContent) + 1;
+  }
+  else if (statusLower === "approved") {
+    if (elements.approved) elements.approved.textContent = Number(elements.approved.textContent) + 1;
+  }
+
+  // Render escalation queue if present
+  if (data.escalation_queue && typeof renderQueue === "function") {
+    renderQueue(data.escalation_queue);
+  }
 }
 
 // ── Button bindings ──
