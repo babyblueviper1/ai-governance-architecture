@@ -216,6 +216,17 @@
       border-radius: 6px;
       min-width: 240px;
     }
+
+    .event-tampered {
+      background: #fef2f2 !important;
+      border-left: 4px solid var(--danger);
+      font-weight: 500;
+    }
+
+    .event-line strong {
+      min-width: 110px;
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -347,7 +358,7 @@
 
 <script>
 // ──────────────────────────────────────────────
-//  Frontend logic — cleaned & modularized
+//  Frontend logic — enhanced with better color coding & integrity display
 // ──────────────────────────────────────────────
 
 let verificationKey = null;
@@ -375,12 +386,9 @@ const elements = {
 
 const llmToggle = document.getElementById("use-llm-toggle");
 const llmKeyPanel = document.getElementById("llm-key-panel");
-const modeIndicator = document.getElementById("current-mode") || { textContent: "" };
 
 llmToggle.onchange = () => {
   llmKeyPanel.hidden = !llmToggle.checked;
-  modeIndicator.textContent = llmToggle.checked ? "Real LLM" : "Random Agent";
-  modeIndicator.style.color = llmToggle.checked ? "var(--success)" : "var(--gray)";
 };
 
 document.getElementById("apply-key-btn").onclick = async () => {
@@ -424,7 +432,6 @@ document.getElementById("speedSlider").oninput = e => {
   if (autoInterval) { stopAuto(); startAuto(); }
 };
 
-// Core action trigger
 async function runAction() {
   const btn = document.querySelector(".btn-run");
   if (btn.classList.contains("loading")) return;
@@ -450,7 +457,6 @@ function startAuto() {
   if (autoInterval) return;
   document.querySelector(".btn-auto").disabled = true;
   document.querySelector(".btn-stop").disabled = false;
-
   autoInterval = setInterval(runAction, speed);
 }
 
@@ -458,124 +464,105 @@ function stopAuto() {
   if (!autoInterval) return;
   clearInterval(autoInterval);
   autoInterval = null;
-
   document.querySelector(".btn-auto").disabled = false;
   document.querySelector(".btn-stop").disabled = true;
   elements.alerts.textContent = "Autonomous mode stopped";
   setTimeout(() => elements.alerts.textContent = "", 4000);
 }
 
-// ── Integrity verification in browser ──
-async function verifyIntegrity(data) {
-  const el = elements.decision.integrity;
-  const currentPolicy = document.getElementById("current-policy-hash").textContent.trim();
-
-  if (currentPolicy === "Loading…" || currentPolicy === "—") {
-    el.textContent = "Waiting for policy…";
-    el.className = "";
-    return;
-  }
-
-  if (!verificationKey) {
-    el.textContent = "No verification key";
-    return;
-  }
-
-  const policyOk = data.policy === currentPolicy;
-
-  // Recompute HMAC (simplified — adjust payload to match backend exactly)
-  const payload = JSON.stringify({
-    action: data.action,
-    table: data.table,
-    timestamp: data.timestamp,
-    nonce: data.nonce || "",
-    envelope_hash: data.envelope_hash
-  }, null, 0);
-
-  const recomputed = await computeHmac(payload, verificationKey);
-  const sigOk = recomputed && recomputed === data.signature?.slice(0, recomputed.length);
-
-  if (policyOk && sigOk) {
-    el.className = "integrity-good";
-    el.textContent = "✓ Valid signature & policy match";
-  } else {
-    const reasons = [];
-    if (!policyOk) reasons.push("policy mismatch");
-    if (!sigOk) reasons.push("signature invalid");
-    el.className = "integrity-bad";
-    el.textContent = "✗ Tampered — " + (reasons.join(" + ") || "invalid");
-  }
-}
-
-async function computeHmac(message, keyHex) {
-  if (!keyHex) return null;
-  const enc = new TextEncoder();
-  const keyData = new Uint8Array(keyHex.match(/.{1,2}/g).map(b => parseInt(b,16)));
-  const key = await crypto.subtle.importKey(
-    "raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-  );
-  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(message));
-  return Array.from(new Uint8Array(sig))
-    .map(b => b.toString(16).padStart(2,"0"))
-    .join("");
-}
-
-// ── Event rendering ──
+// ── Enhanced event rendering with color + integrity ──
 function handleEvent(data) {
   if (!data?.action) return;
 
-  const ts = data.timestamp?.split(" ")[1] || new Date().toLocaleTimeString([],{timeStyle:"short"});
+  const ts = data.timestamp?.split(" ")[1] || new Date().toLocaleTimeString([], {timeStyle:"short"});
 
+  // Update Latest Decision panel
   elements.decision.action.textContent   = `${data.action} ${data.table||""}`.trim();
-  elements.decision.result.textContent   = data.status;
-  elements.decision.envHash.textContent  = data.envelope_hash || "—";
+  elements.decision.result.textContent   = data.status || data.message || "—";
+  elements.decision.envHash.textContent  = data.envelope_hash?.slice(0,16) + "…" || "—";
   elements.decision.policy.textContent   = data.policy || "—";
-  elements.decision.sig.textContent      = data.signature || "—";
+  elements.decision.sig.textContent      = data.signature?.slice(0,16) + "…" || "—";
 
-  verifyIntegrity(data);
-
-  let cls = "event-pending", countTarget = null, alertMsg = "";
-
-  switch (data.status) {
-    case "EXECUTED":   cls = "event-executed";  countTarget = elements.executed; break;
-    case "BLOCKED":    cls = "event-blocked";   countTarget = elements.blocked;  alertMsg = `Blocked: ${data.action}`; break;
-    case "PENDING":    cls = "event-pending";   alertMsg = `Escalation: ${data.action}`; break;
-    case "APPROVED":   cls = "event-approved";  countTarget = elements.approved; break;
-    case "DENIED":     cls = "event-blocked";   countTarget = elements.blocked;  alertMsg = `Denied: ${data.action}`; break;
+  // Integrity in Latest Decision
+  let integrityText = "✓ Valid";
+  let integrityClass = "integrity-good";
+  if (!data.verified || data.tampered) {
+    integrityText = data.verify_message || "✗ Tampered / Invalid";
+    integrityClass = "integrity-bad";
   }
+  elements.decision.integrity.textContent = integrityText;
+  elements.decision.integrity.className = integrityClass;
 
+  // Count updates
+  let countTarget = null;
+  if (data.status === "EXECUTED")     countTarget = elements.executed;
+  if (data.status === "APPROVED")     countTarget = elements.approved;
+  if (data.status === "BLOCKED" || data.status === "DENIED") {
+    countTarget = elements.blocked;
+  }
   if (countTarget) {
     countTarget.textContent = Number(countTarget.textContent) + 1;
   }
 
+  // ── Live Events line ────────────────────────────────────────
   const line = document.createElement("div");
-  line.className = `event-line ${cls}`;
+  
+  // Base class from status
+  let statusClass = "";
+  switch (data.status) {
+    case "EXECUTED":   statusClass = "event-executed";   break;
+    case "BLOCKED":    statusClass = "event-blocked";    break;
+    case "PENDING":    statusClass = "event-pending";    break;
+    case "APPROVED":   statusClass = "event-approved";   break;
+    case "DENIED":     statusClass = "event-blocked";    break;
+    default:           statusClass = "";
+  }
+
+  // Integrity overrides / adds emphasis
+  let integrityIcon = "";
+  let integrityStyle = "";
+  if (!data.verified || data.tampered) {
+    integrityIcon = "✗ ";
+    integrityStyle = "color: var(--danger); font-weight: 700;";
+    statusClass += " event-tampered";   // we'll style this extra below
+  } else {
+    integrityIcon = "✓ ";
+  }
+
+  line.className = `event-line ${statusClass}`;
   line.innerHTML = `
-    <span style="opacity:0.65">[${ts}]</span> 
-    ${data.status.padEnd(10)} 
-    ${data.action} ${data.table||""}
-    <span style="color:var(--gray); font-size:0.92rem; margin-left:1rem;">
-      policy=<code>${data.policy?.slice(0,8)}…</code> 
-      sig=<code>${data.signature?.slice(0,8)}…</code>
+    <span style="opacity:0.7">[${ts}]</span>  
+    <strong>${integrityIcon}${data.status}</strong>  
+    ${data.action} <span style="color:var(--gray)">${data.table||""}</span>
+    <span style="margin-left:1.2rem; font-size:0.92rem; opacity:0.9; ${integrityStyle}">
+      ${data.tampered ? `(${data.tamper_type || 'tampered'})` : ''}
     </span>
   `;
-  elements.events.prepend(line);
-  if (elements.events.children.length > 250) elements.events.removeChild(elements.events.lastChild);
 
-  if (alertMsg) {
-    elements.alerts.textContent = alertMsg;
-    setTimeout(() => { if (elements.alerts.textContent === alertMsg) elements.alerts.textContent = ""; }, 5000);
+  elements.events.prepend(line);
+  if (elements.events.children.length > 300) {
+    elements.events.removeChild(elements.events.lastChild);
+  }
+
+  // Alert for important events
+  if (data.status === "PENDING" || !data.verified || data.tampered) {
+    let msg = data.status === "PENDING" ? "Escalation required" : "Integrity alert";
+    if (data.tampered) msg = "Tampered event detected!";
+    elements.alerts.textContent = msg;
+    elements.alerts.style.background = data.tampered ? "#fee2e2" : "#fefce8";
+    setTimeout(() => { elements.alerts.textContent = ""; elements.alerts.style.background = ""; }, 7000);
   }
 
   if (data.escalation_queue) renderQueue(data.escalation_queue);
 }
 
+// ── Queue rendering (unchanged but included for completeness) ──
 function renderQueue(queue) {
   const container = document.getElementById("escalationQueue");
   container.innerHTML = "";
   let pending = 0;
 
-  for (const item of queue) {
+  queue.forEach(item => {
     const div = document.createElement("div");
     div.className = `queue-item ${item.status.toLowerCase()}`;
 
@@ -602,7 +589,7 @@ function renderQueue(queue) {
     }
 
     container.appendChild(div);
-  }
+  });
 
   elements.totalEsc.textContent = queue.length;
   elements.pending.textContent = pending;
@@ -610,31 +597,32 @@ function renderQueue(queue) {
 
 async function approveRequest(id) {
   await fetch(`/approve/${id}`, { method: "POST" });
-  // SSE will update queue
 }
 
 async function denyRequest(id) {
   await fetch(`/deny/${id}`, { method: "POST" });
-  // SSE will update queue
 }
 
-// ── SSE & initial load ──
+// ── SSE listener ──
 new EventSource("/events").onmessage = e => {
-  try { handleEvent(JSON.parse(e.data)); }
-  catch {}
+  try {
+    const data = JSON.parse(e.data);
+    handleEvent(data);
+  } catch (err) {
+    console.error("SSE parse error:", err);
+  }
 };
 
+// ── Initial load ──
 window.addEventListener("load", async () => {
   // Policy hash
   try {
     const r = await fetch("/policy_hash");
     const d = await r.json();
     document.getElementById("current-policy-hash").textContent = d.policy_hash || "—";
-  } catch {
-    document.getElementById("current-policy-hash").textContent = "Failed to load";
-  }
+  } catch {}
 
-  // Verification key (only needed for client-side demo verification)
+  // Verification key (optional client-side check)
   try {
     const r = await fetch("/verification_key");
     const d = await r.json();
