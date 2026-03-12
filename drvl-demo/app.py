@@ -24,8 +24,8 @@ subscribe(handle_event)
 
 ENVIRONMENT = "demo"
 DEMO_TAMPER_PROBABILITY = 0.15
-AUTO_APPROVE_PCT = 0.35
-AUTO_DENY_PCT = 0.35
+AUTO_APPROVE_PCT = 0.20
+AUTO_DENY_PCT  = 0.15
 
 last_run_time = 0
 
