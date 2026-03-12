@@ -142,8 +142,7 @@ def set_llm_key():
         
         # Optional: quick validation (cheap call that fails fast on bad key)
         try:
-            # This tests authentication without burning tokens
-            agent.llm_client.models.list(limit=1)
+            agent.llm_client.models.list()
         except Exception as e:
             agent.llm_client = None  # clear on failure
             return jsonify({"error": f"Invalid or unauthorized API key: {str(e)}"}), 401
