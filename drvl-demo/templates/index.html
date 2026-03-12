@@ -11,13 +11,9 @@
             color: #212529;
             margin: 0;
             padding: 30px 20px;
-            line-height: 1.5;
+            line-height: 1.6;
         }
-        h1 {
-            margin: 0 0 8px;
-            font-size: 2.1rem;
-            text-align: center;
-        }
+        h1 { margin: 0 0 8px; font-size: 2.1rem; text-align: center; }
         .subtitle {
             color: #6c757d;
             margin-bottom: 24px;
@@ -28,7 +24,7 @@
             margin: 24px 0;
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 16px;
             justify-content: center;
             align-items: center;
         }
@@ -44,9 +40,7 @@
             position: relative;
             overflow: hidden;
         }
-        button:hover:not(:disabled) {
-            opacity: 0.92;
-        }
+        button:hover:not(:disabled) { opacity: 0.92; }
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -63,42 +57,24 @@
         button.loading::after {
             content: "";
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 16px;
-            height: 16px;
+            top: 50%; left: 50%;
+            width: 16px; height: 16px;
             border: 3px solid white;
             border-top-color: transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             transform: translate(-50%, -50%);
         }
-        @keyframes spin {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
+        @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
         .btn-run    { background: #0d6efd; }
         .btn-auto   { background: #343a40; }
         .btn-stop   { background: #dc3545; }
+        .btn-approve { background: #198754; padding: 6px 14px; font-size: 13px; }
+        .btn-deny    { background: #dc3545; padding: 6px 14px; font-size: 13px; }
 
-        .btn-approve {
-            background: #198754;
-            padding: 6px 14px;
-            font-size: 13px;
-        }
-        .btn-deny {
-            background: #dc3545;
-            padding: 6px 14px;
-            font-size: 13px;
-        }
-
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        input[type="range"] {
-            width: 180px;
-        }
+        .speed-control { display: flex; align-items: center; gap: 12px; }
+        input[type="range"] { width: 180px; }
 
         #stats {
             display: flex;
@@ -121,10 +97,7 @@
             padding: 24px;
         }
 
-        #policy div {
-            margin: 10px 0;
-            font-size: 1.05rem;
-        }
+        #policy div { margin: 10px 0; font-size: 1.05rem; }
         .allowed    { color: #198754; }
         .restricted { color: #dc3545; }
 
@@ -140,9 +113,7 @@
             text-align: center;
         }
 
-        #decision {
-            font-size: 1.05rem;
-        }
+        #decision { font-size: 1.05rem; }
         #decision b { color: #343a40; }
 
         #events {
@@ -159,10 +130,10 @@
             font-family: 'Consolas', 'Courier New', monospace;
             font-size: 0.95rem;
         }
-        .event-executed { background: #d4edda; color: #155724; }
-        .event-blocked  { background: #f8d7da; color: #721c24; }
-        .event-pending  { background: #fff3cd; color: #856404; }
-        .event-approved { background: #cce5ff; color: #004085; font-weight: 600; }
+        .event-executed  { background: #d4edda; color: #155724; }
+        .event-blocked   { background: #f8d7da; color: #721c24; }
+        .event-pending   { background: #fff3cd; color: #856404; }
+        .event-approved  { background: #cce5ff; color: #004085; font-weight: 600; }
 
         .queue-item {
             display: flex;
@@ -174,25 +145,11 @@
             background: #f8f9fa;
             border: 1px solid #dee2e6;
         }
-        .queue-item.pending {
-            background: #fff3cd;
-            border-color: #ffeeba;
-        }
-        .queue-item.approved {
-            background: #d4edda;
-            border-color: #c3e6cb;
-            font-weight: 500;
-        }
-        .queue-item.denied {
-            background: #f8d7da;
-            border-color: #f5c6cb;
-            color: #721c24;
-        }
+        .queue-item.pending   { background: #fff3cd; border-color: #ffeeba; }
+        .queue-item.approved  { background: #d4edda; border-color: #c3e6cb; font-weight: 500; }
+        .queue-item.denied    { background: #f8d7da; border-color: #f5c6cb; color: #721c24; }
 
-        .stats-row {
-            margin-bottom: 16px;
-            font-size: 1.1rem;
-        }
+        .stats-row { margin-bottom: 16px; font-size: 1.1rem; }
 
         /* LLM panel */
         #llm-panel {
@@ -204,10 +161,7 @@
             box-shadow: 0 1px 6px rgba(0,0,0,0.1);
             text-align: center;
         }
-        #llm-key-panel {
-            margin-top: 12px;
-            display: none;
-        }
+        #llm-key-panel { margin-top: 12px; display: none; }
         #llm-key-panel select,
         #llm-key-panel input[type="password"] {
             padding: 8px 12px;
@@ -215,18 +169,8 @@
             border: 1px solid #ced4da;
             border-radius: 4px;
         }
-        #llm-status {
-            margin-top: 8px;
-            font-size: 0.9rem;
-            color: #198754;
-            font-weight: 500;
-        }
-        #llm-error {
-            margin-top: 12px;
-            color: #dc3545;
-            font-size: 0.9rem;
-            min-height: 20px;
-        }
+        #llm-status   { margin-top: 8px; font-size: 0.9rem; color: #198754; font-weight: 500; }
+        #llm-error    { margin-top: 12px; color: #dc3545; font-size: 0.9rem; min-height: 20px; }
         .warning-text {
             font-size: 0.85rem;
             color: #856404;
@@ -237,25 +181,18 @@
             line-height: 1.4;
         }
 
-        /* Apply Key button styling */
         #apply-key-btn {
             background: #0d6efd;
             color: white;
             padding: 10px 20px;
             font-size: 15px;
         }
-        #apply-key-btn:not(:disabled) {
-            background: #0d6efd;
-            color: white;
-        }
         #apply-key-btn:disabled {
             background: #6c757d;
-            color: white;
             opacity: 0.6;
             cursor: not-allowed;
         }
 
-        /* Flex layout for better spacing */
         .llm-input-group {
             display: flex;
             flex-wrap: wrap;
@@ -265,16 +202,13 @@
             margin: 12px 0;
         }
 
-        /* Current mode indicator */
         #mode-indicator {
             text-align: center;
             margin: 12px 0;
             font-size: 0.95rem;
             color: #495057;
         }
-        #current-mode {
-            font-weight: bold;
-        }
+        #current-mode { font-weight: bold; }
     </style>
 </head>
 <body>
@@ -292,18 +226,18 @@
     </label>
     <div id="llm-key-panel">
         <div class="warning-text">
-            <strong>Warning:</strong> Using real LLM will consume your OpenAI tokens and may incur costs.<br>
-            Demo currently supports <strong>OpenAI</strong> (GPT-4o / 4o-mini).
+            <strong>Warning:</strong> Using real LLM consumes OpenAI tokens and may incur costs.<br>
+            Demo supports <strong>OpenAI</strong> (GPT-4o / 4o-mini).
         </div>
         <div class="llm-input-group">
             <select id="llm-provider">
                 <option value="openai">OpenAI (GPT-4o / 4o-mini)</option>
             </select>
-            <input type="password" id="api-key-input" placeholder="Your OpenAI API key" style="flex: 1; min-width: 220px;">
+            <input type="password" id="api-key-input" placeholder="Your OpenAI API key" style="flex:1; min-width:220px;">
             <button id="apply-key-btn" onclick="submitApiKey()">Apply Key</button>
         </div>
-        <p style="font-size: 0.85rem; color: #666; margin-top: 12px;">
-            Your key is sent once to the server and never stored or logged. Only used for this session.
+        <p style="font-size:0.85rem; color:#666; margin-top:12px;">
+            Your key is sent once to the server, never stored or logged. Session-only.
         </p>
         <div id="llm-status"></div>
         <div id="llm-error"></div>
@@ -336,44 +270,40 @@
     <div class="restricted">✗ DROP   — Forbidden</div>
 </div>
 
-<div class="panel" style="background: #f8f9fa; border-left: 4px solid #0d6efd; padding: 16px; margin: 20px auto; max-width: 780px;">
-    <h3 style="margin-top: 0; font-size: 1.1rem; color: #0d6efd;">Policy & Decision Integrity</h3>
-    <p style="font-size: 0.95rem; color: #495057; margin: 8px 0;">
+<div class="panel" style="background:#f8f9fa; border-left:4px solid #0d6efd; padding:16px; margin:20px auto; max-width:780px;">
+    <h3 style="margin-top:0; font-size:1.1rem; color:#0d6efd;">Policy & Decision Integrity</h3>
+    <p style="font-size:0.95rem; color:#495057; margin:8px 0;">
         Every event includes:
     </p>
-    <ul style="font-size: 0.9rem; color: #495057; margin: 8px 0 0 20px; line-height: 1.5;">
-        <li><strong>envelope hash</strong> = integrity fingerprint of the proposed action (before enforcement)</li>
-        <li><strong>policy</strong> = hash of current governance rules (changes if policy is modified)</li>
-        <li><strong>sig</strong> = cryptographic signature of the event (proves decision wasn’t tampered with)</li>
+    <ul style="font-size:0.9rem; color:#495057; margin:8px 0 0 20px; line-height:1.5;">
+        <li><strong>envelope hash</strong> — fingerprint of proposed action</li>
+        <li><strong>policy hash</strong> — fingerprint of active rules</li>
+        <li><strong>signature</strong> — HMAC-SHA256 proof of authenticity</li>
     </ul>
-    <p style="font-size: 0.85rem; color: #6c757d; margin-top: 12px;">
-        The envelope creates a clear boundary between AI reasoning and actual execution — ensuring only verified actions proceed.  
-        Together these fields provide reproducible, auditable enforcement — core to real AI governance systems.
-    </p>
-</div>
-<div class="panel" style="background: #f0f8ff; border-left: 4px solid #0d6efd; padding: 16px; margin: 16px auto; max-width: 780px;">
-    <p style="font-size: 1rem; font-weight: 500; margin: 0;">
-        Current Policy Hash: <code id="current-policy-hash" style="font-family: monospace; background: #e9ecef; padding: 2px 6px; border-radius: 4px;">—</code>
-    </p>
-    <p style="font-size: 0.85rem; color: #6c757d; margin-top: 8px;">
-        All events below must match this hash — if not, policy was modified.
+    <p style="font-size:0.85rem; color:#6c757d; margin-top:12px;">
+        These fields create a tamper-evident boundary between AI reasoning and execution.
     </p>
 </div>
 
-<h2 style="text-align: center; color: #dc3545; margin: 32px 0 16px; font-size: 1.4rem;">
+<div class="panel" style="background:#f0f8ff; border-left:4px solid #0d6efd; padding:16px; margin:16px auto; max-width:780px;">
+    <p style="font-size:1rem; font-weight:500; margin:0;">
+        Current Policy Hash: <code id="current-policy-hash" style="font-family:monospace; background:#e9ecef; padding:2px 6px; border-radius:4px;">Loading…</code>
+    </p>
+    <p style="font-size:0.85rem; color:#6c757d; margin-top:8px;">
+        Events must match this hash — mismatch indicates policy change or tampering.
+    </p>
+</div>
+
+<h2 style="text-align:center; color:#dc3545; margin:32px 0 16px; font-size:1.4rem;">
     Event Alerts
 </h2>
-    
 <div id="alerts"></div>
 
 <div class="panel">
     <h2>Latest Governance Decision</h2>
 
-    <div style="background: #fff3cd; border: 1px solid #ffeeba; border-radius: 6px; 
-                padding: 14px 18px; margin: 20px auto 24px; max-width: 780px; 
-                font-size: 0.95rem; color: #856404; text-align: center; line-height: 1.45;">
-        <strong>Demo note:</strong> For illustration purposes, ~15% of events are 
-        <strong>intentionally tampered</strong> (wrong policy hash or corrupted signature).<br>
+    <div style="background:#fff3cd; border:1px solid #ffeeba; border-radius:6px; padding:14px 18px; margin:20px auto 24px; max-width:780px; font-size:0.95rem; color:#856404; text-align:center; line-height:1.45;">
+        <strong>Demo note:</strong> ~15% of events are <strong>intentionally tampered</strong> (wrong policy hash or invalid signature).
     </div>
 
     <div id="decision">
@@ -381,45 +311,32 @@
         <div><b>Rule / Status:</b> <span id="decRule">—</span></div>
         <div><b>Result:</b> <span id="decResult">—</span></div>
 
-   
-    <div style="margin-top:12px;font-size:0.9rem;color:#495057;">
-        <b>Envelope Hash:</b>   <!-- comes first logically -->
-        <code id="decEnvelopeHash" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
-    </div>
-
-    <div style="margin-top:4px;font-size:0.9rem;color:#495057;">
-        <b>Policy Hash:</b>
-        <code id="decPolicy" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
-    </div>
-
-    <div style="margin-top:4px;font-size:0.9rem;color:#495057;">
-        <b>Signature:</b>
-        <code id="decSig" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
-    </div>
-
-    <div style="margin-top:8px;font-size:0.9rem;">
-        <b>Integrity:</b> <span id="decIntegrity">—</span>
+        <div style="margin-top:12px; font-size:0.9rem; color:#495057;">
+            <b>Envelope Hash:</b> <code id="decEnvelopeHash" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
+        </div>
+        <div style="margin-top:4px; font-size:0.9rem; color:#495057;">
+            <b>Policy Hash:</b> <code id="decPolicy" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
+        </div>
+        <div style="margin-top:4px; font-size:0.9rem; color:#495057;">
+            <b>Signature:</b> <code id="decSig" style="background:#e9ecef;padding:2px 6px;border-radius:4px;">—</code>
+        </div>
+        <div style="margin-top:8px; font-size:0.9rem;">
+            <b>Integrity:</b> <span id="decIntegrity">Waiting for data…</span>
+        </div>
     </div>
 </div>
 
 <div class="panel">
     <h2>Escalation Queue</h2>
-    
-    <p style="color: #6c757d; font-size: 0.95rem; margin: 8px 0 16px; text-align: center; max-width: 680px; margin-left: auto; margin-right: auto;">
-        <em>For demo purposes:</em> When escalation is required (DELETE operations), the backend 
-        <strong>auto-approves ~35%</strong>, 
-        <strong>auto-denies ~35%</strong>, 
-        and leaves <strong>~30% pending</strong> for manual Approve or Deny.
+    <p style="color:#6c757d; font-size:0.95rem; margin:8px 0 16px; text-align:center; max-width:680px; margin-left:auto; margin-right:auto;">
+        <em>Demo behavior:</em> DELETE escalations → ~35% auto-approve, ~35% auto-deny, ~30% pending (manual).
     </p>
-
     <div class="stats-row">
         Total escalations: <b><span id="totalEscalations">0</span></b> 
         Pending now: <b><span id="pendingCount">0</span></b>
     </div>
-    
     <div id="escalationQueue"></div>
 </div>
-
 
 <div class="panel">
     <h2>Live Governance Events</h2>
@@ -427,70 +344,7 @@
 </div>
 
 <script>
-document.getElementById("use-llm-toggle").onchange = function() {
-    document.getElementById("llm-key-panel").style.display = this.checked ? "block" : "none";
-    const modeText = document.getElementById("current-mode");
-    if (this.checked) {
-        modeText.textContent = "Real LLM (active)";
-        modeText.style.color = "#198754";
-    } else {
-        modeText.textContent = "Simulated / Random Agent";
-        modeText.style.color = "#6c757d";
-        document.getElementById("llm-status").textContent = "";
-        document.getElementById("llm-error").textContent = "";
-        document.getElementById("apply-key-btn").disabled = false;
-        document.getElementById("apply-key-btn").textContent = "Apply Key";
-        document.getElementById("apply-key-btn").style.opacity = "1";
-    }
-};
-
-function submitApiKey() {
-    const key = document.getElementById("api-key-input").value.trim();
-    const provider = document.getElementById("llm-provider").value;
-    const btn = document.getElementById("apply-key-btn");
-
-    if (!key) {
-        alert("Please enter a valid API key");
-        return;
-    }
-
-    btn.disabled = true;
-    btn.classList.add("loading");
-    btn.textContent = "";
-
-    fetch("/set_llm_key", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider, api_key: key })
-    })
-    .then(r => r.json())
-    .then(data => {
-        btn.disabled = false;
-        btn.classList.remove("loading");
-        btn.textContent = "Apply Key";
-        btn.style.opacity = "1";
-
-        if (data.status === "ok") {
-            document.getElementById("llm-status").textContent = "✓ LLM mode active — real OpenAI model will be used for future actions";
-            document.getElementById("llm-status").style.color = "#198754";
-            document.getElementById("llm-error").textContent = "";
-            document.getElementById("api-key-input").value = ""; // clear key after success
-        } else {
-            document.getElementById("llm-error").textContent = data.error || "Failed to activate LLM mode";
-            alert("Error: " + (data.error || "Failed to activate LLM mode"));
-        }
-    })
-    .catch(err => {
-        btn.disabled = false;
-        btn.classList.remove("loading");
-        btn.textContent = "Apply Key";
-        btn.style.opacity = "1";
-        document.getElementById("llm-error").textContent = "Connection error — could not reach server";
-        alert("Connection error — could not set API key");
-        console.error(err);
-    });
-}
-
+let verificationKey = null;
 let autoInterval = null;
 let speed = 1800;
 
@@ -509,16 +363,68 @@ const els = {
     }
 };
 
+document.getElementById("use-llm-toggle").onchange = function() {
+    document.getElementById("llm-key-panel").style.display = this.checked ? "block" : "none";
+    const modeText = document.getElementById("current-mode");
+    if (this.checked) {
+        modeText.textContent = "Real LLM (active)";
+        modeText.style.color = "#198754";
+    } else {
+        modeText.textContent = "Simulated / Random Agent";
+        modeText.style.color = "#6c757d";
+        document.getElementById("llm-status").textContent = "";
+        document.getElementById("llm-error").textContent = "";
+        document.getElementById("apply-key-btn").disabled = false;
+        document.getElementById("apply-key-btn").textContent = "Apply Key";
+    }
+};
+
+function submitApiKey() {
+    const key = document.getElementById("api-key-input").value.trim();
+    const provider = document.getElementById("llm-provider").value;
+    const btn = document.getElementById("apply-key-btn");
+
+    if (!key) return alert("Please enter a valid API key");
+
+    btn.disabled = true;
+    btn.classList.add("loading");
+    btn.textContent = "";
+
+    fetch("/set_llm_key", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider, api_key: key })
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.classList.remove("loading");
+        btn.textContent = "Apply Key";
+
+        if (data.status === "ok") {
+            document.getElementById("llm-status").textContent = "✓ LLM mode active — using real OpenAI model";
+            document.getElementById("llm-status").style.color = "#198754";
+            document.getElementById("llm-error").textContent = "";
+            document.getElementById("api-key-input").value = "";
+        } else {
+            document.getElementById("llm-error").textContent = data.error || "Failed to activate LLM mode";
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.classList.remove("loading");
+        btn.textContent = "Apply Key";
+        document.getElementById("llm-error").textContent = "Connection error — could not reach server";
+    });
+}
+
 const slider = document.getElementById("speedSlider");
 const speedVal = document.getElementById("speedValue");
 
 slider.oninput = () => {
     speed = parseInt(slider.value);
     speedVal.textContent = (speed / 1000).toFixed(1) + " s";
-    if (autoInterval) {
-        stopAuto();
-        startAuto();
-    }
+    if (autoInterval) { stopAuto(); startAuto(); }
 };
 
 function triggerAction() {
@@ -531,24 +437,20 @@ function triggerAction() {
 
     fetch("/run")
         .then(r => r.json())
-        .then(data => {
-            handleResponse(data);
-            btn.classList.remove("loading");
-            btn.disabled = false;
-            btn.textContent = "Run AI Action";
-        })
+        .then(handleResponse)
         .catch(err => {
             console.error("Run failed:", err);
+            alert("Action failed — check console");
+        })
+        .finally(() => {
             btn.classList.remove("loading");
             btn.disabled = false;
             btn.textContent = "Run AI Action";
-            alert("Action failed — check console");
         });
 }
 
 function startAuto() {
     if (autoInterval) return;
-
     const btn = document.querySelector(".btn-auto");
     btn.classList.add("loading");
     btn.disabled = true;
@@ -559,13 +461,12 @@ function startAuto() {
     setTimeout(() => {
         btn.classList.remove("loading");
         btn.disabled = false;
-        btn.textContent = "Running Autonomous... (click Stop)";
+        btn.textContent = "Running Autonomous… (click Stop)";
     }, 600);
 }
 
 function stopAuto() {
     if (!autoInterval) return;
-
     clearInterval(autoInterval);
     autoInterval = null;
 
@@ -573,10 +474,66 @@ function stopAuto() {
     btn.classList.remove("loading");
     btn.disabled = false;
     btn.textContent = "Start Autonomous Mode";
-    btn.style.opacity = "1";
 
     els.alerts.textContent = "Autonomous mode stopped";
     setTimeout(() => els.alerts.textContent = "", 3000);
+}
+
+async function computeHmac(message, keyHex) {
+    if (!keyHex) return null;
+    const enc = new TextEncoder();
+    const keyBytes = new Uint8Array(keyHex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
+    const cryptoKey = await crypto.subtle.importKey(
+        "raw", keyBytes, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+    );
+    const signature = await crypto.subtle.sign("HMAC", cryptoKey, enc.encode(message));
+    return Array.from(new Uint8Array(signature))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("")
+        .slice(0, 16);
+}
+
+async function verifyIntegrity(data) {
+    const integrityEl = document.getElementById("decIntegrity");
+    const expectedPolicyHash = document.getElementById("current-policy-hash").textContent.trim();
+
+    if (expectedPolicyHash === "Loading…" || expectedPolicyHash === "—" || expectedPolicyHash === "Failed to load") {
+        integrityEl.textContent = "Waiting for policy hash…";
+        integrityEl.style.color = "#6c757d";
+        return;
+    }
+
+    if (!verificationKey) {
+        integrityEl.textContent = "Verification key unavailable";
+        integrityEl.style.color = "#6c757d";
+        return;
+    }
+
+    const policyMatches = data.policy === expectedPolicyHash;
+
+    const payload = JSON.stringify({
+        action: data.action,
+        table: data.table,
+        timestamp: data.timestamp,
+        nonce: data.nonce || "",
+        envelope_hash: data.envelope_hash
+    });
+
+    const recomputedSig = await computeHmac(payload, verificationKey);
+    const sigValid = recomputedSig && recomputedSig === data.signature;
+
+    if (policyMatches && sigValid) {
+        integrityEl.textContent = "✓ Signature verified (HMAC match) & policy match";
+        integrityEl.style.color = "#198754";
+        integrityEl.style.fontWeight = "600";
+    } else {
+        let reason = [];
+        if (!policyMatches) reason.push("policy mismatch");
+        if (!sigValid) reason.push("signature mismatch");
+        integrityEl.textContent = "✗ Tampered / Invalid (" + (reason.join(" + ") || "unknown") + ")";
+        integrityEl.style.color = "#dc3545";
+        integrityEl.style.fontWeight = "bold";
+    }
 }
 
 function handleResponse(data) {
@@ -590,9 +547,7 @@ function handleResponse(data) {
 
     let eventClass = "";
     let alertText = "";
-    let incExecuted = false;
-    let incBlocked = false;
-    let incApproved = false;
+    let incExecuted = false, incBlocked = false, incApproved = false;
 
     switch (data.status) {
         case "EXECUTED":
@@ -600,88 +555,58 @@ function handleResponse(data) {
             eventClass = "event-executed";
             incExecuted = true;
             break;
-
         case "BLOCKED":
             els.dec.rule.textContent = data.message || "Forbidden / restricted";
             eventClass = "event-blocked";
             incBlocked = true;
             alertText = `Blocked: ${actionStr}`;
             break;
-
         case "PENDING":
             els.dec.rule.textContent = "Escalation required";
             eventClass = "event-pending";
             alertText = `Pending escalation: ${actionStr}`;
             break;
-
         case "APPROVED":
             els.dec.rule.textContent = data.message || "Escalation approved";
             eventClass = "event-approved";
             incApproved = true;
             break;
-
         case "DENIED":
             els.dec.rule.textContent = data.message || "Escalation denied";
             eventClass = "event-blocked";
             incBlocked = true;
             alertText = `Denied: ${actionStr}`;
             break;
-
         default:
             eventClass = "event-pending";
     }
 
-    // Update envelope, policy, signature fields (safe even if missing)
+    // Update displayed fields
     document.getElementById("decEnvelopeHash").textContent = data.envelope_hash || "—";
     document.getElementById("decPolicy").textContent       = data.policy       || "—";
     document.getElementById("decSig").textContent         = data.signature     || "—";
 
-    // Integrity check — only runs if the fields are present
-    const integrityEl = document.getElementById("decIntegrity");
-    const expectedPolicyHash = document.getElementById("current-policy-hash").textContent.trim();
+    // Trigger async integrity verification
+    verifyIntegrity(data);
 
-    if (data.envelope_hash && data.policy && data.signature) {
-        const policyMatches  = data.policy === expectedPolicyHash;
-        const sigLooksValid  = data.signature.length === 16 && /^[0-9a-fA-F]{16}$/.test(data.signature);
-
-        if (policyMatches && sigLooksValid) {
-            integrityEl.textContent = "✓ Valid signature & policy match";
-            integrityEl.style.color = "#198754";
-            integrityEl.style.fontWeight = "600";
-        } else {
-            let reason = [];
-            if (!policyMatches) reason.push("policy hash mismatch");
-            if (!sigLooksValid) reason.push("invalid signature format");
-
-            integrityEl.textContent = "✗ Tampered / Invalid! (" + (reason.join(" + ") || "unknown") + ")";
-            integrityEl.style.color = "#dc3545";
-            integrityEl.style.fontWeight = "bold";
-        }
-    } else {
-        integrityEl.textContent = "— Incomplete attestation";
-        integrityEl.style.color = "#6c757d";
-    }
-
-    // LLM error handling — always run
+    // LLM error
     const errorDiv = document.getElementById("llm-error");
     if (data.llm_error) {
         errorDiv.textContent = data.llm_error;
         els.alerts.textContent = data.llm_error;
         setTimeout(() => {
-            if (els.alerts.textContent === data.llm_error) {
-                els.alerts.textContent = "";
-            }
+            if (els.alerts.textContent === data.llm_error) els.alerts.textContent = "";
         }, 8000);
     } else {
         errorDiv.textContent = "";
     }
 
-    // Stats update — always run
+    // Stats
     if (incExecuted) els.executed.textContent = Number(els.executed.textContent) + 1;
     if (incBlocked)  els.blocked.textContent  = Number(els.blocked.textContent)  + 1;
     if (incApproved) els.approved.textContent = Number(els.approved.textContent) + 1;
 
-    // Add to live event stream — always run
+    // Event log
     const line = document.createElement("div");
     line.className = `event-line ${eventClass}`;
     line.innerHTML = `
@@ -697,18 +622,14 @@ function handleResponse(data) {
     els.events.prepend(line);
     if (els.events.children.length > 200) els.events.removeChild(els.events.lastChild);
 
-    // Show alert text if any — always run
     if (alertText) {
         els.alerts.textContent = alertText;
         setTimeout(() => els.alerts.textContent = "", 4800);
     }
 
-    // Update escalation queue — always run
-    if (data.escalation_queue) {
-        renderQueue(data.escalation_queue);
-    }
+    if (data.escalation_queue) renderQueue(data.escalation_queue);
 }
-    
+
 function renderQueue(queue) {
     const container = document.getElementById("escalationQueue");
     container.innerHTML = "";
@@ -718,19 +639,17 @@ function renderQueue(queue) {
         const div = document.createElement("div");
         div.className = `queue-item ${item.status.toLowerCase()}`;
 
-        let statusDisplay = item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase();
+        const statusDisplay = item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase();
 
         div.innerHTML = `
-            <div style="flex: 1;">
-                <b>ID ${item.request_id}</b> — 
-                ${item.action} ${item.table}
+            <div style="flex:1;">
+                <b>ID ${item.request_id}</b> — ${item.action} ${item.table}
                 <span style="margin-left:16px; opacity:0.8;">${statusDisplay}</span>
             </div>
         `;
 
         if (item.status === "PENDING") {
             pendingCount++;
-
             const approveBtn = document.createElement("button");
             approveBtn.className = "btn-approve";
             approveBtn.textContent = "Approve";
@@ -765,42 +684,50 @@ function deny(requestId) {
         .catch(err => console.error("Deny failed:", err));
 }
 
+// SSE for real-time updates
 const evtSource = new EventSource("/events");
 evtSource.onmessage = event => {
-    try {
-        handleResponse(JSON.parse(event.data));
-    } catch (e) {
-        console.error("SSE parse error:", e);
-    }
+    try { handleResponse(JSON.parse(event.data)); }
+    catch (e) { console.error("SSE parse error:", e); }
 };
 evtSource.onerror = () => console.warn("SSE connection lost – reconnecting...");
 
-// Load current policy hash on page load
+// Initial loads
 window.addEventListener("load", () => {
-    // Policy hash fetch with better logging
+    // Policy hash
     fetch("/policy_hash")
         .then(r => {
             if (!r.ok) throw new Error(`HTTP ${r.status}`);
             return r.json();
         })
         .then(data => {
-            const hashEl = document.getElementById("current-policy-hash");
-            if (data && data.policy_hash) {
-                hashEl.textContent = data.policy_hash;
+            const el = document.getElementById("current-policy-hash");
+            if (data?.policy_hash) {
+                el.textContent = data.policy_hash;
                 console.log("Policy hash loaded:", data.policy_hash);
             } else {
-                hashEl.textContent = "No hash in response";
-                console.warn("Missing policy_hash in response:", data);
+                el.textContent = "No hash received";
             }
         })
         .catch(err => {
-            const hashEl = document.getElementById("current-policy-hash");
-            hashEl.textContent = "Failed to load";
-            hashEl.style.color = "#dc3545";
+            const el = document.getElementById("current-policy-hash");
+            el.textContent = "Failed to load";
+            el.style.color = "#dc3545";
             console.error("Policy hash fetch failed:", err);
         });
 
-    // Optional: also fetch /status for queue on load (already there)
+    // Verification key (for client-side signature check)
+    fetch("/verification_key")
+        .then(r => r.json())
+        .then(data => {
+            if (data?.key) {
+                verificationKey = data.key;
+                console.log("Verification key loaded");
+            }
+        })
+        .catch(err => console.warn("Verification key unavailable", err));
+
+    // Initial queue state
     fetch("/status")
         .then(r => r.json())
         .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
