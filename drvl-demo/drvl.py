@@ -5,149 +5,123 @@ import time
 
 
 class DRVL:
-    """
-    Distributed Runtime Verification Layer (DRVL)
-
-    Provides:
-    - deterministic policy enforcement
-    - escalation signaling
-    - policy attestation via policy hash
-    - signed runtime events for auditability
-    - lightweight execution envelope for boundary separation
-    - event signature verification (added for tampering detection demo)
-    """
-
-    ESCALATION_REQUIRED = {
-        "DELETE": "Requires escalation"
-    }
-
-    FORBIDDEN = {
-        "DROP": "Forbidden operation"
-    }
 
     def __init__(self):
-        # Policy definition
+
+        # single deterministic key
+        self.secret_key = b"drvl-demo-secret"
+
+        # policy definition
         self.policy = {
-            "READ":   "allow",
-            "UPDATE": "allow",
-            "DELETE": "escalate",
-            "DROP":   "deny"
+            "READ": "ALLOW",
+            "UPDATE": "ALLOW",
+            "DELETE": "ESCALATE",
+            "DROP": "DENY"
         }
 
-        # Deterministic policy hash (shortened for demo readability)
+        # policy hash
         self.policy_hash = hashlib.sha256(
             json.dumps(self.policy, sort_keys=True).encode()
-        ).hexdigest()[:8]
+        ).hexdigest()
 
-        # Demo signing key — in production: securely stored, rotated, HSM/etc.
-        self.signing_key = b"drvl-demo-secret-key-2026"
 
-        # Event schema version
-        self.version = "1.0"
+    # ─────────────────────────────────────────────
+    # Signing
+    # ─────────────────────────────────────────────
+
+    def sign_event(self, event: dict) -> str:
+
+        payload = event.copy()
+
+        # NEVER sign the signature field
+        payload.pop("signature", None)
+
+        message = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":")
+        ).encode()
+
+        return hmac.new(
+            self.secret_key,
+            message,
+            hashlib.sha256
+        ).hexdigest()
+
+
+    # ─────────────────────────────────────────────
+    # Verification
+    # ─────────────────────────────────────────────
+
+    def verify_event_signature(self, event: dict):
+
+        payload = event.copy()
+
+        signature = payload.pop("signature", None)
+
+        if not signature:
+            return False, "Missing signature"
+
+        message = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":")
+        ).encode()
+
+        expected = hmac.new(
+            self.secret_key,
+            message,
+            hashlib.sha256
+        ).hexdigest()
+
+        if hmac.compare_digest(signature, expected):
+            return True, "Signature valid"
+
+        return False, "Signature mismatch"
+
+
+    # ─────────────────────────────────────────────
+    # Execution Envelope
+    # ─────────────────────────────────────────────
 
     class ExecutionEnvelope:
-        """Lightweight authorization boundary object between validation and execution."""
-        def __init__(self, action: str, table: str, params: dict | None = None):
+
+        def __init__(self, action, table):
+
             self.action = action
             self.table = table
-            self.params = params or {}
             self.timestamp = time.time()
-            self.nonce = time.time_ns()  # simple replay protection (nanoseconds)
+            self.nonce = time.time_ns()
 
-        def to_dict(self) -> dict:
-            return {
+        def compute_hash(self):
+
+            payload = {
                 "action": self.action,
                 "table": self.table,
-                "params": self.params,
                 "timestamp": self.timestamp,
-                "nonce": self.nonce,
+                "nonce": self.nonce
             }
 
-        def compute_hash(self) -> str:
-            """Deterministic SHA-256 hash of the envelope (truncated for demo readability)."""
-            serialized = json.dumps(self.to_dict(), sort_keys=True)
-            return hashlib.sha256(serialized.encode()).hexdigest()[:16]
+            return hashlib.sha256(
+                json.dumps(payload, sort_keys=True).encode()
+            ).hexdigest()
 
-    def verify(self, action: str, table: str, environment: str = "demo"):
-        """
-        Strict policy enforcement:
-        - READ / UPDATE → always allow & execute
-        - DROP        → always deny
-        - DELETE      → always escalate (then demo randomness applies)
-        - anything else → default allow (you can tighten later)
-        """
-        envelope = self.ExecutionEnvelope(action=action, table=table)
 
-        action_upper = action.upper()
+    # ─────────────────────────────────────────────
+    # Policy Enforcement
+    # ─────────────────────────────────────────────
 
-        if action_upper in ("READ", "UPDATE"):
-            return True, False, "Allowed operation", self.policy_hash, envelope
+    def verify(self, action, table, environment):
 
-        if action_upper == "DROP":
-            return False, False, "Forbidden operation (DROP)", self.policy_hash, envelope
+        rule = self.policy.get(action)
 
-        if action_upper == "DELETE":
-            return False, True, "Requires escalation (DELETE)", self.policy_hash, envelope
+        if rule == "ALLOW":
+            return True, False, "Allowed by policy", None, None
 
-        # Default fallback for unknown actions (INSERT, SELECT, etc.)
-        return True, False, "Allowed by default", self.policy_hash, envelope
+        if rule == "ESCALATE":
+            return False, True, "Escalation required", None, None
 
-    def sign_event(self, event_data: dict) -> str:
-        """
-        HMAC-SHA256 signature with version and nonce for replay protection and schema tracking.
-        Note: nonce is re-generated here → verification needs to use the event's own nonce.
-        """
-        payload = {
-            "version": self.version,
-            # Use the nonce from the event if present, otherwise generate one
-            "nonce": event_data.get("nonce", str(time.time_ns())),
-            **{k: v for k, v in event_data.items() if k not in ["signature", "verified", "verify_message"]}
-        }
+        if rule == "DENY":
+            return False, False, "Denied by policy", None, None
 
-        canonical = json.dumps(payload, sort_keys=True, separators=(',', ':')).encode('utf-8')
-
-        signature = hmac.new(
-            self.signing_key,
-            canonical,
-            hashlib.sha256
-        ).hexdigest()[:16]
-
-        return signature
-
-    def verify_event_signature(self, event: dict) -> tuple[bool, str]:
-        """
-        Verify the HMAC signature of an event.
-
-        Returns:
-            (valid: bool, message: str)
-        """
-        # Rebuild the exact payload that was signed
-        payload = {
-            "version": self.version,
-            "nonce": event.get("nonce", ""),  # must match what was signed
-            **{k: v for k, v in event.items()
-               if k not in [
-                   "signature", "verified", "verify_message",
-                   "tampered", "tamper_type", "color", "envelope_hash"
-               ]}
-        }
-
-        canonical = json.dumps(payload, sort_keys=True, separators=(',', ':')).encode('utf-8')
-
-        computed_signature = hmac.new(
-            self.signing_key,
-            canonical,
-            hashlib.sha256
-        ).hexdigest()[:16]
-
-        received_signature = event.get("signature", "")
-
-        valid = received_signature == computed_signature
-
-        if valid:
-            msg = "Signature valid"
-        else:
-            tamper_info = event.get("tamper_type", "unknown")
-            msg = f"✗ Signature invalid (tampered: {tamper_info})"
-
-        return valid, msg
+        return False, False, "Unknown action", None, None
