@@ -86,6 +86,8 @@ def policy_hash():
 @app.route("/run")
 def run_demo():
     global escalation_counter
+    # After agent.generate_action()
+    time.sleep(random.uniform(0.7, 1.8))          # pretend agent/LLM thinking
 
     # Agent proposes
     action, table = agent.generate_action()
