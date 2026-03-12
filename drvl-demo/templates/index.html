@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
   <title>DRVL Governance Demo — AI Action Governance</title>
 
   <style>
@@ -73,7 +74,7 @@
 
     .integrity-good { color: var(--success); font-weight: 700; }
     .integrity-bad  { color: var(--danger);   font-weight: 700; }
-    code { background: #e5e7eb; padding: 0.15rem 0.4rem; border-radius: 4px; }
+    code { background: #e5e7eb; padding: 0.15rem 0.4rem; border-radius: 4px; word-break: break-all; }
 
     #llm-panel { max-width: 680px; margin: 0 auto 2rem; padding: 1.4rem; background: white; border-radius: 10px; box-shadow: 0 1px 10px rgba(0,0,0,0.06); text-align: center; }
     .llm-input-group { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin: 1.2rem 0; }
@@ -84,7 +85,7 @@
 
 <header>
   <h1>DRVL Governance Demo</h1>
-  <div class="subtitle">Runtime policy enforcement for a probabilistic AI agent</div>
+  <div class="subtitle">Runtime policy enforcement + tamper detection for AI actions</div>
 </header>
 
 <div id="llm-panel">
@@ -132,15 +133,15 @@
 <div class="info-box">
   <h3 style="margin:0 0 0.8rem; color:var(--primary);">Tamper-evident Governance</h3>
   <ul style="padding-left:1.4rem; margin:0;">
-    <li><strong>Envelope hash</strong> — cryptographic fingerprint of proposed action</li>
-    <li><strong>Policy hash</strong> — version of active rules</li>
-    <li><strong>HMAC signature</strong> — authenticity proof</li>
+    <li><strong>Envelope hash</strong> — fingerprint of proposed action</li>
+    <li><strong>Policy hash</strong> — fingerprint of active rules</li>
+    <li><strong>HMAC signature</strong> — cryptographic authenticity proof</li>
   </ul>
 </div>
 
 <div class="panel" style="background:#f0f7ff;">
   <p style="margin:0; font-weight:600;">Current Policy Hash: <code id="current-policy-hash">Loading…</code></p>
-  <p style="margin:0.5rem 0 0; font-size:0.92rem; color:var(--gray);">Any mismatch in events indicates policy change or tampering.</p>
+  <p style="margin:0.5rem 0 0; font-size:0.92rem; color:var(--gray);">Mismatch = policy change or tampering detected</p>
 </div>
 
 <h2 style="text-align:center; color:var(--danger); margin:2.5rem 0 1rem; font-size:1.4rem;">Security & Integrity Alerts</h2>
@@ -149,7 +150,7 @@
 <div class="panel">
   <h2>Latest Decision</h2>
   <div class="warning-text" style="max-width:720px; margin:1rem auto;">
-    <strong>Demo note:</strong> ~15% of published events are intentionally tampered (policy hash or signature) to show detection.
+    <strong>Demo note:</strong> ~15% of events are deliberately tampered (policy hash or signature) to demonstrate detection.
   </div>
   <div id="decision">
     <div><b>Action:</b> <span id="decAction">—</span></div>
@@ -167,7 +168,7 @@
 <div class="panel">
   <h2>Escalation Queue</h2>
   <p style="text-align:center; color:var(--gray); margin-bottom:1rem; font-size:0.96rem;">
-    Demo: DELETE actions → ~35% auto-approve, ~35% auto-deny, rest pending
+    Demo: DELETE actions → ~35% auto-approve, ~35% auto-deny, rest pending for manual review
   </p>
   <div style="text-align:center; margin-bottom:1rem; font-size:1.1rem;">
     Total escalations: <b id="totalEscalations">0</b> • Pending: <b id="pendingCount">0</b>
@@ -176,7 +177,7 @@
 </div>
 
 <div class="panel">
-  <h2>Live Events</h2>
+  <h2>Live Events (last 80 shown)</h2>
   <div id="events"></div>
 </div>
 
@@ -184,6 +185,10 @@
 let verificationKey = null;
 let autoInterval = null;
 let speed = 1800;
+let es = null;
+let reconnectAttempts = 0;
+const MAX_EVENTS = 80;
+const MAX_RECONNECT_DELAY = 30000;
 
 const elements = {
   executed: document.getElementById("executedCount"),
@@ -193,6 +198,7 @@ const elements = {
   pending:  document.getElementById("pendingCount"),
   alerts:   document.getElementById("alerts"),
   events:   document.getElementById("events"),
+  policyHash: document.getElementById("current-policy-hash"),
   decision: {
     action:    document.getElementById("decAction"),
     result:    document.getElementById("decResult"),
@@ -206,7 +212,10 @@ const elements = {
 // ── LLM toggle & API key ──
 const llmToggle = document.getElementById("use-llm-toggle");
 const llmKeyPanel = document.getElementById("llm-key-panel");
-llmToggle.onchange = () => llmKeyPanel.hidden = !llmToggle.checked;
+llmToggle.onchange = () => {
+  llmKeyPanel.hidden = !llmToggle.checked;
+  document.querySelector(".btn-run").textContent = llmToggle.checked ? "Run LLM Action" : "Run AI Action";
+};
 
 document.getElementById("apply-key-btn").onclick = async () => {
   const key = document.getElementById("api-key-input").value.trim();
@@ -229,7 +238,7 @@ document.getElementById("apply-key-btn").onclick = async () => {
       document.getElementById("llm-error").textContent = data.error || "Activation failed";
     }
   } catch {
-    document.getElementById("llm-error").textContent = "Network error";
+    document.getElementById("llm-error").textContent = "Network error — check connection";
   } finally {
     btn.disabled = false; btn.classList.remove("loading");
   }
@@ -254,8 +263,9 @@ async function runAction() {
     const data = await res.json();
     handleEvent(data);
   } catch(err) {
-    console.error(err);
-    elements.alerts.textContent = "Action failed — see console";
+    console.error("Run action failed:", err);
+    elements.alerts.textContent = "Action failed — check console or try again";
+    setTimeout(() => { elements.alerts.textContent = ""; }, 6000);
   } finally {
     btn.classList.remove("loading"); btn.disabled = false;
   }
@@ -264,17 +274,19 @@ async function runAction() {
 // ── Auto mode ──
 function startAuto() {
   if (autoInterval) return;
-  btnAuto.disabled = true; btnStop.disabled = false;
+  document.querySelector(".btn-auto").disabled = true;
+  document.querySelector(".btn-stop").disabled = false;
   autoInterval = setInterval(runAction, speed);
-  console.log("Autonomous mode STARTED – interval ID:", autoInterval);
+  elements.alerts.textContent = "Autonomous mode running…";
 }
 
 function stopAuto() {
   if (!autoInterval) return;
   clearInterval(autoInterval); autoInterval = null;
-  btnAuto.disabled = false; btnStop.disabled = true;
+  document.querySelector(".btn-auto").disabled = false;
+  document.querySelector(".btn-stop").disabled = true;
   elements.alerts.textContent = "Autonomous mode stopped";
-  setTimeout(()=>{ if(elements.alerts.textContent==="Autonomous mode stopped") elements.alerts.textContent=""; },4000);
+  setTimeout(() => { if (elements.alerts.textContent === "Autonomous mode stopped") elements.alerts.textContent = ""; }, 4000);
 }
 
 // ── Queue rendering ──
@@ -297,26 +309,31 @@ function renderQueue(queue) {
       pending++;
 
       const approve = document.createElement("button");
-      approve.className = "btn-approve"; approve.textContent = "Approve";
+      approve.className = "btn-approve";
+      approve.textContent = "Approve";
+      approve.setAttribute("aria-label", `Approve escalation request #${item.request_id}`);
       approve.onclick = async () => {
         await approveRequest(item.request_id);
         div.className = "queue-item approved";
         approve.remove(); deny.remove();
-        elements.approved.textContent = Number(elements.approved.textContent)+1;
+        elements.approved.textContent = Number(elements.approved.textContent) + 1;
         pending--; elements.pending.textContent = pending;
       };
 
       const deny = document.createElement("button");
-      deny.className = "btn-deny"; deny.textContent = "Deny";
+      deny.className = "btn-deny";
+      deny.textContent = "Deny";
+      deny.setAttribute("aria-label", `Deny escalation request #${item.request_id}`);
       deny.onclick = async () => {
         await denyRequest(item.request_id);
         div.className = "queue-item denied";
         approve.remove(); deny.remove();
-        elements.blocked.textContent = Number(elements.blocked.textContent)+1;
+        elements.blocked.textContent = Number(elements.blocked.textContent) + 1;
         pending--; elements.pending.textContent = pending;
       };
 
-      div.appendChild(approve); div.appendChild(deny);
+      div.appendChild(approve);
+      div.appendChild(deny);
     }
 
     container.appendChild(div);
@@ -326,28 +343,49 @@ function renderQueue(queue) {
   elements.pending.textContent = pending;
 }
 
-// ── Approve / Deny endpoints ──
-async function approveRequest(id) { try { await fetch(`/approve/${id}`, { method:"POST" }); } catch(err){console.error(err);} }
-async function denyRequest(id) { try { await fetch(`/deny/${id}`, { method:"POST" }); } catch(err){console.error(err);} }
+// ── Approve / Deny ──
+async function approveRequest(id) { try { await fetch(`/approve/${id}`, { method: "POST" }); } catch(err){console.error(err);} }
+async function denyRequest(id)   { try { await fetch(`/deny/${id}`,   { method: "POST" }); } catch(err){console.error(err);} }
 
 // ── Event handling ──
 function handleEvent(data) {
   if (!data?.action) return;
-  const ts = data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : new Date().toLocaleTimeString();
 
-  elements.decision.action.textContent  = `${data.action} ${data.table||""}`.trim();
+  // Truncate old events
+  while (elements.events.children.length >= MAX_EVENTS) {
+    elements.events.removeChild(elements.events.lastChild);
+  }
+
+  const ts = data.timestamp ? new Date(data.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'}) : new Date().toLocaleTimeString();
+
+  elements.decision.action.textContent  = `${data.action} ${data.table || ""}`.trim();
   elements.decision.result.textContent  = data.status || data.message || "—";
   elements.decision.envHash.textContent = data.envelope_hash?.slice(0,16) + "…" || "—";
   elements.decision.policy.textContent  = data.policy || "—";
   elements.decision.sig.textContent     = data.signature?.slice(0,16) + "…" || "—";
 
-  const integrityOk = (data.policy === verificationKey);
-  elements.decision.integrity.textContent = integrityOk ? "✓ Verified" : "⚠ Tampered";
-  elements.decision.integrity.className = integrityOk ? "integrity-good" : "integrity-bad";
+  // Full integrity check (prefer server-verified result if present)
+  let integrityText = "Waiting…";
+  let integrityClass = "";
+  let eventClass = "event-executed";
+
+  if (data.verified !== undefined) {
+    integrityText = data.verified ? "✓ Verified (signature valid)" : `⚠ ${data.verify_message || "Invalid signature"}`;
+    integrityClass = data.verified ? "integrity-good" : "integrity-bad";
+    eventClass = data.verified ? "event-executed" : "event-tampered";
+  } else {
+    const policyOk = (data.policy === verificationKey);
+    integrityText = policyOk ? "✓ Policy matches" : "⚠ Policy mismatch (tampered?)";
+    integrityClass = policyOk ? "integrity-good" : "integrity-bad";
+    eventClass = policyOk ? "event-executed" : "event-tampered";
+  }
+
+  elements.decision.integrity.textContent = integrityText;
+  elements.decision.integrity.className = integrityClass;
 
   const line = document.createElement("div");
-  line.className = "event-line " + (integrityOk ? "event-executed" : "event-tampered");
-  line.textContent = `[${ts}] ${data.action} → ${data.status || "?"} | envelope=${data.envelope_hash?.slice(0,12)}…`;
+  line.className = "event-line " + eventClass;
+  line.textContent = `[${ts}] ${data.action} → ${data.status || "?"} | env=${data.envelope_hash?.slice(0,12)}…`;
   elements.events.prepend(line);
 
   if (data.status?.toLowerCase() === "executed") elements.executed.textContent = +elements.executed.textContent + 1;
@@ -358,27 +396,59 @@ function handleEvent(data) {
 }
 
 // ── Button bindings ──
-const btnRun  = document.querySelector(".btn-run");
-const btnAuto = document.querySelector(".btn-auto");
-const btnStop = document.querySelector(".btn-stop");
-btnRun.onclick = runAction;
-btnAuto.onclick = startAuto;
-btnStop.onclick = stopAuto;
+document.querySelector(".btn-run").onclick = runAction;
+document.querySelector(".btn-auto").onclick = startAuto;
+document.querySelector(".btn-stop").onclick = stopAuto;
 
-// ── SSE listener ──
-const es = new EventSource("/events");
-es.onmessage = e => { try { handleEvent(JSON.parse(e.data)); } catch(err){ console.error(err); } };
-es.onerror = e => {
-  console.warn("SSE disconnected, retrying…");
-  elements.alerts.textContent = "⚠ Live feed lost, reconnecting…";
-  setTimeout(()=>{ elements.alerts.textContent=""; },4000);
-};
+// ── SSE with exponential backoff ──
+function connectSSE() {
+  if (es) es.close();
+  es = new EventSource("/events");
 
-// ── Fetch current policy ──
-fetch("/policy_hash")
-  .then(r=>r.json())
-  .then(d=>verificationKey=d.hash)
-  .catch(()=>{ verificationKey=null; });
+  es.onmessage = e => {
+    reconnectAttempts = 0;
+    try { handleEvent(JSON.parse(e.data)); } catch(err) { console.error("SSE parse error:", err); }
+  };
+
+  es.onopen = () => {
+    elements.alerts.textContent = "";
+    reconnectAttempts = 0;
+  };
+
+  es.onerror = () => {
+    es.close();
+    reconnectAttempts++;
+    const delay = Math.min(1000 * Math.pow(1.5, reconnectAttempts), MAX_RECONNECT_DELAY);
+    elements.alerts.textContent = `⚠ Live feed lost – reconnecting in ${Math.round(delay/1000)}s…`;
+    setTimeout(connectSSE, delay);
+  };
+}
+
+connectSSE();
+
+// ── Load policy hash with retry ──
+function loadPolicyHash() {
+  fetch("/policy_hash")
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
+    .then(d => {
+      verificationKey = d.hash;
+      elements.policyHash.textContent = verificationKey || "—";
+      elements.policyHash.style.color = "";
+    })
+    .catch(err => {
+      console.error("Policy hash fetch failed:", err);
+      elements.policyHash.textContent = "Failed to load";
+      elements.policyHash.style.color = "var(--danger)";
+      elements.alerts.textContent = "⚠ Could not load policy hash — integrity checks may be inaccurate";
+      setTimeout(() => { elements.alerts.textContent = ""; }, 8000);
+    });
+}
+
+loadPolicyHash();
+setInterval(() => { if (!verificationKey) loadPolicyHash(); }, 10000);
 </script>
 
 </body>
