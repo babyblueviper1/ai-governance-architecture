@@ -31,12 +31,13 @@ Watch a **probabilistic or real LLM-powered AI agent** perform database actions 
 ### New: Real LLM Mode (bring your own key)
 
 - Toggle on → paste your **OpenAI** API key  
-- **Demo currently supports OpenAI** (GPT-4o / 4o-mini).
+- **Demo currently supports OpenAI** (GPT-4o / 4o-mini)  
 - Actions become truly non-deterministic (and occasionally risky — perfect to see DRVL govern real frontier-model behavior)  
 - **Warning:** Using real LLM will consume your OpenAI tokens and may incur costs. Default simulation mode uses **no tokens**.  
 - Key is sent once to the server, never stored or logged — only used for your session.
 
 ### Escalation & Auto-Decision Features
+
 - `DELETE` operations trigger **escalation requests**  
 - `DROP` operations are always **forbidden** (instantly blocked)  
 - For escalations (DELETE), backend applies probabilistic decisions (demo realism):  
@@ -45,11 +46,16 @@ Watch a **probabilistic or real LLM-powered AI agent** perform database actions 
   - **~30% pending** → appear in live queue with **Approve** and **Deny** buttons for manual control  
 
 ### Policy Integrity & Attestation
-Every governance decision includes:
+
+Every governance decision includes:  
 - **Policy hash** — SHA-256 of current rules (reproducible enforcement)  
 - **Signature** — HMAC of event payload (cryptographic attestation)  
 
 This demonstrates deterministic, auditable governance — key for real security and compliance systems.
+
+**Demo note (intentional mismatches):**  
+For illustration purposes, **~15% of events are deliberately tampered** with (wrong policy hash or corrupted signature) to show what integrity detection looks like in the UI (red "✗ Tampered / Invalid" warning).  
+In a real system, policy hashes are designed to match for events under the current policy — the check exists precisely to detect any changes, tampering, misconfigurations, or other issues.
 
 ### What You’ll See in the Dashboard
 - Live stream of executed (green), blocked (red), pending (yellow), approved (bold green) actions  
