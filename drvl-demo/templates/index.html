@@ -82,6 +82,11 @@
     cursor: not-allowed;
   }
 
+  button:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
   button.loading {
     color: transparent;
     position: relative;
@@ -111,6 +116,55 @@
   .btn-approve { background: var(--success); padding: 0.4rem 1rem; font-size: 0.9rem; }
   .btn-deny    { background: var(--danger);   padding: 0.4rem 1rem; font-size: 0.9rem; }
 
+  #apply-key-btn {
+    background: var(--primary);
+    color: white;
+    padding: 0.65rem 1.4rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.16s ease;
+  }
+
+  #apply-key-btn:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+
+  #apply-key-btn:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  #apply-key-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  #apply-key-btn:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  #apply-key-btn.loading {
+    color: transparent;
+    position: relative;
+  }
+
+  #apply-key-btn.loading::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 3px solid white;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
   .speed-control {
     display: flex;
     align-items: center;
@@ -136,6 +190,10 @@
   .stat-executed  { color: var(--success); }
   .stat-blocked   { color: var(--danger); }
   .stat-approved  { color: var(--success); }
+  .stat-pending   {
+    color: var(--warning);
+    font-weight: 600;
+  }
 
   .panel {
     max-width: 860px;
@@ -269,54 +327,6 @@
     border-radius: 6px;
     min-width: 240px;
   }
-
-#apply-key-btn {
-  background: var(--primary);          /* blue, same as .btn-run */
-  color: white;
-  padding: 0.65rem 1.4rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.16s ease;
-}
-
-#apply-key-btn:hover:not(:disabled) {
-  filter: brightness(1.08);
-}
-
-#apply-key-btn:active:not(:disabled) {
-  transform: translateY(1px);
-}
-
-#apply-key-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-#apply-key-btn.loading {
-  color: transparent;
-  position: relative;
-}
-
-#apply-key-btn.loading::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  width: 1.2rem;
-  height: 1.2rem;
-  border: 3px solid white;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-.stat-pending {
-  color: var(--warning);  /* #d97706 – orange */
-  font-weight: 600;
-}
 </style>
 </head>
 <body>
