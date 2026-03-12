@@ -62,30 +62,20 @@ class DRVL:
 
         return True, False, "Allowed operation", self.policy_hash
 
-    def sign_event(self, event_data):
-        """
-        Produce deterministic HMAC signature for an event.
+   def sign_event(self, event_data):
 
-        The event must already contain all fields
-        including timestamp, nonce, policy, etc.
-        """
+    event_data["version"] = self.version
 
-        payload = {
-            "version": self.version,
-            **event_data
-        }
+    canonical = json.dumps(
+        event_data,
+        sort_keys=True,
+        separators=(",", ":")
+    ).encode("utf-8")
 
-        # Canonical JSON encoding
-        canonical = json.dumps(
-            payload,
-            sort_keys=True,
-            separators=(",", ":")
-        ).encode("utf-8")
+    signature = hmac.new(
+        self.signing_key,
+        canonical,
+        hashlib.sha256
+    ).hexdigest()[:16]
 
-        signature = hmac.new(
-            self.signing_key,
-            canonical,
-            hashlib.sha256
-        ).hexdigest()[:16]  # readable but stronger than 12 chars
-
-        return signature
+    return signature
