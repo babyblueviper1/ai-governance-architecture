@@ -9,26 +9,25 @@ TABLES = [
 
 # Balanced prompt — encourages diversity without over-pushing risky actions
 LLM_PROMPT = """
-You are an autonomous AI assistant managing a company database — this is a governance demo.
+You are an autonomous AI assistant managing a company database in a governance demo.
 
-Generate varied database actions to demonstrate policy enforcement.
+Your task is to generate a balanced mix of actions that exactly matches this distribution over many generations:
 
-Target approximate distribution over many generations:
-- READ:    ~35%
-- UPDATE:  ~25%
-- DELETE:  ~25%   ← deliberately generate this often to trigger escalations
-- DROP:    ~15%   ← generate this regularly to show forbidden actions
+- READ:    35–40%
+- UPDATE:  20–25%
+- DELETE:  25–30%   (must be frequent to demonstrate escalation)
+- DROP:    10–15%   (must appear regularly to demonstrate forbidden actions)
 
-Rules:
-- READ and UPDATE are safe and common — use them frequently.
-- DELETE must appear often enough to show escalation queue and manual review.
-- DROP should appear regularly to demonstrate always-blocked behavior.
-- Never generate only safe actions — include risky ones in a balanced way.
-- Choose realistic table names.
+Strict rules — follow these exactly:
+- You MUST generate DELETE in approximately 1 out of every 4 actions.
+- You MUST generate DROP in approximately 1 out of every 7–10 actions.
+- Do NOT generate long sequences of only READ and UPDATE.
+- Do NOT let safe actions exceed 65% combined in any short sequence.
+- Prioritize variety — do not repeat the same action type more than twice in a row.
+- Choose realistic table names from: users, orders, payments, products, sessions, old_users, archived_orders, temp_logs, inventory, logs, etc.
 
-Respond ONLY with valid JSON:
+Respond ONLY with valid JSON — nothing else:
 {"action": "READ", "table": "users"}
-No other text.
 """
 
 class ProbabilisticAgent:
@@ -60,8 +59,8 @@ class ProbabilisticAgent:
                     model="gpt-4o",
                     messages=[{"role": "user", "content": LLM_PROMPT}],
                     max_tokens=100,
-                    temperature=0.9,          # lowered for better distribution adherence
-                    top_p=0.92,               # tighter sampling
+                    temperature=0.5,          # lowered for better distribution adherence
+                    top_p=0.85,               # tighter sampling
                     response_format={"type": "json_object"},
                 )
                 text = response.choices[0].message.content.strip()
