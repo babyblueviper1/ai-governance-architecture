@@ -6,7 +6,7 @@ import random
 from threading import Lock
 from datetime import datetime
 
-# Custom modules
+# Custom modules (assuming these exist in your project)
 from agent import ProbabilisticAgent
 from drvl import DRVL
 from audit import handle_event, log_event
@@ -65,20 +65,20 @@ def create_signed_event(event_data: dict) -> dict:
     event["verified"] = True
     event["verify_message"] = "Signature valid"
 
-    # Optional demo tampering
+    # Optional demo tampering (~15% of events)
     if ENVIRONMENT == "demo" and random.random() < DEMO_TAMPER_PROBABILITY:
         tamper_choice = random.choice(["policy", "signature", "both"])
         event["tampered"] = True
         event["tamper_type"] = tamper_choice
 
         if tamper_choice in ("policy", "both"):
-            event["policy"] = "fake_" + event["policy"][5:]
+            event["policy"] = "fake_" + event["policy"][5:] if len(event["policy"]) > 5 else "fake_policy"
 
         if tamper_choice in ("signature", "both"):
             sig = event["signature"]
             event["signature"] = sig[:4] + "BEEF" + sig[8:] if len(sig) > 12 else "deadbeef12345678"
 
-    # Verify using same deterministic payload
+    # Re-verify using same deterministic payload (good practice)
     valid, msg = drvl.verify_event_signature({
         **payload,
         "policy": event["policy"],
@@ -100,7 +100,11 @@ def home():
 
 @app.route("/policy_hash")
 def policy_hash():
-    return jsonify({"policy_hash": drvl.policy_hash})
+    try:
+        return jsonify({"hash": drvl.policy_hash})  # ← FIXED: frontend expects "hash"
+    except Exception as e:
+        print(f"Error serving policy_hash: {e}")
+        return jsonify({"error": "Could not retrieve policy hash"}), 500
 
 @app.route("/verification_key")
 def verification_key():
@@ -121,10 +125,10 @@ def run_demo():
 
     now = time.time()
     if now - last_run_time < 0.8:
-        return jsonify({"error": "Too many requests"}), 429
+        return jsonify({"error": "Rate limit: wait 0.8s between /run calls"}), 429
     last_run_time = now
 
-    time.sleep(random.uniform(1.2, 2.5))  # simulate thinking
+    time.sleep(random.uniform(1.2, 2.5))  # simulate agent "thinking"
 
     action, table = agent.generate_action()
     llm_error = getattr(agent, "last_llm_error", None)
@@ -144,7 +148,7 @@ def run_demo():
         "envelope_hash": envelope.compute_hash(),
     }
 
-    # Escalation logic
+    # Escalation / decision logic
     result = None
     request_id = None
     color_hint = None
@@ -244,54 +248,4 @@ def deny(req_id):
     with escalation_lock:
         for req in escalation_queue:
             if req["id"] == req_id and req["status"] == "PENDING":
-                req["status"] = "DENIED"
-                req["decided_at"] = time.time()
-                event_timestamp = datetime.utcnow().isoformat()
-                event = {
-                    "type": "escalation_decision",
-                    "request_id": req_id,
-                    "status": "DENIED",
-                    "action": req["action"],
-                    "table": req["table"],
-                    "timestamp": event_timestamp,
-                    "envelope_hash": req["envelope_hash"],
-                }
-                publish(create_signed_event(event))
-                break
-    return status()
-
-# ──────────────────────────────
-# Status
-# ──────────────────────────────
-
-@app.route("/status")
-def status():
-    with escalation_lock:
-        return jsonify({
-            "escalation_queue": [
-                {"request_id": q["id"], "action": q["action"], "table": q["table"], "status": q["status"], "envelope_hash": q["envelope_hash"]}
-                for q in escalation_queue
-            ]
-        })
-
-# ──────────────────────────────
-# Live Events (SSE)
-# ──────────────────────────────
-
-@app.route("/events")
-def events():
-    def generate():
-        last_index = 0
-        while True:
-            events_list = get_events()
-            if last_index < len(events_list):
-                new_events = events_list[last_index:]
-                for ev in new_events:
-                    yield f"data: {json.dumps(ev)}\n\n"
-                last_index = len(events_list)
-            time.sleep(0.5)
-    return Response(generate(), mimetype="text/event-stream")
-
-# ──────────────────────────────
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000, debug=True)
+                req["status"] = "DEN
