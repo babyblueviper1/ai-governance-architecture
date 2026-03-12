@@ -43,22 +43,34 @@ escalation_counter = 0
 # ────────────────────────────────────────────────
 # Tampering + Signing
 # ────────────────────────────────────────────────
-
 def create_signed_event(event_data: dict) -> dict:
+    """Attach policy hash and signature deterministically, optionally tamper for demo"""
 
     event = event_data.copy()
-
     event["policy"] = drvl.policy_hash
-    event["signature"] = drvl.sign_event(event)
+
+    # Build a deterministic payload for signing (freeze only the fields that matter)
+    payload = {
+        "action": event.get("action"),
+        "table": event.get("table"),
+        "timestamp": event.get("timestamp"),
+        "nonce": event.get("envelope_hash"),  # or event.get("nonce") if preferred
+        "status": event.get("status"),
+        "message": event.get("message"),
+        "policy": event.get("policy"),
+        "envelope_hash": event.get("envelope_hash"),
+    }
+
+    # Generate signature
+    event["signature"] = drvl.sign_event(payload)
     event["tampered"] = False
     event["tamper_type"] = None
     event["verified"] = True
     event["verify_message"] = "Signature valid"
 
+    # Optional demo tampering
     if ENVIRONMENT == "demo" and random.random() < DEMO_TAMPER_PROBABILITY:
-
         tamper_choice = random.choice(["policy", "signature", "both"])
-
         event["tampered"] = True
         event["tamper_type"] = tamper_choice
 
@@ -67,12 +79,14 @@ def create_signed_event(event_data: dict) -> dict:
 
         if tamper_choice in ("signature", "both"):
             sig = event["signature"]
-            event["signature"] = (
-                sig[:4] + "BEEF" + sig[8:]
-                if len(sig) > 12 else "deadbeef12345678"
-            )
+            event["signature"] = sig[:4] + "BEEF" + sig[8:] if len(sig) > 12 else "deadbeef12345678"
 
-    valid, msg = drvl.verify_event_signature(event)
+    # Verification uses the **same deterministic payload** for consistency
+    valid, msg = drvl.verify_event_signature({
+        **payload,
+        "policy": event["policy"],
+        "signature": event["signature"]
+    })
 
     event["verified"] = valid
     event["verify_message"] = msg
