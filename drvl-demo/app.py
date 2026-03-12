@@ -59,7 +59,7 @@ def run_demo():
         "action": action,
         "table": table,
         "timestamp": time.strftime("%H:%M:%S"),
-        "request_id": req_id
+        "nonce": time.time_ns()
     }
 
     if needs_escalation:
@@ -67,7 +67,7 @@ def run_demo():
         req_id = escalation_counter
         event["request_id"] = req_id
 
-        # Demo: probabilistic auto-decision for escalations (DELETE)
+        # Demo: probabilistic auto-decision for escalations (DELETE in production)
         # ~35% auto-approve, ~35% auto-deny, ~30% pending/manual
         rand = random.random()
         if rand < 0.35:
