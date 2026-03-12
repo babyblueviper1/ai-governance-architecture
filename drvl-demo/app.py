@@ -82,10 +82,29 @@ def policy_hash():
 
 @app.route("/verification_key")
 def verification_key():
-    """Expose demo verification key for client-side signature verification."""
-    return jsonify({
-        "key": drvl.secret_key.hex() if isinstance(drvl.secret_key, bytes) else drvl.secret_key
-    })
+    try:
+        key = None
+
+        # support multiple DRVL key names
+        if hasattr(drvl, "secret_key"):
+            key = drvl.secret_key
+        elif hasattr(drvl, "hmac_key"):
+            key = drvl.hmac_key
+        elif hasattr(drvl, "signing_key"):
+            key = drvl.signing_key
+
+        if key is None:
+            return jsonify({"error": "No verification key available"}), 500
+
+        # convert to hex for browser
+        if isinstance(key, bytes):
+            key = key.hex()
+
+        return jsonify({"key": key})
+
+    except Exception as e:
+        print("Verification key error:", e)
+        return jsonify({"error": "verification key failure"}), 500
 
 
 @app.route("/run")
