@@ -401,24 +401,43 @@ const elements = {
 // ── LLM toggle & API key ──
 const llmToggle = document.getElementById("use-llm-toggle");
 const llmKeyPanel = document.getElementById("llm-key-panel");
-llmToggle.onchange = () => {
-  llmKeyPanel.hidden = !llmToggle.checked;
-  document.querySelector(".btn-run").textContent = llmToggle.checked ? "Run LLM Action" : "Run AI Action";
-};
 
+function updateLLMPanel() {
+  llmKeyPanel.hidden = !llmToggle.checked;
+  // Optional: dynamically update the Run button text
+  const runBtn = document.querySelector(".btn-run");
+  if (runBtn) {
+    runBtn.textContent = llmToggle.checked ? "Run LLM Action" : "Run AI Action";
+  }
+}
+
+// Set initial state (important if page loads with checkbox already checked)
+updateLLMPanel();
+
+// Listen for changes
+llmToggle.addEventListener('change', updateLLMPanel);
+
+// Apply Key button handler (unchanged, but good to keep here)
 document.getElementById("apply-key-btn").onclick = async () => {
   const key = document.getElementById("api-key-input").value.trim();
   if (!key) return alert("Please enter an API key");
+
   const btn = document.getElementById("apply-key-btn");
-  btn.disabled = true; btn.classList.add("loading");
+  btn.disabled = true;
+  btn.classList.add("loading");
 
   try {
     const res = await fetch("/set_llm_key", {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({provider: document.getElementById("llm-provider").value, api_key: key})
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: document.getElementById("llm-provider").value,
+        api_key: key
+      })
     });
+
     const data = await res.json();
+
     if (data.status === "ok") {
       document.getElementById("llm-status").textContent = "✓ LLM mode activated";
       document.getElementById("llm-status").style.color = "var(--success)";
@@ -426,10 +445,12 @@ document.getElementById("apply-key-btn").onclick = async () => {
     } else {
       document.getElementById("llm-error").textContent = data.error || "Activation failed";
     }
-  } catch {
+  } catch (err) {
+    console.error("LLM key apply error:", err);
     document.getElementById("llm-error").textContent = "Network error — check connection";
   } finally {
-    btn.disabled = false; btn.classList.remove("loading");
+    btn.disabled = false;
+    btn.classList.remove("loading");
   }
 };
 
