@@ -565,7 +565,7 @@ function stopAuto() {
 function handleResponse(data) {
     if (!data || !data.action) return;
 
-    const ts = data.timestamp || new Date().toLocaleTimeString([], {hour12: false});
+    const ts = data.timestamp || new Date().toLocaleTimeString([], { hour12: false });
     const actionStr = `${data.action} ${data.table || ''}`.trim();
 
     els.dec.action.textContent = actionStr;
@@ -583,28 +583,33 @@ function handleResponse(data) {
             eventClass = "event-executed";
             incExecuted = true;
             break;
+
         case "BLOCKED":
             els.dec.rule.textContent = data.message || "Forbidden / restricted";
             eventClass = "event-blocked";
             incBlocked = true;
             alertText = `Blocked: ${actionStr}`;
             break;
+
         case "PENDING":
             els.dec.rule.textContent = "Escalation required";
             eventClass = "event-pending";
             alertText = `Pending escalation: ${actionStr}`;
             break;
+
         case "APPROVED":
             els.dec.rule.textContent = data.message || "Escalation approved";
             eventClass = "event-approved";
             incApproved = true;
             break;
+
         case "DENIED":
             els.dec.rule.textContent = data.message || "Escalation denied";
             eventClass = "event-blocked";
             incBlocked = true;
             alertText = `Denied: ${actionStr}`;
             break;
+
         default:
             eventClass = "event-pending";
     }
@@ -613,13 +618,30 @@ function handleResponse(data) {
     document.getElementById("decSig").textContent = data.signature || "—";
 
     const integrityEl = document.getElementById("decIntegrity");
+
+    // We know what the real policy hash should be (loaded on page init)
+    const expectedPolicyHash = document.getElementById("current-policy-hash").textContent.trim();
+
     if (data.policy && data.signature) {
-        integrityEl.textContent = "✓ Valid signature (policy matches)";
-        integrityEl.style.color = "#198754";
-        integrityEl.style.fontWeight = "600";
+        const policyMatches = data.policy === expectedPolicyHash;
+        const sigLooksValid = data.signature.length === 16 && /^[0-9a-fA-F]{16}$/.test(data.signature);
+
+        if (policyMatches && sigLooksValid) {
+            integrityEl.textContent = "✓ Valid signature & policy match";
+            integrityEl.style.color = "#198754";
+            integrityEl.style.fontWeight = "600";
+        } else {
+            let reason = [];
+            if (!policyMatches) reason.push("policy hash mismatch");
+            if (!sigLooksValid) reason.push("invalid signature format");
+
+            integrityEl.textContent = "✗ Tampered / Invalid! (" + (reason.join(" + ") || "unknown") + ")";
+            integrityEl.style.color = "#dc3545";
+            integrityEl.style.fontWeight = "bold";
+        }
     } else {
-        integrityEl.textContent = "— No signature";
-        integrityEl.style.color = "#dc3545";
+        integrityEl.textContent = "— No signature data";
+        integrityEl.style.color = "#6c757d";
     }
 
     // LLM error handling
