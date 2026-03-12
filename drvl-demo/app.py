@@ -80,6 +80,13 @@ def policy_hash():
         "policy_hash": drvl.policy_hash
     })
 
+@app.route("/verification_key")
+def verification_key():
+    """Expose demo verification key for client-side signature verification."""
+    return jsonify({
+        "key": drvl.secret_key.hex() if isinstance(drvl.secret_key, bytes) else drvl.secret_key
+    })
+
 
 @app.route("/run")
 def run_demo():
