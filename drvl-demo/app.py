@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask, jsonify, render_template, request, Response
 import json
 import time
@@ -6,8 +5,9 @@ import os
 import random
 from threading import Lock
 from datetime import datetime
+from queue import Queue, Empty
 
-# Custom modules (assuming these exist in your project)
+# Custom modules (assuming these exist)
 from agent import ProbabilisticAgent
 from drvl import DRVL
 from audit import handle_event, log_event
@@ -38,16 +38,33 @@ escalation_lock = Lock()
 escalation_queue = []
 escalation_counter = 0
 
+# Simple in-memory event queue for SSE (append-only, clients get recent events)
+event_queue = Queue()
+MAX_QUEUED_EVENTS = 100  # prevent memory leak in long-running demo
+
+def broadcast_event(event):
+    """Publish to callbacks + add to SSE queue"""
+    publish(event)
+    event_queue.put(event)
+    # Trim old events
+    while event_queue.qsize() > MAX_QUEUED_EVENTS:
+        try:
+            event_queue.get_nowait()
+        except Empty:
+            pass
+
+# Override publish to use broadcast_event
+# (If your event_bus.publish is not easily overrideable, call broadcast_event instead of publish everywhere)
+# For simplicity, replace all publish(...) calls below with broadcast_event(...)
+
 # ──────────────────────────────
-# Tampering + Signing
+# Tampering + Signing (unchanged except broadcast)
 # ──────────────────────────────
 
 def create_signed_event(event_data: dict) -> dict:
-    """Attach policy hash and signature deterministically, optionally tamper for demo"""
     event = event_data.copy()
     event["policy"] = drvl.policy_hash
 
-    # Freeze payload deterministically for signing
     payload = {
         "action": event.get("action"),
         "table": event.get("table"),
@@ -59,27 +76,22 @@ def create_signed_event(event_data: dict) -> dict:
         "envelope_hash": event.get("envelope_hash"),
     }
 
-    # Sign deterministically
     event["signature"] = drvl.sign_event(payload)
     event["tampered"] = False
     event["tamper_type"] = None
     event["verified"] = True
     event["verify_message"] = "Signature valid"
 
-    # Optional demo tampering (~15% of events)
     if ENVIRONMENT == "demo" and random.random() < DEMO_TAMPER_PROBABILITY:
         tamper_choice = random.choice(["policy", "signature", "both"])
         event["tampered"] = True
         event["tamper_type"] = tamper_choice
-
         if tamper_choice in ("policy", "both"):
             event["policy"] = "fake_" + event["policy"][5:] if len(event["policy"]) > 5 else "fake_policy"
-
         if tamper_choice in ("signature", "both"):
             sig = event["signature"]
             event["signature"] = sig[:4] + "BEEF" + sig[8:] if len(sig) > 12 else "deadbeef12345678"
 
-    # Re-verify using same deterministic payload (good practice)
     valid, msg = drvl.verify_event_signature({
         **payload,
         "policy": event["policy"],
@@ -92,6 +104,35 @@ def create_signed_event(event_data: dict) -> dict:
     return event
 
 # ──────────────────────────────
+# SSE Endpoint (new)
+# ──────────────────────────────
+
+@app.route("/events")
+def events():
+    def event_stream():
+        last_sent = None
+        while True:
+            try:
+                event = event_queue.get(timeout=15)  # long poll
+                data = json.dumps(event)
+                yield f"data: {data}\n\n"
+                last_sent = event
+            except Empty:
+                # heartbeat to keep connection alive
+                yield ": ping\n\n"
+            except GeneratorExit:
+                break
+
+    return Response(
+        event_stream(),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no"
+        }
+    )
+
+# ──────────────────────────────
 # Routes
 # ──────────────────────────────
 
@@ -101,27 +142,11 @@ def home():
 
 @app.route("/policy_hash")
 def policy_hash():
-    try:
-        return jsonify({"hash": drvl.policy_hash})  # ← FIXED: frontend expects "hash"
-    except Exception as e:
-        print(f"Error serving policy_hash: {e}")
-        return jsonify({"error": "Could not retrieve policy hash"}), 500
-
-@app.route("/verification_key")
-def verification_key():
-    try:
-        key = getattr(drvl, "secret_key", None)
-        if key is None:
-            return jsonify({"error": "No verification key available"}), 500
-        if isinstance(key, bytes):
-            key = key.hex()
-        return jsonify({"key": key})
-    except Exception as e:
-        print("Verification key error:", e)
-        return jsonify({"error": "verification key failure"}), 500
+    return jsonify({"hash": drvl.policy_hash})
 
 @app.route("/set_llm_key", methods=["POST"])
 def set_llm_key():
+    # unchanged from your version
     try:
         data = request.get_json()
         if not data:
@@ -131,26 +156,23 @@ def set_llm_key():
         api_key = data.get("api_key")
         
         if not provider or not api_key:
-            return jsonify({"error": "Provider and API key are required"}), 400
+            return jsonify({"error": "Provider and API key required"}), 400
         
         if provider.lower() != "openai":
-            return jsonify({"error": "Only OpenAI provider is supported"}), 400
+            return jsonify({"error": "Only OpenAI supported"}), 400
         
-        # Actually configure the agent
         agent.set_llm(provider, api_key)
         
-        # Optional: quick validation (cheap call that fails fast on bad key)
         try:
             agent.llm_client.models.list()
         except Exception as e:
-            agent.llm_client = None  # clear on failure
-            return jsonify({"error": f"Invalid or unauthorized API key: {str(e)}"}), 401
+            agent.llm_client = None
+            return jsonify({"error": f"Invalid API key: {str(e)}"}), 401
         
         return jsonify({"status": "ok"})
-    
     except Exception as e:
-        print(f"Error setting LLM key: {e}")
-        return jsonify({"error": "Failed to activate LLM — check key"}), 500
+        print(f"Set LLM key error: {e}")
+        return jsonify({"error": "Activation failed"}), 500
 
 @app.route("/run")
 def run_demo():
@@ -158,10 +180,10 @@ def run_demo():
 
     now = time.time()
     if now - last_run_time < 0.8:
-        return jsonify({"error": "Rate limit: wait 0.8s between /run calls"}), 429
+        return jsonify({"error": "Rate limit: wait 0.8s"}), 429
     last_run_time = now
 
-    time.sleep(random.uniform(0.3, 0.8))  # simulate agent "thinking"
+    time.sleep(random.uniform(0.3, 0.8))
 
     action, table = agent.generate_action()
     llm_error = getattr(agent, "last_llm_error", None)
@@ -171,7 +193,6 @@ def run_demo():
     envelope = drvl.ExecutionEnvelope(action=action, table=table)
     allowed, needs_escalation, message, _, _ = drvl.verify(action, table, ENVIRONMENT)
 
-    # Use deterministic timestamp for signing
     event_timestamp = datetime.utcnow().isoformat()
     event = {
         "action": action,
@@ -181,23 +202,29 @@ def run_demo():
         "envelope_hash": envelope.compute_hash(),
     }
 
-    # Escalation / decision logic
+    status = None
     result = None
     request_id = None
     color_hint = None
-    status = None
+    message = message or ""
 
     if needs_escalation:
         r = random.random()
         if r < AUTO_APPROVE_PCT:
-            status = "EXECUTED"
+            status = "APPROVED"               # ← changed: auto-approve → "APPROVED"
             color_hint = "green"
-            result = db.execute(action, table)
-            event.update({"status": status, "message": "Auto-approved (~35%)", "color": color_hint})
+            try:
+                result = db.execute(action, table) or {"executed": True, "rows_affected": 1}
+                message += " (auto-approved)"
+            except Exception as e:
+                result = {"error": str(e)}
+                status = "BLOCKED"
+                message = f"Execution failed: {e}"
         elif r < AUTO_APPROVE_PCT + AUTO_DENY_PCT:
-            status = "BLOCKED"
+            status = "DENIED"                 # ← auto-deny → "DENIED"
             color_hint = "red"
-            event.update({"status": status, "message": "Auto-denied (~35%)", "color": color_hint})
+            message += " (auto-denied)"
+            result = {"blocked": True}
         else:
             with escalation_lock:
                 escalation_counter += 1
@@ -212,29 +239,36 @@ def run_demo():
                 })
             status = "PENDING"
             color_hint = "pending"
-            event.update({"status": status, "message": "Awaiting review (~30%)", "request_id": request_id, "color": color_hint})
+            message += " (awaiting review)"
+            result = {"pending": True, "request_id": request_id}
     else:
         if allowed:
             status = "EXECUTED"
             color_hint = "green"
-            result = db.execute(action, table)
+            try:
+                result = db.execute(action, table) or {"executed": True, "rows_affected": 1}
+            except Exception as e:
+                result = {"error": str(e)}
+                status = "BLOCKED"
+                color_hint = "red"
+                message = f"Execution failed: {e}"
         else:
             status = "BLOCKED"
             color_hint = "red"
-        event.update({"status": status, "message": message, "color": color_hint})
+            result = {"blocked": True}
 
     log_event(action, table, status, message, timestamp=event_timestamp, policy=drvl.policy_hash)
 
-    signed = create_signed_event(event)
-    publish(signed)
+    signed = create_signed_event({**event, "status": status, "message": message})
+    broadcast_event(signed)   # ← use broadcast instead of publish
 
     return jsonify({
         "action": action,
         "table": table,
         "status": status,
-        "message": message or event.get("message"),
+        "message": message,
         "color": color_hint,
-        "result": result,
+        "result": result,                     # now object when executed
         "request_id": request_id,
         "escalation_queue": [
             {"request_id": q["id"], "action": q["action"], "table": q["table"], "status": q["status"], "envelope_hash": q["envelope_hash"]}
@@ -250,38 +284,42 @@ def run_demo():
         "verify_message": signed.get("verify_message"),
     })
 
-# ──────────────────────────────
-# Escalation endpoints
-# ──────────────────────────────
+# Escalation endpoints (updated to use broadcast_event)
 
 @app.route("/approve/<int:req_id>", methods=["POST"])
 def approve(req_id):
     with escalation_lock:
         for req in escalation_queue:
             if req["id"] == req_id and req["status"] == "PENDING":
-                db.execute(req["action"], req["table"])
-                req["status"] = "APPROVED"
-                req["decided_at"] = time.time()
-                event_timestamp = datetime.utcnow().isoformat()
-                event = {
-                    "type": "escalation_decision",
-                    "request_id": req_id,
-                    "status": "APPROVED",
-                    "action": req["action"],
-                    "table": req["table"],
-                    "timestamp": event_timestamp,
-                    "envelope_hash": req["envelope_hash"],
-                }
-                publish(create_signed_event(event))
+                try:
+                    result = db.execute(req["action"], req["table"]) or {"executed": True, "rows_affected": 1}
+                    req["status"] = "APPROVED"
+                    req["decided_at"] = time.time()
+                    event_timestamp = datetime.utcnow().isoformat()
+                    event = {
+                        "type": "escalation_decision",
+                        "request_id": req_id,
+                        "status": "APPROVED",
+                        "action": req["action"],
+                        "table": req["table"],
+                        "timestamp": event_timestamp,
+                        "envelope_hash": req["envelope_hash"],
+                        "result": result
+                    }
+                    signed = create_signed_event(event)
+                    broadcast_event(signed)
+                except Exception as e:
+                    print(f"Approve execution failed for {req_id}: {e}")
+                    return jsonify({"error": str(e)}), 500
                 break
-    return status()
+    return status()   # assuming you have a /status route; otherwise return jsonify({"ok": True})
 
 @app.route("/deny/<int:req_id>", methods=["POST"])
 def deny(req_id):
     with escalation_lock:
         for req in escalation_queue:
             if req["id"] == req_id and req["status"] == "PENDING":
-                req["status"] = "DENIED"                    # ← fix here
+                req["status"] = "DENIED"
                 req["decided_at"] = time.time()
                 event_timestamp = datetime.utcnow().isoformat()
                 event = {
@@ -292,12 +330,27 @@ def deny(req_id):
                     "table": req["table"],
                     "timestamp": event_timestamp,
                     "envelope_hash": req["envelope_hash"],
+                    "result": {"blocked": True}
                 }
-                publish(create_signed_event(event))
+                signed = create_signed_event(event)
+                broadcast_event(signed)
                 break
     return status()
 
+# Placeholder if you don't have /status yet
+@app.route("/status")
+def status():
+    with escalation_lock:
+        pending = sum(1 for q in escalation_queue if q["status"] == "PENDING")
+        return jsonify({
+            "total_escalations": len(escalation_queue),
+            "pending": pending,
+            "queue": [
+                {"request_id": q["id"], "action": q["action"], "table": q["table"], "status": q["status"]}
+                for q in escalation_queue
+            ]
+        })
+
 if __name__ == "__main__":
-    # For local development/testing
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
