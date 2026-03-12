@@ -609,6 +609,19 @@ function handleResponse(data) {
             eventClass = "event-pending";
     }
 
+    document.getElementById("decPolicy").textContent = data.policy || "—";
+    document.getElementById("decSig").textContent = data.signature || "—";
+
+    const integrityEl = document.getElementById("decIntegrity");
+    if (data.policy && data.signature) {
+        integrityEl.textContent = "✓ Valid signature (policy matches)";
+        integrityEl.style.color = "#198754";
+        integrityEl.style.fontWeight = "600";
+    } else {
+        integrityEl.textContent = "— No signature";
+        integrityEl.style.color = "#dc3545";
+    }
+
     // LLM error handling
     const errorDiv = document.getElementById("llm-error");
     if (data.llm_error) {
