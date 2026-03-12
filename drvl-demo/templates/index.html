@@ -3,156 +3,128 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DRVL Governance Demo — Probabilistic Agent</title>
+  <title>DRVL Governance Demo — AI Action Governance</title>
 
   <style>
     :root {
       --bg:        #f9fafb;
-      --text:       #1f2937;
+      --text:       #111827;
       --gray:       #6b7280;
       --light-gray: #e5e7eb;
       --success:    #16a34a;
       --danger:     #dc2626;
       --warning:    #d97706;
       --primary:    #2563eb;
-      --panel-bg:   white;
+      --panel:      white;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin:0; padding:0; }
 
     body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-family: system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
-      margin: 0;
-      padding: 24px 16px;
-      line-height: 1.55;
+      line-height: 1.6;
+      padding: 1.5rem 1rem;
     }
 
-    header {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    h1 {
-      margin: 0 0 0.4em;
-      font-size: clamp(1.9rem, 5vw, 2.4rem);
-    }
-
-    .subtitle {
-      color: var(--gray);
-      font-size: 1.1rem;
-      margin: 0;
-    }
+    header { text-align: center; margin-bottom: 2.5rem; }
+    h1 { font-size: clamp(2rem, 5.5vw, 2.6rem); margin-bottom: 0.4em; }
+    .subtitle { color: var(--gray); font-size: 1.15rem; }
 
     .controls {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 16px 24px;
-      margin: 24px 0 32px;
+      gap: 1rem 2rem;
+      margin: 2rem 0;
       align-items: center;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 15px;
-      font-weight: 500;
+      padding: 0.65rem 1.4rem;
+      font-size: 1rem;
+      font-weight: 600;
       border: none;
       border-radius: 6px;
-      cursor: pointer;
       color: white;
-      transition: all 0.18s ease;
-      position: relative;
-      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.16s ease;
     }
 
-    button:hover:not(:disabled) { opacity: 0.94; }
+    button:hover:not(:disabled) { filter: brightness(1.08); }
     button:active:not(:disabled) { transform: translateY(1px); }
-
-    button:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
 
     button.loading {
-      color: transparent !important;
+      color: transparent;
+      position: relative;
     }
-
     button.loading::after {
       content: "";
       position: absolute;
       inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      place-items: center;
     }
-
     button.loading::after {
-      width: 18px;
-      height: 18px;
+      width: 1.2rem;
+      height: 1.2rem;
       border: 3px solid white;
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
-
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .btn-run    { background: var(--primary); }
-    .btn-auto   { background: #4b5563; }
-    .btn-stop   { background: var(--danger); }
-    .btn-approve { background: var(--success); font-size: 13px; padding: 6px 14px; }
-    .btn-deny    { background: var(--danger);   font-size: 13px; padding: 6px 14px; }
+    .btn-run     { background: var(--primary); }
+    .btn-auto    { background: #4b5563; }
+    .btn-stop    { background: var(--danger); }
+    .btn-approve { background: var(--success); padding: 0.4rem 1rem; font-size: 0.9rem; }
+    .btn-deny    { background: var(--danger);   padding: 0.4rem 1rem; font-size: 0.9rem; }
 
     .speed-control {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 0.8rem;
       font-size: 0.95rem;
     }
-
     input[type="range"] {
-      width: 160px;
+      width: 140px;
       accent-color: var(--primary);
     }
 
     #stats {
       display: flex;
       justify-content: center;
-      gap: 36px;
-      font-size: 1.15rem;
+      gap: 2.5rem;
+      font-size: 1.2rem;
       font-weight: 600;
-      margin: 0 0 32px;
+      margin: 0 0 2rem;
       flex-wrap: wrap;
     }
-
     .stat-executed { color: var(--success); }
     .stat-blocked  { color: var(--danger); }
     .stat-approved { color: var(--success); }
 
     .panel {
-      max-width: 820px;
-      margin: 0 auto 28px;
-      background: var(--panel-bg);
+      max-width: 860px;
+      margin: 0 auto 1.8rem;
+      background: var(--panel);
       border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      padding: 1.6rem;
     }
 
-    #policy > div {
-      margin: 10px 0;
-      font-size: 1.05rem;
-    }
-
+    .policy-item { font-size: 1.1rem; margin: 0.6rem 0; }
     .allowed    { color: var(--success); }
     .restricted { color: var(--danger); }
 
     #alerts {
-      min-height: 2.2em;
-      padding: 14px;
-      margin: 0 auto 28px;
-      max-width: 820px;
+      min-height: 2.4rem;
+      padding: 1rem;
+      margin: 0 auto 1.8rem;
+      max-width: 860px;
       border-radius: 8px;
       font-weight: 500;
       background: #fee2e2;
@@ -163,74 +135,65 @@
     .info-box {
       background: #eff6ff;
       border-left: 4px solid var(--primary);
-      padding: 16px 20px;
+      padding: 1.2rem 1.6rem;
       border-radius: 8px;
-      margin: 24px auto;
-      max-width: 820px;
+      margin: 1.5rem auto;
+      max-width: 860px;
     }
 
-    .info-box strong { color: var(--primary); }
+    .warning-text {
+      font-size: 0.92rem;
+      color: #854d0e;
+      background: #fefce8;
+      padding: 1rem 1.4rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+    }
 
     .queue-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 16px;
-      margin: 10px 0;
+      padding: 0.9rem 1.3rem;
+      margin: 0.6rem 0;
       border-radius: 6px;
-      background: #f9fafb;
       border: 1px solid var(--light-gray);
-      gap: 16px;
+      background: #f9fafb;
+      gap: 1rem;
     }
-
     .queue-item.pending   { background: #fefce8; border-color: #fef08a; }
     .queue-item.approved  { background: #f0fdf4; border-color: #86efac; font-weight: 500; }
     .queue-item.denied    { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
 
     #events {
-      max-height: 340px;
+      max-height: 380px;
       overflow-y: auto;
       background: #f3f4f6;
       border-radius: 8px;
-      padding: 10px;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-size: 0.94rem;
+      padding: 0.8rem;
+      font-family: 'Consolas', monospace;
+      font-size: 0.96rem;
     }
 
     .event-line {
-      padding: 8px 12px;
-      margin: 4px 0;
+      padding: 0.6rem 1rem;
+      margin: 0.3rem 0;
       border-radius: 5px;
     }
+    .event-executed  { background: #ecfdf5; }
+    .event-blocked   { background: #fef2f2; }
+    .event-pending   { background: #fefce8; }
+    .event-approved  { background: #dbeafe; font-weight: 600; }
 
-    .event-executed  { background: #ecfdf5; color: #065f46; }
-    .event-blocked   { background: #fef2f2; color: #991b1b; }
-    .event-pending   { background: #fefce8; color: #854d0e; }
-    .event-approved  { background: #dbeafe; color: #1e40af; font-weight: 600; }
+    .integrity-good { color: var(--success); font-weight: 700; }
+    .integrity-bad  { color: var(--danger);   font-weight: 700; }
 
-    .integrity-good {
-      color: var(--success);
-      font-weight: 600;
-    }
-    .integrity-bad {
-      color: var(--danger);
-      font-weight: 700;
-    }
-
-    .warning-text {
-      font-size: 0.86rem;
-      color: #854d0e;
-      background: #fefce8;
-      padding: 12px 16px;
-      border-radius: 6px;
-      margin: 16px 0;
-      line-height: 1.45;
-    }
+    code { background: #e5e7eb; padding: 0.15rem 0.4rem; border-radius: 4px; }
 
     #llm-panel {
-      max-width: 640px;
-      margin: 0 auto 32px;
-      padding: 20px;
+      max-width: 680px;
+      margin: 0 auto 2rem;
+      padding: 1.4rem;
       background: white;
       border-radius: 10px;
       box-shadow: 0 1px 10px rgba(0,0,0,0.06);
@@ -240,36 +203,18 @@
     .llm-input-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 0.8rem;
       justify-content: center;
-      margin: 16px 0;
+      margin: 1.2rem 0;
     }
 
-    #llm-key-panel select,
-    #llm-key-panel input[type="password"] {
-      padding: 9px 14px;
-      font-size: 15px;
+    #llm-key-panel input[type="password"],
+    #llm-key-panel select {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
       border: 1px solid #d1d5db;
       border-radius: 6px;
-      min-width: 220px;
-    }
-
-    #mode-indicator {
-      text-align: center;
-      color: var(--gray);
-      margin-bottom: 16px;
-      font-size: 0.98rem;
-    }
-
-    #current-mode {
-      font-weight: 600;
-    }
-
-    code {
-      font-family: 'Consolas', monospace;
-      background: #f3f4f6;
-      padding: 2px 6px;
-      border-radius: 4px;
+      min-width: 240px;
     }
   </style>
 </head>
@@ -277,50 +222,46 @@
 
 <header>
   <h1>DRVL Governance Demo</h1>
-  <div class="subtitle">Deterministic runtime governance of a probabilistic AI agent</div>
+  <div class="subtitle">Runtime policy enforcement for a probabilistic AI agent</div>
 </header>
 
-<div id="mode-indicator">
-  Current mode: <span id="current-mode">Simulated / Random Agent</span>
-</div>
-
 <div id="llm-panel">
-  <label style="font-weight: 500; display: block; margin-bottom: 16px; cursor: pointer;">
+  <label style="font-weight:600; display:block; margin-bottom:1.2rem; cursor:pointer;">
     <input type="checkbox" id="use-llm-toggle" /> 
-    Use real LLM instead of simulated/random agent
+    Use real LLM (OpenAI) instead of random agent
   </label>
 
   <div id="llm-key-panel" hidden>
     <div class="warning-text">
-      <strong>Warning:</strong> Using a real LLM consumes OpenAI tokens and may incur costs.<br>
-      Currently supports <strong>OpenAI</strong> (GPT-4o, GPT-4o-mini, …)
+      <strong>Note:</strong> Real LLM usage consumes API tokens and may incur costs.<br>
+      Only OpenAI is currently supported.
     </div>
 
     <div class="llm-input-group">
       <select id="llm-provider">
         <option value="openai">OpenAI</option>
       </select>
-      <input type="password" id="api-key-input" placeholder="Your OpenAI API key" />
-      <button id="apply-key-btn" type="button">Apply Key</button>
+      <input type="password" id="api-key-input" placeholder="sk-... OpenAI API key" autocomplete="off" />
+      <button id="apply-key-btn">Apply Key</button>
     </div>
 
-    <p style="font-size:0.84rem; color:#6b7280; margin:12px 0 4px;">
-      Your key is sent once to the server — never stored or logged. Valid for this session only.
+    <p style="font-size:0.88rem; color:var(--gray); margin:0.9rem 0 0.4rem;">
+      Key is sent once — never stored. Valid for this browser session only.
     </p>
 
-    <div id="llm-status" style="min-height:1.3em;"></div>
-    <div id="llm-error" style="color:var(--danger); min-height:1.3em;"></div>
+    <div id="llm-status" style="min-height:1.4em; margin-top:0.8rem;"></div>
+    <div id="llm-error" style="color:var(--danger); min-height:1.4em;"></div>
   </div>
 </div>
 
 <div class="controls">
-  <button class="btn-run"    type="button" aria-label="Trigger one AI action">Run AI Action</button>
-  <button class="btn-auto"   type="button" aria-label="Start continuous mode">Start Autonomous Mode</button>
-  <button class="btn-stop"   type="button" aria-label="Stop continuous mode">Stop Autonomous Mode</button>
+  <button class="btn-run" type="button">Run AI Action</button>
+  <button class="btn-auto" type="button">Start Autonomous Mode</button>
+  <button class="btn-stop" type="button" disabled>Stop Autonomous Mode</button>
 
   <div class="speed-control">
     <label for="speedSlider">Interval:</label>
-    <input type="range" id="speedSlider" min="600" max="5000" step="300" value="1800" />
+    <input type="range" id="speedSlider" min="600" max="5000" step="200" value="1800" />
     <output id="speedValue">1.8 s</output>
   </div>
 </div>
@@ -332,97 +273,88 @@
 </div>
 
 <div class="panel">
-  <h2>Active Governance Policies</h2>
-  <div class="allowed">✓ READ   — Allowed</div>
-  <div class="allowed">✓ UPDATE — Allowed</div>
-  <div class="restricted">✗ DELETE — Requires escalation</div>
-  <div class="restricted">✗ DROP   — Forbidden</div>
+  <h2>Active Policies</h2>
+  <div class="policy-item allowed">✓ READ   — permitted</div>
+  <div class="policy-item allowed">✓ UPDATE — permitted</div>
+  <div class="policy-item restricted">✗ DELETE — escalation required</div>
+  <div class="policy-item restricted">✗ DROP   — always forbidden</div>
 </div>
 
 <div class="info-box">
-  <h3 style="margin:0 0 12px; color:var(--primary);">Policy & Decision Integrity</h3>
-  <p style="margin:0 0 12px;">
-    Every event is protected with:
-  </p>
-  <ul style="margin:0 0 12px 1.6em; padding-left:0; list-style-position:inside;">
-    <li><strong>envelope hash</strong> — fingerprint of the proposed action</li>
-    <li><strong>policy hash</strong> — fingerprint of active rules</li>
-    <li><strong>signature</strong> — HMAC-SHA256 proof of authenticity</li>
+  <h3 style="margin:0 0 0.8rem; color:var(--primary);">Tamper-evident Governance</h3>
+  <ul style="padding-left:1.4rem; margin:0;">
+    <li><strong>Envelope hash</strong> — cryptographic fingerprint of proposed action</li>
+    <li><strong>Policy hash</strong> — version of active rules</li>
+    <li><strong>HMAC signature</strong> — authenticity proof</li>
   </ul>
-  <p style="font-size:0.92rem; color:var(--gray); margin:0;">
-    These fields create a strong tamper-evident boundary between AI reasoning and execution.
-  </p>
 </div>
 
 <div class="panel" style="background:#f0f7ff;">
-  <p style="margin:0; font-weight:500;">
-    Current Policy Hash: 
-    <code id="current-policy-hash">Loading…</code>
+  <p style="margin:0; font-weight:600;">
+    Current Policy Hash: <code id="current-policy-hash">Loading…</code>
   </p>
-  <p style="margin:8px 0 0; font-size:0.9rem; color:var(--gray);">
-    All events must match this hash. A mismatch indicates policy change or tampering attempt.
+  <p style="margin:0.5rem 0 0; font-size:0.92rem; color:var(--gray);">
+    Any mismatch in events indicates policy change or tampering.
   </p>
 </div>
 
-<h2 style="text-align:center; color:var(--danger); margin:40px 0 16px; font-size:1.45rem;">
-  Event Alerts
+<h2 style="text-align:center; color:var(--danger); margin:2.5rem 0 1rem; font-size:1.4rem;">
+  Security & Integrity Alerts
 </h2>
 <div id="alerts"></div>
 
 <div class="panel">
-  <h2>Latest Governance Decision</h2>
+  <h2>Latest Decision</h2>
 
-  <div class="warning-text" style="margin:16px auto; max-width:680px;">
-    <strong>Demo behavior:</strong> ~15% of events are <strong>intentionally tampered</strong><br>
-    (wrong policy hash or invalid signature) to demonstrate detection.
+  <div class="warning-text" style="max-width:720px; margin:1rem auto;">
+    <strong>Demo note:</strong> ~15% of published events are <strong>intentionally tampered</strong> (policy hash or signature) to show detection.
   </div>
 
   <div id="decision">
     <div><b>Action:</b> <span id="decAction">—</span></div>
-    <div><b>Rule / Status:</b> <span id="decRule">—</span></div>
+    <div><b>Status:</b> <span id="decRule">—</span></div>
     <div><b>Result:</b> <span id="decResult">—</span></div>
 
-    <div style="margin-top:16px; font-size:0.94rem;">
-      <b>Envelope Hash:</b> <code id="decEnvelopeHash">—</code><br>
-      <b>Policy Hash:</b>   <code id="decPolicy">—</code><br>
-      <b>Signature:</b>     <code id="decSig">—</code>
+    <div style="margin-top:1.2rem; font-size:0.96rem; word-break:break-all;">
+      <b>Envelope:</b> <code id="decEnvelopeHash">—</code><br>
+      <b>Policy:</b>   <code id="decPolicy">—</code><br>
+      <b>Signature:</b> <code id="decSig">—</code>
     </div>
 
-    <div style="margin-top:12px;">
-      <b>Integrity:</b> <span id="decIntegrity">Waiting for data…</span>
+    <div style="margin-top:1rem;">
+      <b>Integrity:</b> <span id="decIntegrity">Waiting…</span>
     </div>
   </div>
 </div>
 
 <div class="panel">
   <h2>Escalation Queue</h2>
-  <p style="color:var(--gray); text-align:center; margin:0 0 16px; font-size:0.94rem;">
-    <em>Demo behavior:</em> DELETE escalations → ~35% auto-approve, ~35% auto-deny, ~30% remain pending
+  <p style="text-align:center; color:var(--gray); margin-bottom:1rem; font-size:0.96rem;">
+    Demo: DELETE actions → ~35% auto-approve, ~35% auto-deny, rest pending
   </p>
 
-  <div style="text-align:center; margin-bottom:16px; font-size:1.05rem;">
-    Total escalations: <b><span id="totalEscalations">0</span></b> 
-    Pending now: <b><span id="pendingCount">0</span></b>
+  <div style="text-align:center; margin-bottom:1rem; font-size:1.1rem;">
+    Total escalations: <b id="totalEscalations">0</b>  •  Pending: <b id="pendingCount">0</b>
   </div>
 
   <div id="escalationQueue"></div>
 </div>
 
 <div class="panel">
-  <h2>Live Governance Events</h2>
+  <h2>Live Events</h2>
   <div id="events"></div>
 </div>
 
 <script>
 // ──────────────────────────────────────────────
-// JavaScript (original logic preserved + minor cleanups)
+//  Frontend logic — cleaned & modularized
 // ──────────────────────────────────────────────
 
 let verificationKey = null;
-let autoInterval    = null;
-let speed           = 1800;
+let autoInterval = null;
+let speed = 1800;
 
-const els = {
+const elements = {
   executed: document.getElementById("executedCount"),
   blocked:  document.getElementById("blockedCount"),
   approved: document.getElementById("approvedCount"),
@@ -430,114 +362,96 @@ const els = {
   pending:  document.getElementById("pendingCount"),
   alerts:   document.getElementById("alerts"),
   events:   document.getElementById("events"),
-  dec: {
-    action: document.getElementById("decAction"),
-    rule:   document.getElementById("decRule"),
-    result: document.getElementById("decResult")
+  decision: {
+    action:   document.getElementById("decAction"),
+    rule:     document.getElementById("decRule"),
+    result:   document.getElementById("decResult"),
+    envHash:  document.getElementById("decEnvelopeHash"),
+    policy:   document.getElementById("decPolicy"),
+    sig:      document.getElementById("decSig"),
+    integrity: document.getElementById("decIntegrity")
   }
 };
 
-const toggle = document.getElementById("use-llm-toggle");
-const keyPanel = document.getElementById("llm-key-panel");
-const modeText = document.getElementById("current-mode");
+const llmToggle = document.getElementById("use-llm-toggle");
+const llmKeyPanel = document.getElementById("llm-key-panel");
+const modeIndicator = document.getElementById("current-mode") || { textContent: "" };
 
-toggle.onchange = () => {
-  keyPanel.hidden = !toggle.checked;
-  if (toggle.checked) {
-    modeText.textContent = "Real LLM (active)";
-    modeText.style.color = "var(--success)";
-  } else {
-    modeText.textContent = "Simulated / Random Agent";
-    modeText.style.color = "var(--gray)";
-    document.getElementById("llm-status").textContent = "";
-    document.getElementById("llm-error").textContent = "";
-  }
+llmToggle.onchange = () => {
+  llmKeyPanel.hidden = !llmToggle.checked;
+  modeIndicator.textContent = llmToggle.checked ? "Real LLM" : "Random Agent";
+  modeIndicator.style.color = llmToggle.checked ? "var(--success)" : "var(--gray)";
 };
 
-document.getElementById("apply-key-btn").onclick = submitApiKey;
-
-function submitApiKey() {
+document.getElementById("apply-key-btn").onclick = async () => {
   const key = document.getElementById("api-key-input").value.trim();
-  if (!key) return alert("Please enter a valid API key");
+  if (!key) return alert("Please enter an API key");
 
   const btn = document.getElementById("apply-key-btn");
   btn.disabled = true;
   btn.classList.add("loading");
 
-  fetch("/set_llm_key", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      provider: document.getElementById("llm-provider").value,
-      api_key: key
-    })
-  })
-  .then(r => r.json())
-  .then(data => {
-    btn.disabled = false;
-    btn.classList.remove("loading");
+  try {
+    const res = await fetch("/set_llm_key", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        provider: document.getElementById("llm-provider").value,
+        api_key: key
+      })
+    });
+    const data = await res.json();
 
     if (data.status === "ok") {
-      document.getElementById("llm-status").textContent = "✓ LLM mode active — using real OpenAI model";
+      document.getElementById("llm-status").textContent = "✓ LLM mode activated";
       document.getElementById("llm-status").style.color = "var(--success)";
-      document.getElementById("llm-error").textContent = "";
       document.getElementById("api-key-input").value = "";
     } else {
-      document.getElementById("llm-error").textContent = data.error || "Failed to activate LLM mode";
+      document.getElementById("llm-error").textContent = data.error || "Activation failed";
     }
-  })
-  .catch(() => {
+  } catch {
+    document.getElementById("llm-error").textContent = "Network error";
+  } finally {
     btn.disabled = false;
     btn.classList.remove("loading");
-    document.getElementById("llm-error").textContent = "Connection error — could not reach server";
-  });
-}
+  }
+};
 
-const slider = document.getElementById("speedSlider");
-const speedVal = document.getElementById("speedValue");
-
-slider.oninput = () => {
-  speed = parseInt(slider.value);
-  speedVal.textContent = (speed / 1000).toFixed(1) + " s";
+// Speed slider
+document.getElementById("speedSlider").oninput = e => {
+  speed = +e.target.value;
+  document.getElementById("speedValue").textContent = (speed / 1000).toFixed(1) + " s";
   if (autoInterval) { stopAuto(); startAuto(); }
 };
 
-function triggerAction() {
+// Core action trigger
+async function runAction() {
   const btn = document.querySelector(".btn-run");
   if (btn.classList.contains("loading")) return;
 
   btn.classList.add("loading");
   btn.disabled = true;
-  btn.textContent = "";
 
-  fetch("/run")
-    .then(r => r.json())
-    .then(handleResponse)
-    .catch(err => {
-      console.error("Run failed:", err);
-      alert("Action failed — check console");
-    })
-    .finally(() => {
-      btn.classList.remove("loading");
-      btn.disabled = false;
-      btn.textContent = "Run AI Action";
-    });
+  try {
+    const res = await fetch("/run");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    handleEvent(data);
+  } catch (err) {
+    console.error(err);
+    elements.alerts.textContent = "Action failed — see console";
+  } finally {
+    btn.classList.remove("loading");
+    btn.disabled = false;
+  }
 }
 
 function startAuto() {
   if (autoInterval) return;
-  const btn = document.querySelector(".btn-auto");
-  btn.classList.add("loading");
-  btn.disabled = true;
-  btn.textContent = "Starting...";
+  document.querySelector(".btn-auto").disabled = true;
+  document.querySelector(".btn-stop").disabled = false;
 
-  autoInterval = setInterval(triggerAction, speed);
-
-  setTimeout(() => {
-    btn.classList.remove("loading");
-    btn.disabled = false;
-    btn.textContent = "Running Autonomous… (click Stop)";
-  }, 600);
+  autoInterval = setInterval(runAction, speed);
 }
 
 function stopAuto() {
@@ -545,163 +459,112 @@ function stopAuto() {
   clearInterval(autoInterval);
   autoInterval = null;
 
-  const btn = document.querySelector(".btn-auto");
-  btn.classList.remove("loading");
-  btn.disabled = false;
-  btn.textContent = "Start Autonomous Mode";
-
-  els.alerts.textContent = "Autonomous mode stopped";
-  setTimeout(() => els.alerts.textContent = "", 3000);
+  document.querySelector(".btn-auto").disabled = false;
+  document.querySelector(".btn-stop").disabled = true;
+  elements.alerts.textContent = "Autonomous mode stopped";
+  setTimeout(() => elements.alerts.textContent = "", 4000);
 }
 
-async function computeHmac(message, keyHex) {
-  if (!keyHex) return null;
-  const enc = new TextEncoder();
-  const keyBytes = new Uint8Array(keyHex.match(/.{1,2}/g).map(b => parseInt(b, 16)));
-  const cryptoKey = await crypto.subtle.importKey(
-    "raw", keyBytes, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-  );
-  const signature = await crypto.subtle.sign("HMAC", cryptoKey, enc.encode(message));
-  return Array.from(new Uint8Array(signature))
-    .map(b => b.toString(16).padStart(2, "0"))
-    .join("")
-    .slice(0, 16);
-}
-
+// ── Integrity verification in browser ──
 async function verifyIntegrity(data) {
-  const integrityEl = document.getElementById("decIntegrity");
-  const expectedPolicyHash = document.getElementById("current-policy-hash").textContent.trim();
+  const el = elements.decision.integrity;
+  const currentPolicy = document.getElementById("current-policy-hash").textContent.trim();
 
-  if (expectedPolicyHash === "Loading…" || expectedPolicyHash === "—" || expectedPolicyHash === "Failed to load") {
-    integrityEl.textContent = "Waiting for policy hash…";
-    integrityEl.style.color = "var(--gray)";
+  if (currentPolicy === "Loading…" || currentPolicy === "—") {
+    el.textContent = "Waiting for policy…";
+    el.className = "";
     return;
   }
 
   if (!verificationKey) {
-    integrityEl.textContent = "Verification key unavailable";
-    integrityEl.style.color = "var(--gray)";
+    el.textContent = "No verification key";
     return;
   }
 
-  const policyMatches = data.policy === expectedPolicyHash;
+  const policyOk = data.policy === currentPolicy;
 
+  // Recompute HMAC (simplified — adjust payload to match backend exactly)
   const payload = JSON.stringify({
     action: data.action,
     table: data.table,
     timestamp: data.timestamp,
     nonce: data.nonce || "",
     envelope_hash: data.envelope_hash
-  });
+  }, null, 0);
 
-  const recomputedSig = await computeHmac(payload, verificationKey);
-  const sigValid = recomputedSig && recomputedSig === data.signature;
+  const recomputed = await computeHmac(payload, verificationKey);
+  const sigOk = recomputed && recomputed === data.signature?.slice(0, recomputed.length);
 
-  if (policyMatches && sigValid) {
-    integrityEl.className = "integrity-good";
-    integrityEl.textContent = "✓ Signature verified (HMAC match) & policy match";
+  if (policyOk && sigOk) {
+    el.className = "integrity-good";
+    el.textContent = "✓ Valid signature & policy match";
   } else {
-    let reason = [];
-    if (!policyMatches) reason.push("policy mismatch");
-    if (!sigValid) reason.push("signature mismatch");
-    const reasonStr = reason.join(" + ") || "unknown";
-    integrityEl.className = "integrity-bad";
-    integrityEl.textContent = "✗ Tampered / Invalid (" + reasonStr + ")";
-
-    const alert = document.createElement("div");
-    alert.className = "event-line event-blocked";
-    alert.innerHTML = `
-      <span style="opacity:0.7">[${new Date().toLocaleTimeString()}]</span>
-      SECURITY ALERT — Integrity failure (${reasonStr})
-    `;
-    document.getElementById("events").prepend(alert);
+    const reasons = [];
+    if (!policyOk) reasons.push("policy mismatch");
+    if (!sigOk) reasons.push("signature invalid");
+    el.className = "integrity-bad";
+    el.textContent = "✗ Tampered — " + (reasons.join(" + ") || "invalid");
   }
 }
 
-function handleResponse(data) {
-  if (!data || !data.action) return;
+async function computeHmac(message, keyHex) {
+  if (!keyHex) return null;
+  const enc = new TextEncoder();
+  const keyData = new Uint8Array(keyHex.match(/.{1,2}/g).map(b => parseInt(b,16)));
+  const key = await crypto.subtle.importKey(
+    "raw", keyData, { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(message));
+  return Array.from(new Uint8Array(sig))
+    .map(b => b.toString(16).padStart(2,"0"))
+    .join("");
+}
 
-  const ts = data.timestamp || new Date().toLocaleTimeString([], { hour12: false });
-  const actionStr = `${data.action} ${data.table || ''}`.trim();
+// ── Event rendering ──
+function handleEvent(data) {
+  if (!data?.action) return;
 
-  els.dec.action.textContent = actionStr;
-  els.dec.result.textContent = data.status;
+  const ts = data.timestamp?.split(" ")[1] || new Date().toLocaleTimeString([],{timeStyle:"short"});
 
-  let eventClass = "";
-  let alertText = "";
-  let incExecuted = false, incBlocked = false, incApproved = false;
-
-  switch (data.status) {
-    case "EXECUTED":
-      els.dec.rule.textContent = data.message || "Allowed by policy";
-      eventClass = "event-executed";
-      incExecuted = true;
-      break;
-    case "BLOCKED":
-      els.dec.rule.textContent = data.message || "Forbidden / restricted";
-      eventClass = "event-blocked";
-      incBlocked = true;
-      alertText = `Blocked: ${actionStr}`;
-      break;
-    case "PENDING":
-      els.dec.rule.textContent = "Escalation required";
-      eventClass = "event-pending";
-      alertText = `Pending escalation: ${actionStr}`;
-      break;
-    case "APPROVED":
-      els.dec.rule.textContent = data.message || "Escalation approved";
-      eventClass = "event-approved";
-      incApproved = true;
-      break;
-    case "DENIED":
-      els.dec.rule.textContent = data.message || "Escalation denied";
-      eventClass = "event-blocked";
-      incBlocked = true;
-      alertText = `Denied: ${actionStr}`;
-      break;
-    default:
-      eventClass = "event-pending";
-  }
-
-  document.getElementById("decEnvelopeHash").textContent = data.envelope_hash || "—";
-  document.getElementById("decPolicy").textContent       = data.policy       || "—";
-  document.getElementById("decSig").textContent         = data.signature     || "—";
+  elements.decision.action.textContent   = `${data.action} ${data.table||""}`.trim();
+  elements.decision.result.textContent   = data.status;
+  elements.decision.envHash.textContent  = data.envelope_hash || "—";
+  elements.decision.policy.textContent   = data.policy || "—";
+  elements.decision.sig.textContent      = data.signature || "—";
 
   verifyIntegrity(data);
 
-  const errorDiv = document.getElementById("llm-error");
-  if (data.llm_error) {
-    errorDiv.textContent = data.llm_error;
-    els.alerts.textContent = data.llm_error;
-    setTimeout(() => {
-      if (els.alerts.textContent === data.llm_error) els.alerts.textContent = "";
-    }, 8000);
-  } else {
-    errorDiv.textContent = "";
+  let cls = "event-pending", countTarget = null, alertMsg = "";
+
+  switch (data.status) {
+    case "EXECUTED":   cls = "event-executed";  countTarget = elements.executed; break;
+    case "BLOCKED":    cls = "event-blocked";   countTarget = elements.blocked;  alertMsg = `Blocked: ${data.action}`; break;
+    case "PENDING":    cls = "event-pending";   alertMsg = `Escalation: ${data.action}`; break;
+    case "APPROVED":   cls = "event-approved";  countTarget = elements.approved; break;
+    case "DENIED":     cls = "event-blocked";   countTarget = elements.blocked;  alertMsg = `Denied: ${data.action}`; break;
   }
 
-  if (incExecuted) els.executed.textContent = Number(els.executed.textContent) + 1;
-  if (incBlocked)  els.blocked.textContent  = Number(els.blocked.textContent)  + 1;
-  if (incApproved) els.approved.textContent = Number(els.approved.textContent) + 1;
+  if (countTarget) {
+    countTarget.textContent = Number(countTarget.textContent) + 1;
+  }
 
   const line = document.createElement("div");
-  line.className = `event-line ${eventClass}`;
+  line.className = `event-line ${cls}`;
   line.innerHTML = `
-    <span style="opacity:0.7">[${ts}]</span> 
+    <span style="opacity:0.65">[${ts}]</span> 
     ${data.status.padEnd(10)} 
-    ${actionStr} 
-    <span style="color:var(--gray); font-size:0.9rem;">
-      | policy=<code>${data.policy || '—'}</code> 
-      | sig=<code>${data.signature || '—'}</code>
-      | env=<code>${data.envelope_hash || '—'}</code>
+    ${data.action} ${data.table||""}
+    <span style="color:var(--gray); font-size:0.92rem; margin-left:1rem;">
+      policy=<code>${data.policy?.slice(0,8)}…</code> 
+      sig=<code>${data.signature?.slice(0,8)}…</code>
     </span>
   `;
-  els.events.prepend(line);
-  if (els.events.children.length > 200) els.events.removeChild(els.events.lastChild);
+  elements.events.prepend(line);
+  if (elements.events.children.length > 250) elements.events.removeChild(elements.events.lastChild);
 
-  if (alertText) {
-    els.alerts.textContent = alertText;
-    setTimeout(() => els.alerts.textContent = "", 4800);
+  if (alertMsg) {
+    elements.alerts.textContent = alertMsg;
+    setTimeout(() => { if (elements.alerts.textContent === alertMsg) elements.alerts.textContent = ""; }, 5000);
   }
 
   if (data.escalation_queue) renderQueue(data.escalation_queue);
@@ -710,101 +573,86 @@ function handleResponse(data) {
 function renderQueue(queue) {
   const container = document.getElementById("escalationQueue");
   container.innerHTML = "";
-  let pendingCount = 0;
+  let pending = 0;
 
-  queue.forEach(item => {
+  for (const item of queue) {
     const div = document.createElement("div");
     div.className = `queue-item ${item.status.toLowerCase()}`;
 
-    const statusDisplay = item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase();
-
     div.innerHTML = `
       <div style="flex:1;">
-        <b>ID ${item.request_id}</b> — ${item.action} ${item.table}
-        <span style="margin-left:16px; opacity:0.8;">${statusDisplay}</span>
+        <b>#${item.request_id}</b> — ${item.action} ${item.table}
+        <span style="margin-left:1.2rem; opacity:0.85;">${item.status}</span>
       </div>
     `;
 
     if (item.status === "PENDING") {
-      pendingCount++;
-      const approveBtn = document.createElement("button");
-      approveBtn.className = "btn-approve";
-      approveBtn.textContent = "Approve";
-      approveBtn.onclick = () => approve(item.request_id);
-      div.appendChild(approveBtn);
+      pending++;
+      const approve = document.createElement("button");
+      approve.className = "btn-approve";
+      approve.textContent = "Approve";
+      approve.onclick = () => approveRequest(item.request_id);
+      div.appendChild(approve);
 
-      const denyBtn = document.createElement("button");
-      denyBtn.className = "btn-deny";
-      denyBtn.textContent = "Deny";
-      denyBtn.onclick = () => deny(item.request_id);
-      div.appendChild(denyBtn);
+      const deny = document.createElement("button");
+      deny.className = "btn-deny";
+      deny.textContent = "Deny";
+      deny.onclick = () => denyRequest(item.request_id);
+      div.appendChild(deny);
     }
 
     container.appendChild(div);
-  });
+  }
 
-  els.totalEsc.textContent = queue.length;
-  els.pending.textContent = pendingCount;
+  elements.totalEsc.textContent = queue.length;
+  elements.pending.textContent = pending;
 }
 
-function approve(requestId) {
-  fetch(`/approve/${requestId}`, { method: "POST" })
-    .then(r => r.json())
-    .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
-    .catch(err => console.error("Approve failed:", err));
+async function approveRequest(id) {
+  await fetch(`/approve/${id}`, { method: "POST" });
+  // SSE will update queue
 }
 
-function deny(requestId) {
-  fetch(`/deny/${requestId}`, { method: "POST" })
-    .then(r => r.json())
-    .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
-    .catch(err => console.error("Deny failed:", err));
+async function denyRequest(id) {
+  await fetch(`/deny/${id}`, { method: "POST" });
+  // SSE will update queue
 }
 
-const evtSource = new EventSource("/events");
-evtSource.onmessage = event => {
-  try { handleResponse(JSON.parse(event.data)); }
-  catch (e) { console.error("SSE parse error:", e); }
+// ── SSE & initial load ──
+new EventSource("/events").onmessage = e => {
+  try { handleEvent(JSON.parse(e.data)); }
+  catch {}
 };
-evtSource.onerror = () => console.warn("SSE connection lost – reconnecting...");
 
-window.addEventListener("load", () => {
-  fetch("/policy_hash")
-    .then(r => {
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      return r.json();
-    })
-    .then(data => {
-      const el = document.getElementById("current-policy-hash");
-      if (data?.policy_hash) {
-        el.textContent = data.policy_hash;
-      } else {
-        el.textContent = "No hash received";
-      }
-    })
-    .catch(err => {
-      const el = document.getElementById("current-policy-hash");
-      el.textContent = "Failed to load";
-      el.style.color = "var(--danger)";
-    });
+window.addEventListener("load", async () => {
+  // Policy hash
+  try {
+    const r = await fetch("/policy_hash");
+    const d = await r.json();
+    document.getElementById("current-policy-hash").textContent = d.policy_hash || "—";
+  } catch {
+    document.getElementById("current-policy-hash").textContent = "Failed to load";
+  }
 
-  fetch("/verification_key")
-    .then(r => {
-      if (!r.ok) throw new Error("Server returned " + r.status);
-      return r.json();
-    })
-    .then(data => {
-      if (data && data.key) {
-        verificationKey = data.key;
-      }
-    })
-    .catch(() => {});
+  // Verification key (only needed for client-side demo verification)
+  try {
+    const r = await fetch("/verification_key");
+    const d = await r.json();
+    if (d.key) verificationKey = d.key;
+  } catch {}
 
-  fetch("/status")
-    .then(r => r.json())
-    .then(data => data.escalation_queue && renderQueue(data.escalation_queue))
-    .catch(() => {});
+  // Initial queue
+  try {
+    const r = await fetch("/status");
+    const d = await r.json();
+    if (d.escalation_queue) renderQueue(d.escalation_queue);
+  } catch {}
 });
+
+// Button bindings
+document.querySelector(".btn-run").onclick = runAction;
+document.querySelector(".btn-auto").onclick = startAuto;
+document.querySelector(".btn-stop").onclick = stopAuto;
 </script>
 </body>
 </html>
