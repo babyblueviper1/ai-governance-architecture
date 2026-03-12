@@ -14,20 +14,23 @@ The agent attempts database operations (`READ`, `UPDATE`, `DELETE`, `DROP`) whil
 - Actions become truly non-deterministic (and occasionally risky — perfect to see DRVL govern real frontier-model behavior)  
 - **Warning:** Using real LLM will consume your OpenAI tokens and may incur costs. The default simulation mode uses **no tokens**.  
 - Your key is sent once to the server, never stored or logged — only used for your current session.
-
 ## Policy Integrity & Attestation
 
-Every governance decision includes:  
-- **Envelope hash** — integrity fingerprint of the proposed action (before enforcement)  
-- **Policy hash** — SHA-256 fingerprint of the current rules (ensures reproducible enforcement)  
-- **Signature** — HMAC-SHA256 of the event payload (provides cryptographic attestation)
+Every governance decision includes:
 
-The **Execution Envelope** wraps the action proposal early, creating a clear boundary between probabilistic reasoning and deterministic execution.  
-Only verified envelopes proceed — producing auditable, hashable records of what was actually attempted and allowed.
+- **Envelope hash** — SHA-256 fingerprint of the proposed execution envelope (captures the exact action request before enforcement).
+- **Policy hash** — SHA-256 fingerprint of the active policy set (ensures the decision can be reproduced under the same rules).
+- **Signature** — HMAC-SHA256 signature over the event payload, providing cryptographic attestation of the enforcement decision.
+
+The **Execution Envelope** wraps the action proposal early, creating a clear boundary between probabilistic model reasoning and deterministic system execution.
+
+Only validated envelopes proceed to execution, producing verifiable enforcement events that record what was proposed, what policy evaluated it, and what decision was made.
 
 **Demo note (intentional mismatches):**  
-For illustration purposes, **~15% of events are deliberately tampered** with (wrong policy hash or corrupted signature) to show what integrity detection looks like in the UI (red "✗ Tampered / Invalid" warning).  
-In a real system, policy hashes are designed to match for events under the current policy — the check exists precisely to detect any changes, tampering, misconfigurations, or other issues.
+For illustration purposes, ~15% of events are deliberately tampered with (e.g., corrupted signature or mismatched policy hash) to demonstrate integrity detection in the interface (red “✗ Tampered / Invalid” indicator).
+
+In a real deployment, policy hashes would remain consistent across events evaluated under the same policy state. The verification checks exist to detect tampering, misconfiguration, or unauthorized modification.
+
 ### Execution Envelope (Action Boundary)
 
 Every proposed action is wrapped in a lightweight **Execution Envelope** before verification:
