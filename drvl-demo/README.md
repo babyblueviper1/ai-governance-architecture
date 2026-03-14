@@ -1,6 +1,6 @@
 # DRVL Governance Demo — Probabilistic Agent with Escalation
 
-**Live Demo (no installation needed!)**  
+**Live Demo (no installation needed)**  
 🎮 https://drvl-demo.onrender.com/  
 *(First load may take 10–30 seconds due to Render free-tier spin-up. Subsequent visits are instant.)*
 
